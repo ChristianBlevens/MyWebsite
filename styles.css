@@ -140,43 +140,24 @@ a, button {
 /* Enhanced iframe container */
 .iframe-container {
   position: relative;
-  overflow: hidden;
-  border-radius: 0.375rem;
-  background-color: #1f2937;
-}
-
-.iframe-container iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-/* Iframe adaptive container - minimum 1:1 ratio */
-.iframe-adaptive-container {
-  position: relative;
   width: 100%;
   background-color: #1a202c;
   border-radius: 0.375rem;
   overflow: hidden;
-  min-height: 300px; /* Initial height until iframe loads */
+  transition: height 0.3s ease;
 }
 
 /* Loading overlay for iframe */
 .iframe-loading {
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  height: 100%;
+  min-height: 600px;
   background-color: #1a202c;
   z-index: 5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 300px;
+  border-radius: 0.375rem;
 }
 
 /* Fixed project modal layout */
@@ -197,12 +178,42 @@ iframe {
   border: 0;
   background-color: white;
   display: block; /* Remove inline gaps */
+  width: 100%;
+  transition: height 0.3s ease; /* Smooth height changes */
 }
 
-/* Close button positioning */
-#projectDetails button.sticky {
-  position: sticky;
-  z-index: 20;
+/* Force iframe to occupy its space correctly */
+#projectDetails iframe {
+  display: block;
+  min-height: 600px;
+}
+
+/* Size control buttons */
+#projectDetails .size-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 10;
+}
+
+#projectDetails .size-control-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background-color: rgba(55, 65, 81, 0.8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#projectDetails .size-control-btn:hover {
+  background-color: rgba(75, 85, 99, 0.9);
 }
 
 /* Responsive adjustments */
@@ -215,8 +226,10 @@ iframe {
     max-height: calc(100vh - 60px);
   }
   
-  .iframe-adaptive-container {
-    min-height: 250px;
+  .iframe-container, 
+  .iframe-loading,
+  #projectDetails iframe {
+    min-height: 400px;
   }
 }
 
@@ -395,4 +408,10 @@ iframe:focus {
 .gallery-image:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Close button positioning */
+#projectDetails button.sticky {
+  position: sticky;
+  z-index: 20;
 }

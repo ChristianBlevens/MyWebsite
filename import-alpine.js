@@ -39,19 +39,29 @@ function contactForm() {
   };
 }
 
-// Project modal functions
+// Project modal functions with security-compliant approach
 function modalData() {
   return {
     isOpen: false,
     currentProject: null,
     iframeLoaded: false,
+    uniqueId: 1, // Used to force iframe reload
+    // Default height
+    iframeHeight: 600,
     
     open(project) {
+      // Generate new unique ID to force iframe reload
+      this.uniqueId = Date.now();
+      
       // Reset state before setting new project
       this.iframeLoaded = false;
       this.currentProject = project;
       this.isOpen = true;
       document.body.style.overflow = 'hidden';
+      
+      // Set iframe height based on project type
+      // You can customize heights for different project types if needed
+      this.iframeHeight = 600;
       
       // Reset scroll position when opening a new project
       setTimeout(() => {
@@ -65,77 +75,46 @@ function modalData() {
     close() {
       this.isOpen = false;
       document.body.style.overflow = 'auto';
-      
-      // When closing, set a small timeout before resetting iframe state
-      setTimeout(() => {
-        this.iframeLoaded = false;
-      }, 300);
     },
     
-    adjustIframeHeight() {
+    // Handle iframe load event
+    onIframeLoad() {
+      this.iframeLoaded = true;
+      
       // Get references to the iframe and its container
       const iframe = this.$refs.projectIframe;
       const container = this.$refs.iframeContainer;
       
-      if (!iframe || !container) return;
+      if (iframe && container) {
+        // Apply the height
+        iframe.style.height = this.iframeHeight + 'px';
+        container.style.height = this.iframeHeight + 'px';
+      }
+    },
+    
+    // Increase iframe height by 100px
+    increaseHeight() {
+      this.iframeHeight += 100;
+      const iframe = this.$refs.projectIframe;
+      const container = this.$refs.iframeContainer;
       
-      // First ensure iframe width is set
-      const containerWidth = container.offsetWidth;
-      iframe.style.width = '100%';
-      
-      // Function to measure and set proper height
-      const resizeIframe = () => {
-        try {
-          // Try to access iframe content
-          let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-          let iframeHeight = 0;
-          
-          // Wait for content to be fully loaded
-          setTimeout(() => {
-            try {
-              // Get the scroll height of the iframe content
-              const contentHeight = Math.max(
-                iframeDoc.body.scrollHeight,
-                iframeDoc.documentElement.scrollHeight
-              );
-              
-              // Set a minimum height equal to width (1:1 ratio)
-              iframeHeight = Math.max(containerWidth, contentHeight);
-              
-              // Apply the height
-              iframe.style.height = iframeHeight + 'px';
-              
-              // Add resize observer for dynamic content changes
-              if (!iframe._resizeObserver && iframeDoc.body) {
-                iframe._resizeObserver = new ResizeObserver(() => {
-                  this.adjustIframeHeight();
-                });
-                iframe._resizeObserver.observe(iframeDoc.body);
-              }
-            } catch (e) {
-              console.log('Error measuring iframe content:', e);
-              // Fallback to 1:1 ratio if can't measure content
-              iframe.style.height = containerWidth + 'px';
-            }
-          }, 300);
-        } catch (e) {
-          console.log('Cannot access iframe content:', e);
-          // Default to 1:1 aspect ratio if cross-origin issues
-          iframe.style.height = containerWidth + 'px';
+      if (iframe && container) {
+        iframe.style.height = this.iframeHeight + 'px';
+        container.style.height = this.iframeHeight + 'px';
+      }
+    },
+    
+    // Decrease iframe height by 100px, but not below 600px (1:1 minimum)
+    decreaseHeight() {
+      if (this.iframeHeight > 300) {
+        this.iframeHeight -= 100;
+        const iframe = this.$refs.projectIframe;
+        const container = this.$refs.iframeContainer;
+        
+        if (iframe && container) {
+          iframe.style.height = this.iframeHeight + 'px';
+          container.style.height = this.iframeHeight + 'px';
         }
-      };
-      
-      // Initial resize
-      resizeIframe();
-      
-      // Also listen for window resize events
-      if (!window._iframeResizeListener) {
-        window._iframeResizeListener = true;
-        window.addEventListener('resize', () => {
-          if (this.isOpen && this.iframeLoaded) {
-            resizeIframe();
-          }
-        });
       }
     }
   };
