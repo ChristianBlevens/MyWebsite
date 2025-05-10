@@ -44,14 +44,13 @@ function modalData() {
   return {
     isOpen: false,
     currentProject: null,
-    demoLoaded: false,
     iframeLoaded: false,
     
     open(project) {
+      // Reset state before setting new project
+      this.iframeLoaded = false;
       this.currentProject = project;
       this.isOpen = true;
-      this.demoLoaded = false;
-      this.iframeLoaded = false;
       document.body.style.overflow = 'hidden';
       
       // Reset scroll position when opening a new project
@@ -66,10 +65,78 @@ function modalData() {
     close() {
       this.isOpen = false;
       document.body.style.overflow = 'auto';
+      
+      // When closing, set a small timeout before resetting iframe state
+      setTimeout(() => {
+        this.iframeLoaded = false;
+      }, 300);
     },
     
-    loadDemo() {
-      this.demoLoaded = true;
+    adjustIframeHeight() {
+      // Get references to the iframe and its container
+      const iframe = this.$refs.projectIframe;
+      const container = this.$refs.iframeContainer;
+      
+      if (!iframe || !container) return;
+      
+      // First ensure iframe width is set
+      const containerWidth = container.offsetWidth;
+      iframe.style.width = '100%';
+      
+      // Function to measure and set proper height
+      const resizeIframe = () => {
+        try {
+          // Try to access iframe content
+          let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          let iframeHeight = 0;
+          
+          // Wait for content to be fully loaded
+          setTimeout(() => {
+            try {
+              // Get the scroll height of the iframe content
+              const contentHeight = Math.max(
+                iframeDoc.body.scrollHeight,
+                iframeDoc.documentElement.scrollHeight
+              );
+              
+              // Set a minimum height equal to width (1:1 ratio)
+              iframeHeight = Math.max(containerWidth, contentHeight);
+              
+              // Apply the height
+              iframe.style.height = iframeHeight + 'px';
+              
+              // Add resize observer for dynamic content changes
+              if (!iframe._resizeObserver && iframeDoc.body) {
+                iframe._resizeObserver = new ResizeObserver(() => {
+                  this.adjustIframeHeight();
+                });
+                iframe._resizeObserver.observe(iframeDoc.body);
+              }
+            } catch (e) {
+              console.log('Error measuring iframe content:', e);
+              // Fallback to 1:1 ratio if can't measure content
+              iframe.style.height = containerWidth + 'px';
+            }
+          }, 300);
+        } catch (e) {
+          console.log('Cannot access iframe content:', e);
+          // Default to 1:1 aspect ratio if cross-origin issues
+          iframe.style.height = containerWidth + 'px';
+        }
+      };
+      
+      // Initial resize
+      resizeIframe();
+      
+      // Also listen for window resize events
+      if (!window._iframeResizeListener) {
+        window._iframeResizeListener = true;
+        window.addEventListener('resize', () => {
+          if (this.isOpen && this.iframeLoaded) {
+            resizeIframe();
+          }
+        });
+      }
     }
   };
 }

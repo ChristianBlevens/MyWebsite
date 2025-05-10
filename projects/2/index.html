@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Lights Photo App</title>
+    <link rel="icon" type="image/svg" href="./favicon.svg"/>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Description for SEO -->
+    <meta name="description" content="Create beautiful Christmas light displays on your photos with this interactive web app">
+    <!-- Prevent favicon.ico request -->
+    <link rel="icon" href="data:,">
+</head>
+<body>
+    <div class="container">
+        <h1>Christmas Lights Photo App</h1>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <div id="cameraTab" class="tab active">Use Camera</div>
+            <div id="fileTab" class="tab">Upload Image</div>
+        </div>
+        
+        <!-- ===== Input Views ===== -->
+        
+        <!-- Camera View -->
+        <div id="cameraView">
+            <div class="input-container">
+                <div id="cameraPlaceholder" class="input-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                        <circle cx="12" cy="13" r="3"></circle>
+                    </svg>
+                    <p>Camera inactive</p>
+                </div>
+                <video id="video" class="hidden" autoplay playsinline></video>
+            </div>
+            <div class="button-container">
+                <button id="startCameraBtn" class="button button-green">Start Camera</button>
+                <button id="takePictureBtn" class="button button-blue hidden">Take Photo</button>
+            </div>
+        </div>
+        
+        <!-- File Upload View -->
+        <div id="fileView" class="hidden">
+            <div class="input-container">
+                <div id="fileUploadPlaceholder" class="input-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p>Upload an image</p>
+                </div>
+                <img id="previewImage" class="hidden" alt="Preview">
+            </div>
+            <div class="button-container">
+                <input type="file" id="fileInput" class="file-input" accept="image/*">
+                <label for="fileInput" class="file-label">Choose Image</label>
+                <button id="useImageBtn" class="button button-green hidden">Use This Image</button>
+            </div>
+        </div>
+        
+        <!-- ===== Editor View ===== -->
+        <div id="editorView" class="hidden">
+            <div class="editor-container">
+                <!-- Sidebar with controls -->
+                <div class="control-sidebar">
+                    <!-- Density Slider -->
+                    <div class="density-slider-container">
+                        <input type="range" min="0.5" max="2" step="0.01" value="1" class="density-slider" id="densitySlider">
+                        <div class="density-label">Density</div>
+                    </div>
+                    
+                    <!-- Color Bar -->
+                    <div class="color-bar-container" id="colorBar">
+                        <!-- Color markers will be added dynamically -->
+                    </div>
+                    
+                    <!-- Speed Slider -->
+                    <div class="speed-slider-container">
+                        <input type="range" min="0.1" max="2" step="0.1" value="1" class="speed-slider" id="speedSlider">
+                        <div class="speed-label">Speed</div>
+                    </div>
+                    
+                    <!-- Glow Size Slider -->
+                    <div class="glow-size-slider-container">
+                        <input type="range" min="0.5" max="3" step="0.1" value="1" class="glow-size-slider" id="glowSizeSlider">
+                        <div class="glow-size-label">Glow</div>
+                    </div>
+                </div>
+
+                <!-- Main Canvas Container -->
+                <div class="input-container">
+                    <!-- Main editing canvas -->
+                    <canvas id="canvas" class="crosshair"></canvas>
+                    
+                    <!-- Overlay canvases for different visualizations -->
+                    <canvas id="lightsOverlayCanvas" class="overlay-canvas"></canvas>
+                    <canvas id="depthOverlayCanvas" class="overlay-canvas hidden"></canvas>
+                    <canvas id="lineOverlayCanvas" class="overlay-canvas hidden"></canvas>
+                    
+                    <!-- Processing overlay -->
+                    <div id="processingOverlay" class="processing-overlay hidden">
+                        <p>Processing image...</p>
+                        <div class="progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="instructions" class="instructions">Click to add points for your Christmas lights</div>
+            
+            <div id="editorButtons" class="button-container">
+                <!-- Editing buttons -->
+                <button id="undoBtn" class="button button-purple" disabled>Undo</button>
+                <button id="clearBtn" class="button button-red" disabled>Clear All</button>
+                <button id="resetBtn" class="button button-gray">Start Over</button>
+                
+                <!-- Toggle buttons -->
+				<button id="toggleIndependentColorsBtn" class="button button-rainbow">Use Independent Colors</button>
+				<button id="toggleAnimationBtn" class="button button-purple">Pause Animation</button>
+                <button id="toggleSplinesBtn" class="button button-orange">Hide Splines</button>
+                <button id="depthToggleBtn" class="button button-blue">Toggle Depth Map</button>
+                <button id="lineToggleBtn" class="button button-orange">Toggle Line Data</button>
+                
+				<!-- Enhance buttons -->
+				<button id="enhanceBtn" class="button button-green" disabled>Enhance Image</button>
+                <button id="downloadBtn" class="button button-blue">Download Image</button>
+            </div>
+            
+            <!-- Results Container -->
+            <div id="resultsContainer" class="hidden">
+                <div class="input-container">
+                    <img id="enhancedImage" width="100%" alt="Enhanced Image">
+                </div>
+                <div class="instructions">AI Enhanced Image</div>
+            </div>
+        </div>
+        
+        <!-- ===== Overlays ===== -->
+        
+        <!-- Color Picker Overlay -->
+        <div id="colorPickerOverlay" class="color-picker-overlay hidden">
+            <div class="color-picker-container">
+                <div class="color-picker-title">Choose Light Color</div>
+                <input type="color" id="colorPickerInput" class="color-picker-input" value="#ff0000">
+                <div class="color-picker-buttons">
+                    <button id="cancelColorBtn" class="button button-gray">Cancel</button>
+                    <button id="selectColorBtn" class="button button-blue">Select</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Scripts ===== -->
+    <!-- Core functionality -->
+    <script src="main.js"></script>
+</body>
+</html>
