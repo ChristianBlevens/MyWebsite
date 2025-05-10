@@ -257,13 +257,13 @@
 								<!-- Fixed-size iframe container with project-specific key for forcing reload -->
 								<div class="iframe-container" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
 									<iframe :src="'projects/' + currentProject.id + '/index.html?v=' + uniqueId" 
-											:key="'iframe-' + currentProject.id + '-' + uniqueId"
-											class="w-full border-0 bg-white" 
-											sandbox="allow-scripts allow-same-origin"
-											loading="lazy"
-											x-ref="projectIframe"
-											:style="`height: ${iframeHeight}px; width: 100%;`"
-											@load="onIframeLoad()"></iframe>
+										:key="'iframe-' + currentProject.id + '-' + uniqueId"
+										class="w-full border-0 bg-white" 
+										sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"
+										loading="lazy"
+										x-ref="projectIframe"
+										:style="`height: ${iframeHeight}px; width: 100%;`"
+										@load="onIframeLoad()"></iframe>
 								</div>
 							</div>
 						</div>
@@ -337,5 +337,6 @@
     <script src="projects.js"></script>
     <script src="import-alpine.js"></script>
     <script src="main.js"></script>
+	<script src="unity-helper.js"></script>
 </body>
 </html>

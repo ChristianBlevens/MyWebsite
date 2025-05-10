@@ -121,7 +121,12 @@
             };
 
       document.body.appendChild(script);
-
+	
+	// Add this to the generated Unity WebGL index.html
+	  document.addEventListener('click', function() {
+		// Give focus to the iframe when clicked (helps with keyboard input)
+		window.focus();
+	  });
     </script>
   </body>
 </html>
