@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Collision Destruction - Project Demo</title>
+    <!-- Tailwind CSS CDN for consistent styling with the main portfolio -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Custom project styles -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white m-0 p-0 h-screen flex flex-col">
+    <div class="container mx-auto p-4 flex-grow flex flex-col">
+        <!-- Project header -->
+        <header class="pb-4 border-b border-gray-700 mb-4">
+            <h1 class="text-2xl font-bold">Voxel Collision Destruction</h1>
+            <p class="text-gray-400">Interactive demo</p>
+        </header>
+        
+        <!-- Demo content area - this will contain your actual project content -->
+        <div class="flex-grow flex flex-col items-center justify-center">
+            <!-- This is just a placeholder. Replace with your actual project content -->
+            <div class="bg-gray-800 rounded-lg p-8 max-w-xl w-full text-center">
+                <i class="fas fa-cubes text-5xl mb-4 text-blue-500"></i>
+                <h2 class="text-xl font-bold mb-2">Voxel System Demo</h2>
+                <p class="mb-6">This is a placeholder for your voxel collision system demo. When you place your actual project files here, this content will be replaced with your interactive demo.</p>
+                
+                <!-- Sample interactive elements -->
+                <div class="flex justify-center space-x-4 mb-6">
+                    <button class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-md">Generate Voxels</button>
+                    <button class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-md">Apply Force</button>
+                    <button class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-md">Reset Demo</button>
+                </div>
+                
+                <!-- Canvas for WebGL/3D content -->
+                <div class="w-full h-64 bg-gray-700 rounded-md flex items-center justify-center">
+                    <p>3D Canvas Placeholder</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controls and information -->
+        <footer class="pt-4 border-t border-gray-700 mt-4">
+            <div class="flex flex-wrap justify-between items-center">
+                <div class="text-sm text-gray-400">
+                    <p>Controls: Click and drag to rotate. Scroll to zoom. Right-click to pan.</p>
+                </div>
+                <div>
+                    <span class="text-sm text-blue-400">Frame rate: <span id="fps">60</span> FPS</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Project specific scripts -->
+    <script src="scripts.js"></script>
+</body>
+</html>

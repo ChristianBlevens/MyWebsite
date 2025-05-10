@@ -4,687 +4,352 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Christian Blevens | Game Programmer</title>
-    <style>
-        :root {
-            --primary-color: #333;
-            --secondary-color: #555;
-            --accent-color: #f0f0f0;
-            --text-color: #f0f0f0;
-            --background-color: #232323;
-            --card-background: #2a2a2a;
-            --hover-color: #3a3a3a;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-        
-        /* Header Styles */
-        header {
-            padding: 2rem 0;
-            text-align: center;
-        }
-        
-        header h1 {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        header h2 {
-            font-size: 1.5rem;
-            color: var(--secondary-color);
-            font-weight: 400;
-        }
-        
-        nav {
-            margin: 2rem 0;
-            text-align: center;
-        }
-        
-        nav ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        nav ul li {
-            margin: 0 1rem;
-        }
-        
-        nav ul li a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 1.2rem;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-        
-        nav ul li a:hover {
-            background-color: var(--hover-color);
-        }
-        
-        /* Main Content Styles */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 4rem 0;
-        }
-        
-        .hero img {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 2rem;
-        }
-        
-        .hero h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin-bottom: 2rem;
-        }
-        
-        .btn {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            padding: 0.8rem 1.5rem;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-        }
-        
-        .btn:hover {
-            background-color: var(--hover-color);
-        }
-        
-        /* Projects Grid */
-        .projects {
-            padding: 4rem 0;
-        }
-        
-        .projects h2 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-        }
-        
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .project-card {
-            background-color: var(--card-background);
-            border-radius: 8px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .project-image {
-            height: 200px;
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .project-info {
-            padding: 1.5rem;
-        }
-        
-        .project-info h3 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .project-details {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            padding: 2rem;
-            overflow-y: auto;
-        }
-        
-        .project-details-content {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: var(--card-background);
-            border-radius: 8px;
-            padding: 2rem;
-            position: relative;
-        }
-        
-        .close-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        
-        .project-details h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .project-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-        
-        .project-gallery img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-        
-        .skills-list {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 1rem 0;
-        }
-        
-        .skill-tag {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            padding: 0.3rem 0.8rem;
-            border-radius: 50px;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        /* Features List */
-        .features-list {
-            margin-top: 1rem;
-        }
-        
-        .feature-item {
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-        
-        /* Footer Styles */
-        footer {
-            background-color: var(--primary-color);
-            padding: 2rem 0;
-            text-align: center;
-            margin-top: 4rem;
-        }
-        
-        .social-links {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .social-links a {
-            margin: 0 1rem;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
-        }
-        
-        .social-links a:hover {
-            color: var(--accent-color);
-        }
-        
-        footer p {
-            font-size: 0.9rem;
-            color: var(--secondary-color);
-        }
-        
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2.5rem;
-            }
-            
-            header h2 {
-                font-size: 1.2rem;
-            }
-            
-            nav ul {
-                flex-direction: column;
-            }
-            
-            nav ul li {
-                margin: 0.5rem 0;
-            }
-            
-            .hero h2 {
-                font-size: 2rem;
-            }
-            
-            .projects h2 {
-                font-size: 2rem;
-            }
-            
-            .project-details-content {
-                padding: 1.5rem;
-            }
-            
-            .project-details h2 {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
+    <!-- Modern Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Alpine.js CDN  -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+    <!-- Add preload hint for critical resources -->
+    <link rel="preload" href="ImportAlpine.js" as="script">
 </head>
-<body>
-    <header>
-        <div class="container">
-            <h1>Christian Blevens</h1>
-            <h2>Game Programmer</h2>
+<body class="text-gray-100 antialiased bg-gray-900 font-sans" x-data="portfolioApp" x-init="init()">
+    <!-- Improved header with gradient accent -->
+    <header class="py-12 text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-purple-900 opacity-20"></div>
+        <div class="container px-4 mx-auto relative z-10">
+            <h1 class="text-5xl md:text-6xl font-bold tracking-tight">Christian Blevens</h1>
+            <h2 class="text-2xl text-blue-300 font-normal mt-3">Game Programmer</h2>
         </div>
     </header>
     
-    <nav>
-        <div class="container">
-            <ul>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
+    <!-- Sticky navigation -->
+    <nav class="sticky top-0 py-4 bg-gray-900 bg-opacity-90 backdrop-filter backdrop-blur-sm z-30 shadow-md"
+         x-data="{ mobileMenuOpen: false }">
+        <div class="container px-4 mx-auto">
+            <!-- Mobile menu button -->
+            <div class="flex md:hidden justify-between items-center">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                        class="text-gray-100 focus:outline-none">
+                    <i class="fas" :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
+                </button>
+            </div>
+            
+            <!-- Desktop menu - Centered -->
+            <div class="hidden md:flex justify-center">
+                <ul class="flex justify-center flex-wrap">
+                    <li class="mx-4">
+                        <a href="#projects" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">Projects</a>
+                    </li>
+                    <li class="mx-4">
+                        <a href="#about" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">About</a>
+                    </li>
+                    <li class="mx-4">
+                        <a href="#contact" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Mobile dropdown menu -->
+            <div class="md:hidden absolute top-full left-0 right-0 bg-gray-800 shadow-lg"
+                 x-show="mobileMenuOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform -translate-y-4"
+                 x-cloak>
+                <ul class="py-2">
+                    <li class="block">
+                        <a href="#projects" @click="mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">Projects</a>
+                    </li>
+                    <li class="block">
+                        <a href="#about" @click="mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">About</a>
+                    </li>
+                    <li class="block">
+                        <a href="#contact" @click="mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">Contact</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
     
     <main>
-        <section class="hero" id="about">
-            <div class="container">
-                <img src="/api/placeholder/400/400" alt="Christian Blevens">
-                <h2>Game Programmer & Developer</h2>
-                <p>Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
-                <a href="#contact" class="btn">Get In Touch</a>
+        <section id="about" class="py-20">
+            <div class="container px-4 mx-auto flex flex-col items-center text-center">
+                <div class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-8">
+                    <img src="https://i.imgur.com/pb87Imr.png" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
+                </div>
+                <h2 class="text-4xl font-bold mb-4">Game Programmer & Developer</h2>
+                <p class="text-xl max-w-3xl mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
+                <a href="#contact" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-8 py-3 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Get In Touch</a>
             </div>
         </section>
         
-        <section class="projects" id="projects">
-            <div class="container">
-                <h2>Projects</h2>
-                <div class="projects-grid" id="projectsGrid">
-                    <!-- Project cards will be generated here by JavaScript -->
+        <!-- Projects section with filtering capability -->
+        <section id="projects" class="py-20 bg-gray-800 bg-opacity-50">
+            <div class="container px-4 mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-8">Projects</h2>
+                
+                <!-- Project filtering options -->
+                <div class="flex flex-wrap justify-center mb-10 gap-2" x-data="{ activeFilter: 'all' }">
+                    <button @click="activeFilter = 'all'" 
+                            :class="{'bg-blue-600': activeFilter === 'all', 'bg-gray-700': activeFilter !== 'all'}"
+                            class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                        All Projects
+                    </button>
+                    <button @click="activeFilter = 'C++'" 
+                            :class="{'bg-blue-600': activeFilter === 'C++', 'bg-gray-700': activeFilter !== 'C++'}"
+                            class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                        C++
+                    </button>
+                    <button @click="activeFilter = 'Unity'" 
+                            :class="{'bg-blue-600': activeFilter === 'Unity', 'bg-gray-700': activeFilter !== 'Unity'}"
+                            class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                        Unity
+                    </button>
+                    <button @click="activeFilter = 'AI'" 
+                            :class="{'bg-blue-600': activeFilter === 'AI', 'bg-gray-700': activeFilter !== 'AI'}"
+                            class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                        AI & Simulation
+                    </button>
+                </div>
+                
+                <!-- Alpine Project Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projectsGrid">
+                    <template x-for="project in window.projects" :key="project.id">
+                        <div x-show="activeFilter === 'all' || project.skills.includes(activeFilter)"
+                             class="bg-gray-700 rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                             @click="$dispatch('open-project-modal', project)">
+                            <div class="h-48 bg-center bg-cover relative" :style="`background-image: url('${project.image}')`">
+                                <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2" x-text="project.title"></h3>
+                                <p class="mb-4 text-gray-300" x-text="project.description"></p>
+                                <div class="space-y-2">
+                                    <template x-for="feature in project.features.slice(0, 2)" :key="feature">
+                                        <div class="text-sm text-gray-400" x-text="`• ${feature}`"></div>
+                                    </template>
+                                </div>
+                                <div class="mt-4 flex flex-wrap gap-2">
+                                    <template x-for="(skill, index) in project.skills.slice(0, 2)" :key="index">
+                                        <span class="bg-gray-900 text-xs px-2 py-1 rounded-full" x-text="skill"></span>
+                                    </template>
+                                    <template x-if="project.skills.length > 2">
+                                        <span class="bg-gray-900 text-xs px-2 py-1 rounded-full" x-text="`+${project.skills.length - 2}`"></span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
         </section>
         
-        <section class="contact" id="contact">
-            <div class="container" style="text-align: center; padding: 4rem 0;">
-                <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Get In Touch</h2>
-                <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto 2rem;">Interested in working together or have questions about my projects? Feel free to reach out!</p>
-                <div style="max-width: 500px; margin: 0 auto;">
-                    <form id="contactForm" style="display: flex; flex-direction: column; gap: 1rem;">
-                        <input type="text" placeholder="Your Name" style="padding: 0.8rem; border-radius: 5px; border: none; background-color: var(--card-background); color: var(--text-color);">
-                        <input type="email" placeholder="Your Email" style="padding: 0.8rem; border-radius: 5px; border: none; background-color: var(--card-background); color: var(--text-color);">
-                        <textarea placeholder="Your Message" rows="5" style="padding: 0.8rem; border-radius: 5px; border: none; background-color: var(--card-background); color: var(--text-color); resize: vertical;"></textarea>
-                        <button type="submit" class="btn" style="cursor: pointer; border: none; font-size: 1rem;">Send Message</button>
-                    </form>
-                </div>
+        <!-- Contact section with improved form -->
+        <section id="contact" class="py-20">
+            <div class="container px-4 mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-8">Get In Touch</h2>
+                <p class="text-xl max-w-3xl mx-auto mb-8">Interested in working together or have questions about my projects? Feel free to reach out!</p>
+                <form id="contactForm" class="max-w-lg mx-auto flex flex-col space-y-4" x-data="contactForm()" @submit.prevent="handleSubmit">
+                    <div class="relative">
+                        <input type="text" x-model="formData.name" placeholder="Your Name" 
+                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-md border-2 border-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200" required>
+                    </div>
+                    <div class="relative">
+                        <input type="email" x-model="formData.email" placeholder="Your Email" 
+                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-md border-2 border-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200" required>
+                    </div>
+                    <div class="relative">
+                        <textarea x-model="formData.message" placeholder="Your Message" rows="5" 
+                                  class="w-full bg-gray-700 text-white px-4 py-3 rounded-md border-2 border-gray-600 focus:border-blue-500 focus:outline-none transition-colors duration-200 resize-y" required></textarea>
+                    </div>
+                    <button type="submit" 
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-6 py-3 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        Send Message
+                    </button>
+                    
+                    <!-- Success message -->
+                    <div x-show="formSubmitted" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform -translate-y-4"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="bg-green-600 bg-opacity-20 border border-green-500 text-green-300 px-4 py-3 rounded-md" x-cloak>
+                        Your message has been sent successfully!
+                    </div>
+                </form>
             </div>
         </section>
     </main>
     
-    <footer>
-        <div class="container">
-            <div class="social-links">
-                <a href="#" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i> GitHub</a>
-                <a href="#" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                <a href="#" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i> Twitter</a>
+    <footer class="bg-gray-900 py-10 text-center mt-16 border-t border-gray-800">
+        <div class="container px-4 mx-auto">
+            <div class="flex justify-center mb-6 space-x-4">
+                <a href="#" target="_blank" aria-label="GitHub" class="text-gray-400 hover:text-white text-2xl transition-colors duration-300">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" target="_blank" aria-label="LinkedIn" class="text-gray-400 hover:text-white text-2xl transition-colors duration-300">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="#" target="_blank" aria-label="Twitter" class="text-gray-400 hover:text-white text-2xl transition-colors duration-300">
+                    <i class="fab fa-twitter"></i>
+                </a>
             </div>
-            <p>&copy; 2025 Christian Blevens. All rights reserved.</p>
+            <p class="text-gray-500 text-sm">&copy; 2025 Christian Blevens. All rights reserved.</p>
         </div>
     </footer>
     
-    <!-- Project Details Modal -->
-    <div class="project-details" id="projectDetails">
-        <div class="project-details-content">
-            <button class="close-btn" id="closeBtn">&times;</button>
-            <div id="projectDetailsContent">
-                <!-- Project details will be loaded here -->
-            </div>
+    <!-- Enhanced Project Details Modal with iframe support -->
+    <div id="projectDetails" 
+         x-data="modalData()"
+         @open-project-modal.window="open($event.detail)"
+         x-show="isOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-90 z-50 p-4 md:p-8 overflow-y-auto flex items-center justify-center"
+         x-cloak
+         @click.self="close()">
+        <div class="bg-gray-800 rounded-lg max-w-5xl w-full p-5 md:p-8 relative shadow-2xl transform transition-all" 
+             @click.stop
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100">
+            <button class="absolute top-4 right-4 text-white text-2xl bg-transparent border-none cursor-pointer hover:text-gray-300 transition-colors" @click="close()">&times;</button>
+            
+            <template x-if="currentProject">
+                <div>
+                    <h2 class="text-3xl font-bold mb-4" x-text="currentProject.title"></h2>
+                    <p class="mb-6 text-gray-300" x-text="currentProject.details"></p>
+                    
+                    <!-- Tab navigation for modal content -->
+                    <div class="border-b border-gray-700 mb-6">
+                        <ul class="flex flex-wrap -mb-px">
+                            <li class="mr-2">
+                                <button @click="activeTab = 'info'" 
+                                        :class="{'border-b-2 border-blue-500 text-blue-400': activeTab === 'info', 'text-gray-400 hover:text-gray-200': activeTab !== 'info'}" 
+                                        class="inline-block py-2 px-4 font-medium focus:outline-none">
+                                    Info
+                                </button>
+                            </li>
+                            <li class="mr-2">
+                                <button @click="activeTab = 'gallery'" 
+                                        :class="{'border-b-2 border-blue-500 text-blue-400': activeTab === 'gallery', 'text-gray-400 hover:text-gray-200': activeTab !== 'gallery'}" 
+                                        class="inline-block py-2 px-4 font-medium focus:outline-none">
+                                    Gallery
+                                </button>
+                            </li>
+                            <li class="mr-2">
+                                <button @click="activeTab = 'demo'" 
+                                        :class="{'border-b-2 border-blue-500 text-blue-400': activeTab === 'demo', 'text-gray-400 hover:text-gray-200': activeTab !== 'demo'}" 
+                                        class="inline-block py-2 px-4 font-medium focus:outline-none">
+                                    Live Demo
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tab content -->
+                    <div>
+                        <!-- Info tab -->
+                        <div x-show="activeTab === 'info'">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 class="text-xl font-bold mb-4">Features</h3>
+                                    <div class="space-y-2 mb-6">
+                                        <template x-for="feature in currentProject.features" :key="feature">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                                <span x-text="feature"></span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h3 class="text-xl font-bold mb-4">Skills & Technologies</h3>
+                                    <div class="flex flex-wrap gap-2 mb-6">
+                                        <template x-for="skill in currentProject.skills" :key="skill">
+                                            <span class="bg-gray-900 text-white px-3 py-1 rounded-full text-sm" x-text="skill"></span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Gallery tab -->
+                        <div x-show="activeTab === 'gallery'">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <template x-for="(image, index) in currentProject.gallery" :key="index">
+                                    <div class="cursor-pointer" @click="$dispatch('open-gallery-modal', image)">
+                                        <img :src="image" :alt="currentProject.title" class="w-full h-48 object-cover rounded-md hover:opacity-90 transition-opacity">
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        
+                        <!-- Demo tab with iframe -->
+                        <div x-show="activeTab === 'demo'">
+                            <div class="rounded-md overflow-hidden bg-gray-900 border border-gray-700 p-4">
+                                <div class="w-full h-96"> <!-- Fixed height container -->
+                                    <template x-if="demoLoaded">
+                                        <iframe :src="'projects/' + currentProject.id + '/index.html'" 
+                                                class="w-full h-full border-0 rounded-md" 
+                                                sandbox="allow-scripts allow-same-origin"
+                                                loading="lazy"
+                                                @load="iframeLoaded = true"></iframe>
+                                    </template>
+                                    
+                                    <template x-if="!demoLoaded">
+                                        <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                                            <div class="mb-4 text-center">
+                                                <i class="fas fa-code text-5xl mb-3"></i>
+                                                <p class="text-lg">Project demo will be available soon</p>
+                                                <p class="text-sm text-gray-500 mt-2">This project will load from: <span class="text-blue-400" x-text="'projects/' + currentProject.id + '/index.html'"></span></p>
+                                            </div>
+                                            <button @click="loadDemo()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-md text-white mt-4">
+                                                Try to load demo
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
         </div>
     </div>
     
-    <script>
-        // Project Data
-        const projects = [
-            {
-                id: 1,
-                title: "Voxel Collision Destruction",
-                image: "/api/placeholder/600/400",
-                description: "Innovative voxel-based collision and destruction system",
-                features: [
-                    "Innovative voxel collision destruction",
-                    "Modular, scalable architecture",
-                    "Unique communication class design"
-                ],
-                details: "A sophisticated voxel-based destruction system that allows for realistic and dynamic object destruction based on collision points and forces. The architecture is designed to be highly modular and scalable, supporting complex scenes with numerous destructible objects.",
-                skills: ["C++", "Physics", "Optimization", "Voxel Technology"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 2,
-                title: "Object-Oriented Framework",
-                image: "/api/placeholder/600/400",
-                description: "Advanced OOP framework for game systems",
-                features: [
-                    "Each system is an object",
-                    "Data-oriented communication",
-                    "Compatible with all OOP frameworks"
-                ],
-                details: "Developed a robust object-oriented programming framework that allows for clean separation of concerns across game systems. The framework promotes maintainability and extensibility while ensuring efficient data-oriented communication between components.",
-                skills: ["C++", "Object-Oriented Design", "Data-Oriented Design", "Systems Architecture"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 3,
-                title: "Modular Ability System",
-                image: "/api/placeholder/600/400",
-                description: "Flexible ability system for game characters",
-                features: [
-                    "Fully modular abilities",
-                    "Mod-safe framework",
-                    "Innovative main menu"
-                ],
-                details: "Created a highly flexible ability system that allows for modular composition of character skills and powers. The system is designed to be mod-safe, enabling easy expansion and customization without compromising the core functionality.",
-                skills: ["C#", "Unity", "Game Design", "UI/UX"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 4,
-                title: "Environment Tools",
-                image: "/api/placeholder/600/400",
-                description: "Probuilder environment creation tools",
-                features: [
-                    "Probuilder environments",
-                    "Wide ranging actions",
-                    "Business project"
-                ],
-                details: "Developed a suite of tools for rapid environment creation using Probuilder. These tools enable designers to quickly prototype and iterate on level designs with a wide range of functionality for terrain manipulation, object placement, and scene optimization.",
-                skills: ["Unity", "Probuilder", "Level Design", "Tool Development"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 5,
-                title: "Advanced Physics System",
-                image: "/api/placeholder/600/400",
-                description: "Octree-based physics and surface detection",
-                features: [
-                    "Octree physics checks for surface detection",
-                    "Visual representation of navmesh as a graph",
-                    "Voxel based navigation"
-                ],
-                details: "Implemented an efficient physics system using octree data structures for optimized collision detection and surface analysis. The system includes visual debugging tools for navmesh visualization and supports voxel-based navigation for AI entities.",
-                skills: ["C++", "Physics Programming", "Octree", "Navigation Systems"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 6,
-                title: "Behavior Simulation",
-                image: "/api/placeholder/600/400",
-                description: "Complex behavior simulation system",
-                features: [
-                    "Simulated complex behavior",
-                    "Emergent behaviors amplified",
-                    "Simple but complete control of simulation"
-                ],
-                details: "Designed and implemented a sophisticated behavior simulation system that models complex interactions between entities. The system produces emergent behaviors that evolve over time while providing intuitive controls for adjusting simulation parameters.",
-                skills: ["AI Programming", "Behavior Trees", "Simulation", "Game AI"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 7,
-                title: "Source-Inspired Mechanics",
-                image: "/api/placeholder/600/400",
-                description: "Mechanics inspired by Source engine games",
-                features: [
-                    "Finely emulated source behavior",
-                    "Unique implementation of abilities",
-                    "Local Multiplayer"
-                ],
-                details: "Recreated and refined gameplay mechanics inspired by Source engine games, with a focus on precise movement and physics interactions. The project includes a unique ability system and supports local multiplayer gameplay.",
-                skills: ["C#", "Unity", "Physics Programming", "Multiplayer"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 8,
-                title: "2D Physics Platformer",
-                image: "/api/placeholder/600/400",
-                description: "2D platformer with custom physics",
-                features: [
-                    "2D physics simulation",
-                    "Variable resolution levels",
-                    "Simple yet robust solution"
-                ],
-                details: "Developed a 2D platformer game with a custom physics system that supports variable resolution levels. The solution is designed to be simple to understand while providing robust physics interactions for platforming mechanics.",
-                skills: ["C#", "2D Physics", "Game Design", "Unity"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 9,
-                title: "NPC Navigation System",
-                image: "/api/placeholder/600/400",
-                description: "Efficient navigation for grouped NPCs",
-                features: [
-                    "Efficient navigation of grouped NPCs",
-                    "Obstacle, NPC, and sight line visualization",
-                    "Dynamic NPC clustering"
-                ],
-                details: "Created an advanced navigation system for efficiently managing groups of NPCs. The system includes visualization tools for obstacles, sight lines, and dynamic clustering of characters to optimize pathfinding and movement behaviors.",
-                skills: ["AI Programming", "Pathfinding", "Optimization", "Game AI"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 10,
-                title: "Natural Selection Simulation",
-                image: "/api/placeholder/600/400",
-                description: "AI-driven natural selection simulation",
-                features: [
-                    "Natural selection simulation",
-                    "Efficient search function",
-                    "Database management"
-                ],
-                details: "Implemented a simulation of natural selection processes with AI-driven entities that evolve over time. The project includes efficient search functionality for analyzing simulation data and a database system for tracking evolutionary changes.",
-                skills: ["AI Programming", "Simulation", "Database", "Algorithms"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 11,
-                title: "Math Visualization Tool",
-                image: "/api/placeholder/600/400",
-                description: "Tool for validating math through visualization",
-                features: [
-                    "Math validation through visualization",
-                    "Built with no constraints in mind",
-                    "UI for camera controls"
-                ],
-                details: "Developed a tool for validating mathematical concepts through interactive visualizations. The tool provides flexible camera controls and was built without arbitrary constraints to enable exploration of a wide range of mathematical ideas.",
-                skills: ["Mathematics", "Visualization", "UI Design", "Tool Development"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            },
-            {
-                id: 12,
-                title: "Financial Simulation",
-                image: "/api/placeholder/600/400",
-                description: "Real-world financial simulation project",
-                features: [
-                    "Real-world financial project",
-                    "Long-term extensive planning",
-                    "Cooperation based leadership"
-                ],
-                details: "Created a financial simulation model for a real-world business project. The development involved extensive long-term planning and required cooperation-based leadership to coordinate between technical and business stakeholders.",
-                skills: ["Financial Modeling", "Simulation", "Project Management", "Business Analytics"],
-                gallery: [
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400", 
-                    "/api/placeholder/600/400"
-                ]
-            }
-        ];
-        
-        // Generate Project Cards
-        const projectsGrid = document.getElementById('projectsGrid');
-        const projectDetails = document.getElementById('projectDetails');
-        const closeBtn = document.getElementById('closeBtn');
-        const projectDetailsContent = document.getElementById('projectDetailsContent');
-        
-        // Generate project cards
-        projects.forEach(project => {
-            const card = document.createElement('div');
-            card.className = 'project-card';
-            card.setAttribute('data-id', project.id);
-            
-            card.innerHTML = `
-                <div class="project-image" style="background-image: url('${project.image}');"></div>
-                <div class="project-info">
-                    <h3>${project.title}</h3>
-                    <p>${project.description}</p>
-                    <div class="features-list">
-                        ${project.features.map(feature => `<div class="feature-item">• ${feature}</div>`).join('')}
-                    </div>
-                </div>
-            `;
-            
-            card.addEventListener('click', () => openProjectDetails(project.id));
-            projectsGrid.appendChild(card);
-        });
-        
-        // Open project details
-        function openProjectDetails(projectId) {
-            const project = projects.find(p => p.id === projectId);
-            
-            if (project) {
-                projectDetailsContent.innerHTML = `
-                    <h2>${project.title}</h2>
-                    <p>${project.details}</p>
-                    
-                    <h3 style="margin-top: 1.5rem;">Features</h3>
-                    <div class="features-list">
-                        ${project.features.map(feature => `<div class="feature-item">• ${feature}</div>`).join('')}
-                    </div>
-                    
-                    <h3 style="margin-top: 1.5rem;">Skills & Technologies</h3>
-                    <div class="skills-list">
-                        ${project.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
-                    </div>
-                    
-                    <h3 style="margin-top: 1.5rem;">Gallery</h3>
-                    <div class="project-gallery">
-                        ${project.gallery.map(image => `<img src="${image}" alt="${project.title}">`).join('')}
-                    </div>
-                `;
-                
-                projectDetails.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        
-        // Close project details
-        closeBtn.addEventListener('click', () => {
-            projectDetails.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        });
-        
-        // Close modal when clicking outside content
-        projectDetails.addEventListener('click', (e) => {
-            if (e.target === projectDetails) {
-                projectDetails.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        // Handle contact form submission (placeholder)
-        const contactForm = document.getElementById('contactForm');
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('This is a demo form. In a real implementation, this would send your message to Christian Blevens.');
-        });
-    </script>
+    <!-- Gallery image modal -->
+    <div x-data="galleryModal()" 
+         @open-gallery-modal.window="open($event.detail)"
+         x-show="isOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-95 z-50 p-4 flex items-center justify-center"
+         x-cloak
+         @click.self="close()">
+        <div class="relative max-w-5xl max-h-full">
+            <button class="absolute top-0 right-0 m-4 text-white text-2xl bg-transparent border-none cursor-pointer hover:text-gray-300 z-10" @click="close()">&times;</button>
+            <img :src="currentImage" alt="Gallery image" class="max-w-full max-h-[80vh] object-contain">
+        </div>
+    </div>
+    
+    <!-- Load JavaScript -->
+    <script src="projects.js"></script>
+    <script src="ImportAlpine.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
