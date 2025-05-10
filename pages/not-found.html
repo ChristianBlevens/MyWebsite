@@ -1,0 +1,28 @@
+<!-- Not Found page template (pages/not-found.html) -->
+
+<section class="py-24 flex items-center justify-center">
+    <div class="text-center">
+        <div class="text-6xl font-bold mb-8 text-blue-500">404</div>
+        <h1 class="text-4xl font-bold mb-4">Page Not Found</h1>
+        <p class="text-xl text-gray-400 max-w-md mx-auto mb-10">
+            Sorry, the page you're looking for doesn't exist or has been moved.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#/" 
+               @click.prevent="$router.navigate('/')" 
+               class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-md inline-block transition-colors duration-300">
+                Return Home
+            </a>
+            <a href="#/projects" 
+               @click.prevent="$router.navigate('/projects')" 
+               class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-md inline-block transition-colors duration-300">
+                Browse Projects
+            </a>
+        </div>
+        
+        <div class="mt-16 text-gray-500">
+            <p>If you believe this is an error, please <a href="#/contact" @click.prevent="$router.navigate('/contact')" class="text-blue-400 hover:underline">contact me</a>.</p>
+        </div>
+    </div>
+</section>
