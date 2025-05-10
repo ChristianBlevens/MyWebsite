@@ -44,17 +44,23 @@ function modalData() {
   return {
     isOpen: false,
     currentProject: null,
-    activeTab: 'info',
     demoLoaded: false,
     iframeLoaded: false,
     
     open(project) {
       this.currentProject = project;
       this.isOpen = true;
-      this.activeTab = 'info';
       this.demoLoaded = false;
       this.iframeLoaded = false;
       document.body.style.overflow = 'hidden';
+      
+      // Reset scroll position when opening a new project
+      setTimeout(() => {
+        const modalContent = document.querySelector('#projectDetails > div');
+        if (modalContent) {
+          modalContent.scrollTop = 0;
+        }
+      }, 100);
     },
     
     close() {
