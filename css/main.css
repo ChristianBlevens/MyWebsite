@@ -1,0 +1,379 @@
+/* 
+ * Christian Blevens Portfolio
+ * Main CSS Stylesheet
+ *
+ * This file extends Tailwind CSS with custom styling.
+ * It's organized by component and follows a consistent naming convention.
+ */
+
+/* ---------- BASE STYLES ---------- */
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  border-radius: 0.25rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
+}
+
+/* Alpine.js utility to prevent flash of unstyled content */
+[x-cloak] {
+  display: none !important;
+}
+
+/* Default transitions */
+a, button {
+  transition: all 0.3s ease;
+}
+
+/* Container adjustments */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------- UTILITY CLASSES ---------- */
+
+/* Buttons */
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 
+         text-white font-medium px-8 py-3 rounded-md transition-all duration-300 
+         shadow-lg hover:shadow-xl transform hover:-translate-y-1;
+}
+
+.btn-secondary {
+  @apply bg-gray-700 hover:bg-gray-600 text-white font-medium 
+         px-6 py-2 rounded-md transition-all duration-300;
+}
+
+/* Form inputs */
+.form-input {
+  @apply w-full bg-gray-700 text-white px-4 py-3 rounded-md 
+         border-2 border-gray-600 focus:border-blue-500 
+         focus:outline-none transition-colors duration-200;
+}
+
+/* Skill tags */
+.skill-tag {
+  @apply bg-gray-900 text-xs px-2 py-1 rounded-full inline-block;
+}
+
+/* Size controls */
+.size-control-btn {
+  @apply bg-gray-700 hover:bg-gray-600 text-white w-8 h-8 
+         rounded flex items-center justify-center;
+}
+
+/* ---------- COMPONENT STYLES ---------- */
+
+/* Project cards */
+.project-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+/* Gallery images */
+.gallery-image {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.gallery-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+}
+
+/* Modal content */
+.modal-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  scrollbar-width: thin;
+}
+
+/* ---------- ANIMATIONS ---------- */
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide up animation */
+.slide-up {
+  animation: slideUp 0.5s ease-in-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid #3b82f6;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Button ripple effect */
+.btn-animated {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-animated::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.btn-animated:hover::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
+}
+
+/* Hero section animated gradient */
+.hero-gradient {
+  background: linear-gradient(-45deg, #1e3a8a, #312e81, #4f46e5, #1d4ed8);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- IFRAME CONTAINER STYLES ---------- */
+
+/* Base iframe container */
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  background-color: #1a202c;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+/* Loading overlay */
+.iframe-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1a202c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: opacity 0.5s ease;
+}
+
+/* Ensure iframes fill container correctly */
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: block;
+  transition: height 0.3s ease;
+  background-color: white;
+  box-sizing: border-box !important;
+  transform: none !important;
+}
+
+/* Specific styling for different iframe types */
+iframe[src*="itch.io"] {
+  background-color: transparent !important;
+}
+
+/* Fix for canvas elements in iframes */
+iframe canvas,
+iframe #unity-canvas,
+iframe .emscripten canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Fix for Unity containers */
+iframe #unity-container,
+iframe #gameContainer,
+iframe #unityContainer,
+iframe .unity-desktop,
+iframe .webgl-content,
+iframe .template-wrap {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: none !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Hide scrollbars in iframes */
+iframe::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* ---------- RESPONSIVE ADJUSTMENTS ---------- */
+
+/* Medium screens and below */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
+  .iframe-container {
+    min-height: 400px;
+  }
+  
+  #projectModal {
+    padding: 30px !important;
+  }
+  
+  #projectModal > div {
+    max-height: calc(100vh - 60px);
+  }
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  .iframe-container {
+    min-height: 350px;
+  }
+  
+  .btn-primary {
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* Tall screens */
+@media (min-height: 1000px) {
+  .iframe-container {
+    height: 700px;
+  }
+}
+
+/* Dark mode preference */
+@media (prefers-color-scheme: dark) {
+  /* Styles remain dark by default, but could adjust specific colors */
+  .iframe-container {
+    background-color: #111827;
+  }
+  
+  .form-input {
+    background-color: #1f2937;
+  }
+}
+
+/* Print styles */
+@media print {
+  .iframe-container, 
+  .modal-backdrop,
+  .btn-primary {
+    display: none !important;
+  }
+  
+  body {
+    background-color: white;
+    color: black;
+  }
+  
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+}
