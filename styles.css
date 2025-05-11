@@ -1,8 +1,3 @@
-/* 
- * Enhanced styles for Christian Blevens Portfolio
- * Extends Tailwind CSS with custom styling
- */
-
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
@@ -42,17 +37,6 @@ a, button {
   margin: 0 auto;
 }
 
-/* Project card hover effect with depth */
-.project-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-}
-
-.project-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-}
-
 /* Common animation classes */
 .fade-in {
   animation: fadeIn 0.5s ease-in-out;
@@ -70,22 +54,6 @@ a, button {
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
-}
-
-/* Custom aspect ratio utility for modern browsers */
-.aspect-w-16 {
-  position: relative;
-  padding-bottom: 56.25%;
-}
-
-.aspect-w-16 > * {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
 }
 
 /* Hero section background with animated gradient */
@@ -116,27 +84,6 @@ a, button {
   100% { transform: rotate(360deg); }
 }
 
-/* Glow effect for featured elements */
-.glow-on-hover:hover {
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-}
-
-/* Responsive layout adjustments */
-@media (max-width: 768px) {
-  .container {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  
-  h1 {
-    font-size: 2.5rem;
-  }
-  
-  h2 {
-    font-size: 1.75rem;
-  }
-}
-
 /* Enhanced iframe container styling */
 .iframe-container {
   position: relative;
@@ -148,146 +95,25 @@ a, button {
   transition: height 0.3s ease;
 }
 
-/* Ensure iframes and their content fill the entire space */
+/* Base iframe styling */
 iframe {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
   border: 0;
   margin: 0;
   padding: 0;
   display: block;
   transition: height 0.3s ease;
   background-color: white;
-  box-sizing: border-box !important;
-  transform: none !important;
+  box-sizing: border-box;
 }
 
-/* Force all iframe content to fill width with no maximum */
-iframe, 
-iframe html, 
-iframe body {
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 100% !important;
-}
-
-/* Target itch.io iframes specifically */
+/* Specific styling for itch.io iframes */
 iframe[src*="itch.io"] {
-  background-color: transparent !important;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* Force proper fullscreen for canvas elements in iframes */
-#projectDetails iframe canvas,
-#projectDetails iframe #unity-canvas,
-#projectDetails iframe .emscripten canvas {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
-}
-
-/* Specifically target the Unity container classes */
-#projectDetails iframe #unity-container,
-#projectDetails iframe #gameContainer,
-#projectDetails iframe #unityContainer,
-#projectDetails iframe .unity-desktop,
-#projectDetails iframe .webgl-content,
-#projectDetails iframe .template-wrap {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  transform: none !important;
-  margin: 0 auto !important;
-  box-sizing: border-box !important;
-}
-
-/* Target itch.io specific iframe containers */
-iframe[src*="itch.io"] #gameContainer,
-iframe[src*="itch.io"] .template-wrap {
-  transform: none !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-}
-
-/* Special handling for centered content with predefined width */
-#projectDetails iframe [style*="margin: 0 auto"],
-#projectDetails iframe [style*="margin:0 auto"],
-#projectDetails iframe [style*="margin-left: auto"],
-#projectDetails iframe [style*="margin-right: auto"] {
-  margin: 0 !important;
-  max-width: none !important;
-  width: 100% !important;
-}
-
-/* Target any direct children of body with max-width */
-#projectDetails iframe body > div {
-  max-width: none !important;
-  width: 100% !important;
-}
-
-/* Handle direct fixed positioning that might cause content to be centered rather than full-width */
-#projectDetails iframe .webgl-content[style*="position: absolute"],
-#projectDetails iframe .webgl-content[style*="position:absolute"] {
-  left: 0 !important;
-  transform: none !important;
-  margin-left: 0 !important;
-}
-
-/* Fix for Unity's common pattern of using absolute positioning with negative margins */
-#projectDetails iframe .webgl-content[style*="margin-left: -"],
-#projectDetails iframe .template-wrap[style*="margin-left: -"] {
-  margin-left: 0 !important;
-  left: 0 !important;
-  transform: none !important;
-}
-
-/* Additional rule for common Unity container sizing */
-#projectDetails iframe .webgl-content,
-#projectDetails iframe .template-wrap {
-  position: static !important;
-  margin: 0 !important;
-}
-
-/* Hide scrollbars in iframes */
-#projectDetails iframe::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
-}
-
-/* Add CSS to prevent Alpine.js errors during transitions */
-[x-cloak], 
-.x-cloak {
-  display: none !important;
-}
-
-/* Improved visibility for itch.io embeds */
-iframe[src*="itch.io"] {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+  background-color: transparent;
 }
 
 /* Loading overlay with improved visibility */
@@ -306,28 +132,9 @@ iframe[src*="itch.io"] {
   transition: opacity 0.5s ease;
 }
 
-/* Ensure WebGL canvas in Unity iframes fills the space */
-.unity-canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* Loading overlay for iframe */
-.iframe-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 600px;
-  background-color: #1a202c;
-  z-index: 5;
-  border-radius: 0.375rem;
-}
-
 /* Fixed project modal layout */
 #projectDetails {
-  padding: 50px !important; /* Consistent 50px buffer */
+  padding: 50px;
   overflow: hidden; /* Let inner div handle scrolling */
 }
 
@@ -338,14 +145,8 @@ iframe[src*="itch.io"] {
   margin: 0 auto;
 }
 
-/* Force iframe to occupy its space correctly */
-#projectDetails iframe {
-  display: block;
-  min-height: 600px;
-}
-
 /* Size control buttons */
-#projectDetails .size-controls {
+.size-controls {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -354,7 +155,7 @@ iframe[src*="itch.io"] {
   z-index: 10;
 }
 
-#projectDetails .size-control-btn {
+.size-control-btn {
   width: 28px;
   height: 28px;
   border-radius: 4px;
@@ -368,196 +169,79 @@ iframe[src*="itch.io"] {
   transition: background-color 0.2s;
 }
 
-#projectDetails .size-control-btn:hover {
+.size-control-btn:hover {
   background-color: rgba(75, 85, 99, 0.9);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
   #projectDetails {
-    padding: 30px !important;
+    padding: 30px;
   }
   
   #projectDetails > div {
     max-height: calc(100vh - 60px);
   }
   
-  .iframe-container, 
-  .iframe-loading,
-  #projectDetails iframe {
+  .iframe-container {
     min-height: 400px;
   }
 }
 
-/* Placeholder for iframe when project is not available */
-.iframe-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #1f2937;
-  color: #9ca3af;
-  padding: 2rem;
-  border-radius: 0.375rem;
-  text-align: center;
-}
-
-/* Gallery image hover effects */
-.gallery-image {
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.gallery-image:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Modal backdrop blur effect */
-.modal-backdrop {
-  backdrop-filter: blur(4px);
-}
-
-/* Project skills tags styling */
-.skill-tag {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background-color: #1f2937;
-  color: #e5e7eb;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-/* Project modal */
-.project-modal {
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-/* Demo iframe container */
-.demo-container {
+/* Form styling */
+.form-control {
   position: relative;
-  background: #1a202c;
-  border-radius: 0.375rem;
-  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
-/* Ensure iframe stays contained within its parent */
-.demo-iframe {
+.form-control input,
+.form-control textarea {
   width: 100%;
-  height: 100%;
-  border: none;
-  background-color: white;
-}
-
-/* Loading state */
-.demo-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  text-align: center;
-}
-
-/* Demo loading button */
-.demo-load-btn {
-  transition: all 0.2s ease-in-out;
-}
-
-.demo-load-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-/* Demo tab container with fixed height */
-.demo-tab-container {
-  height: 500px;
-  max-height: 60vh;
-  position: relative;
-}
-
-/* Improve iframe focus states */
-iframe:focus {
-  outline: none;
-}
-
-/* Prevent scrollbar from shifting layout */
-.modal-content {
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
-/* Ensure modal doesn't overflow viewport */
-.modal-dialog {
-  max-height: calc(100vh - 2rem);
-  display: flex;
-  flex-direction: column;
-}
-
-/* Add spacing between tabs and content */
-.tab-content {
-  padding-top: 1rem;
-}
-
-/* Custom styling for form inputs */
-.form-input {
-  background-color: #1f2937;
-  color: white;
+  padding: 0.75rem 1rem;
   border: 2px solid #374151;
   border-radius: 0.375rem;
-  padding: 0.75rem 1rem;
-  width: 100%;
+  background-color: #1f2937;
+  color: white;
   transition: border-color 0.3s ease;
 }
 
-.form-input:focus {
+.form-control input:focus,
+.form-control textarea:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
-/* Button animation */
-.btn-animated {
-  position: relative;
-  overflow: hidden;
+/* Close button positioning */
+#projectDetails button.modal-close {
+  position: sticky;
+  top: 4px;
+  float: right;
+  margin-right: 1rem;
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 20;
 }
 
-.btn-animated::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-
-.btn-animated:hover::after {
-  animation: ripple 1s ease-out;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(20, 20);
-    opacity: 0;
-  }
-}
-
-/* Gallery image hover effects */
+/* Gallery image transitions */
 .gallery-image {
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
 
@@ -566,8 +250,26 @@ iframe:focus {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Close button positioning */
-#projectDetails button.sticky {
-  position: sticky;
-  z-index: 20;
+/* Form submission states */
+.form-submitting {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.form-success {
+  background-color: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgb(16, 185, 129);
+  color: rgb(16, 185, 129);
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
+}
+
+.form-error {
+  background-color: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgb(239, 68, 68);
+  color: rgb(239, 68, 68);
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
 }

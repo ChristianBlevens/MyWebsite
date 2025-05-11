@@ -1,8 +1,3 @@
-/**
- * Projects data for Christian Blevens Portfolio
- * Compatible with both vanilla JS and Alpine.js implementations
- */
-
 // Define projects data globally for Alpine.js to access
 window.projects = [
   {
@@ -68,3 +63,8 @@ window.projects = [
     demoHref: "https://christian-blevens.itch.io/ability-based-multiplayer-fighting-game-with-destructible-terrain"
   },
 ];
+
+// Export projects if using ES modules
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { projects: window.projects };
+}

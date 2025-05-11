@@ -1,10 +1,3 @@
-/**
- * Christian Blevens Portfolio
- * Alpine.js Component Functions
- * 
- * This file defines all the Alpine.js component functions used in the portfolio.
- */
-
 // Contact form function
 function contactForm() {
   return {
@@ -14,26 +7,42 @@ function contactForm() {
       message: ''
     },
     formSubmitted: false,
-    handleSubmit() {
-      console.log('Form submitted:', this.formData);
+    submitting: false,
+    errorMessage: null,
+    
+    async handleSubmit() {
+      this.submitting = true;
+      this.errorMessage = null;
       
-      // In a real implementation, you would send this data to a server
-      // For this demo, we'll just simulate a successful submission
-      
-      // Reset form
-      this.formData = {
-        name: '',
-        email: '',
-        message: ''
-      };
-      
-      // Show success message
-      this.formSubmitted = true;
-      
-      // Hide success message after 5 seconds
-      setTimeout(() => {
-        this.formSubmitted = false;
-      }, 5000);
+      try {
+        // In a real implementation, you would send this data to a server
+        // For demo purposes, we're simulating API behavior with a delay
+        console.log('Form submitted:', this.formData);
+        
+        // Simulate API call with delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Reset form after successful submission
+        this.formData = {
+          name: '',
+          email: '',
+          message: ''
+        };
+        
+        // Show success message
+        this.formSubmitted = true;
+        
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          this.formSubmitted = false;
+        }, 5000);
+      } catch (error) {
+        // Handle submission error
+        console.error('Form submission error:', error);
+        this.errorMessage = 'There was an error submitting the form. Please try again.';
+      } finally {
+        this.submitting = false;
+      }
     }
   };
 }
@@ -45,113 +54,135 @@ function modalData() {
     currentProject: null,
     iframeLoaded: false,
     uniqueId: 1, // Used to force iframe reload
-    // Default height
-    iframeHeight: 600,
+    iframeHeight: 600, // Default height
     iframeElement: null, // Track the iframe element
     
     open(project) {
-      // Generate new unique ID to force iframe reload
-      this.uniqueId = Date.now();
-      
-      // Reset state before setting new project
-      this.iframeLoaded = false;
-      this.currentProject = project;
-      this.isOpen = true;
-      document.body.style.overflow = 'hidden';
-      
-      // Set iframe height based on project type
-      this.iframeHeight = 600;
-      
-      // Force a complete DOM refresh for the iframe container
-      setTimeout(() => {
-        this.createNewIframe();
+      try {
+        // Generate new unique ID to force iframe reload
+        this.uniqueId = Date.now();
         
-        // Reset scroll position when opening a new project
-        const modalContent = document.querySelector('#projectDetails > div');
-        if (modalContent) {
-          modalContent.scrollTop = 0;
-        }
-      }, 50);
+        // Reset state before setting new project
+        this.iframeLoaded = false;
+        this.currentProject = project;
+        this.isOpen = true;
+        document.body.style.overflow = 'hidden';
+        
+        // Force a complete DOM refresh for the iframe container
+        setTimeout(() => {
+          this.createNewIframe();
+          
+          // Reset scroll position when opening a new project
+          const modalContent = document.querySelector('#projectDetails > div');
+          if (modalContent) {
+            modalContent.scrollTop = 0;
+          }
+        }, 50);
+      } catch (error) {
+        console.error('Error opening project modal:', error);
+      }
     },
     
     close() {
-      // Important: Set isOpen to false first
-      this.isOpen = false;
-      document.body.style.overflow = 'auto';
-      
-      // Clean up iframe to prevent memory leaks
-      this.removeCurrentIframe();
-      
-      // Important: We need to defer nullifying currentProject to avoid Alpine.js errors
-      // when the template is still trying to access properties during transition
-      setTimeout(() => {
-        this.currentProject = null;
-      }, 300); // Delay slightly longer than the transition duration
+      try {
+        // First, remove the iframe to prevent memory leaks
+        this.removeCurrentIframe();
+        
+        // Important: Create a local copy of currentProject for reference in the template
+        // during the transition
+        const projectRef = this.currentProject;
+        
+        // Set isOpen to false to start closing animation
+        this.isOpen = false;
+        document.body.style.overflow = 'auto';
+        
+        // Keep currentProject until the modal is fully closed to prevent template errors
+        // Only nullify it after the closing transition is complete
+        setTimeout(() => {
+          // Only set currentProject to null if it's still the same project
+          // This prevents issues if user opened another project during the timeout
+          if (this.currentProject === projectRef) {
+            this.currentProject = null;
+          }
+        }, 300); // Delay matches the transition duration
+      } catch (error) {
+        console.error('Error closing project modal:', error);
+        // Ensure body overflow is restored even if there's an error
+        document.body.style.overflow = 'auto';
+      }
     },
     
     // Create a completely new iframe element
     createNewIframe() {
-      // First, clean up any existing iframe
-      this.removeCurrentIframe();
-      
-      // Get the container
-      const container = this.$refs.iframeContainer;
-      if (!container) return;
-      
-      // Create a new iframe element
-      const iframe = document.createElement('iframe');
-      
-      // Set the source
-      const src = this.getIframeSrc();
-      iframe.src = src;
-      
-      // Set common attributes
-      iframe.style.width = '100%';
-      iframe.style.height = '100%'; 
-      iframe.style.border = '0';
-      iframe.style.margin = '0';
-      iframe.style.padding = '0';
-      iframe.loading = 'lazy';
-      
-      // Set specific attributes based on demo type
-      if (this.currentProject && this.currentProject.demoType === 'itch') {
-        iframe.frameBorder = '0';
-        iframe.allowFullscreen = true;
-        iframe.style.backgroundColor = 'transparent';
-        iframe.style.display = 'block';
-      } else {
-        iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
-        iframe.style.backgroundColor = 'white';
+      try {
+        // First, clean up any existing iframe
+        this.removeCurrentIframe();
+        
+        // Get the container
+        const container = this.$refs.iframeContainer;
+        if (!container) return;
+        
+        // Create a new iframe element
+        const iframe = document.createElement('iframe');
+        
+        // Set the source
+        const src = this.getIframeSrc();
+        iframe.src = src;
+        
+        // Set common attributes
+        iframe.style.width = '100%';
+        iframe.style.height = '100%'; 
+        iframe.style.border = '0';
+        iframe.style.margin = '0';
+        iframe.style.padding = '0';
+        iframe.loading = 'lazy';
+        
+        // Set specific attributes based on demo type
+        if (this.currentProject && this.currentProject.demoType === 'itch') {
+          iframe.frameBorder = '0';
+          iframe.allowFullscreen = true;
+          iframe.style.backgroundColor = 'transparent';
+        } else {
+          iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
+          iframe.style.backgroundColor = 'white';
+        }
+        
+        // Add event listeners
+        const handleLoad = () => this.onIframeLoad();
+        iframe.addEventListener('load', handleLoad);
+        
+        // Store reference to the iframe
+        this.iframeElement = iframe;
+        
+        // Add to DOM
+        container.appendChild(iframe);
+      } catch (error) {
+        console.error('Error creating iframe:', error);
+        this.iframeLoaded = true; // Set to true so loading indicator disappears
       }
-      
-      // Add event listeners
-      const handleLoad = () => this.onIframeLoad();
-      iframe.addEventListener('load', handleLoad);
-      
-      // Store reference to the iframe
-      this.iframeElement = iframe;
-      
-      // Add to DOM
-      container.appendChild(iframe);
     },
     
     // Remove the current iframe completely
     removeCurrentIframe() {
-      if (this.iframeElement) {
-        // Remove from DOM
-        if (this.iframeElement.parentNode) {
-          this.iframeElement.parentNode.removeChild(this.iframeElement);
+      try {
+        if (this.iframeElement) {
+          // Remove from DOM
+          if (this.iframeElement.parentNode) {
+            this.iframeElement.parentNode.removeChild(this.iframeElement);
+          }
+          
+          // Clear reference
+          this.iframeElement = null;
         }
         
-        // Clear reference
-        this.iframeElement = null;
-      }
-      
-      // Also clear any other iframes in the container
-      const container = this.$refs.iframeContainer;
-      if (container) {
-        const iframes = container.querySelectorAll('iframe');
-        iframes.forEach(iframe => iframe.parentNode.removeChild(iframe));
+        // Also clear any other iframes in the container
+        const container = this.$refs.iframeContainer;
+        if (container) {
+          const iframes = container.querySelectorAll('iframe');
+          iframes.forEach(iframe => iframe.parentNode.removeChild(iframe));
+        }
+      } catch (error) {
+        console.error('Error removing iframe:', error);
       }
     },
     
@@ -210,14 +241,24 @@ function galleryModal() {
     currentImage: '',
     
     open(image) {
-      this.currentImage = image;
-      this.isOpen = true;
-      document.body.style.overflow = 'hidden';
+      try {
+        this.currentImage = image;
+        this.isOpen = true;
+        document.body.style.overflow = 'hidden';
+      } catch (error) {
+        console.error('Error opening gallery modal:', error);
+      }
     },
     
     close() {
-      this.isOpen = false;
-      document.body.style.overflow = 'auto';
+      try {
+        this.isOpen = false;
+        document.body.style.overflow = 'auto';
+      } catch (error) {
+        console.error('Error closing gallery modal:', error);
+        // Ensure body overflow is restored even if there's an error
+        document.body.style.overflow = 'auto';
+      }
     }
   };
 }
@@ -246,8 +287,6 @@ document.addEventListener('alpine:init', () => {
     // Initialize application
     init() {
       console.log('Alpine.js Portfolio initialized');
-      
-      // Set up smooth scrolling
       this.setupSmoothScrolling();
     },
     
