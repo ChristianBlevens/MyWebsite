@@ -18,7 +18,6 @@ const ASSETS_TO_CACHE = [
   '/js/alpine-components.js',
   '/js/projects-data.js',
   '/js/utils.js',
-  '/assets/images/profile.jpg',
   // External resources
   'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
