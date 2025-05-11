@@ -14,17 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.warn('Alpine.js not found! Loading fallback behavior...');
     setupFallbackBehavior();
   }
-
-  // Register service worker with the correct path
-	if ('serviceWorker' in navigator) {
-	  navigator.serviceWorker.register(`./js/service-worker.js`)
-		.then(registration => {
-		  console.log('ServiceWorker registered with scope:', registration.scope);
-		})
-		.catch(error => {
-		  console.error('ServiceWorker registration failed:', error);
-		});
-	}
 });
 
 /**
