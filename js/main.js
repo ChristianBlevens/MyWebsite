@@ -16,11 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // Get the base URL for the current deployment
-  const baseUrl = new URL('.', window.location.href).pathname;
+  const baseUrl = new URL('.', window.location.href).pathname + 'js/';
   
   // Register service worker with the correct path
 	if ('serviceWorker' in navigator) {
-	  navigator.serviceWorker.register(`${baseUrl}js/service-worker.js`, { scope: baseUrl })
+	  navigator.serviceWorker.register(`${baseUrl}service-worker.js`, { scope: baseUrl })
 		.then(registration => {
 		  console.log('ServiceWorker registered with scope:', registration.scope);
 		})
