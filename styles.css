@@ -116,7 +116,7 @@ iframe[src*="itch.io"] {
   background-color: transparent;
 }
 
-/* Loading overlay with improved visibility */
+/* Loading overlay with improved visibility - MODIFIED to be contained within iframe container */
 .iframe-loading-overlay {
   position: absolute;
   top: 0;
@@ -143,6 +143,19 @@ iframe[src*="itch.io"] {
   overflow-y: auto; /* Enable scrolling in modal */
   max-width: 1400px; /* Prevent excessive width on large screens */
   margin: 0 auto;
+}
+
+/* Project header (sticky) */
+.project-header {
+  position: sticky;
+  top: 0;
+  background-color: #1f2937;
+  padding: 15px 0;
+  z-index: 20;
+  border-bottom: 1px solid #374151;
+  margin: -8px -8px 20px -8px; /* Negative margin to compensate for padding */
+  padding: 15px 8px;
+  backdrop-filter: blur(8px);
 }
 
 /* Size control buttons */
@@ -199,6 +212,10 @@ iframe[src*="itch.io"] {
   .iframe-container {
     min-height: 400px;
   }
+  
+  .project-header {
+    padding: 10px 8px;
+  }
 }
 
 /* Form styling */
@@ -227,16 +244,15 @@ iframe[src*="itch.io"] {
 
 /* Close button positioning */
 #projectDetails button.modal-close {
-  position: sticky;
-  top: 4px;
-  float: right;
-  margin-right: 1rem;
+  position: absolute;
+  top: 15px;
+  right: 15px;
   font-size: 1.5rem;
   background: transparent;
   border: none;
   color: white;
   cursor: pointer;
-  z-index: 20;
+  z-index: 30;
 }
 
 /* Gallery image transitions */

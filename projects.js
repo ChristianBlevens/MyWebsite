@@ -37,8 +37,8 @@ window.projects = [
       "https://i.imgur.com/pb87Imr.png",
       "https://i.imgur.com/pb87Imr.png"
     ],
-    demoType: "local", // Local file demo
-    demoPath: "projects/2/index.html"
+    //demoType: "local", // Local file demo
+    //demoPath: "projects/2/index.html"
   },
   {
     id: 3,

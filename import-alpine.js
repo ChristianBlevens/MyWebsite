@@ -56,6 +56,7 @@ function modalData() {
     uniqueId: 1, // Used to force iframe reload
     iframeHeight: 600, // Default height
     iframeElement: null, // Track the iframe element
+    iframeCreationAttempted: false, // Track if we've attempted to create an iframe
     
     open(project) {
       try {
@@ -64,13 +65,14 @@ function modalData() {
         
         // Reset state before setting new project
         this.iframeLoaded = false;
+        this.iframeCreationAttempted = false;
         this.currentProject = project;
         this.isOpen = true;
         document.body.style.overflow = 'hidden';
         
         // Force a complete DOM refresh for the iframe container
         setTimeout(() => {
-          this.createNewIframe();
+          this.createOrRemoveIframe();
           
           // Reset scroll position when opening a new project
           const modalContent = document.querySelector('#projectDetails > div');
@@ -103,6 +105,9 @@ function modalData() {
           // This prevents issues if user opened another project during the timeout
           if (this.currentProject === projectRef) {
             this.currentProject = null;
+            // Reset iframe state when modal is fully closed
+            this.iframeLoaded = false;
+            this.iframeCreationAttempted = false;
           }
         }, 300); // Delay matches the transition duration
       } catch (error) {
@@ -112,21 +117,49 @@ function modalData() {
       }
     },
     
+    // Decide whether to create or remove iframe based on current project
+    createOrRemoveIframe() {
+      // Mark that we've attempted to handle the iframe
+      this.iframeCreationAttempted = true;
+      
+      // Check if the current project has a demo
+      if (this.hasDemo()) {
+        console.log('Project has demo, creating iframe');
+        // If it has a demo, create or update the iframe
+        this.createNewIframe();
+      } else {
+        console.log('Project has no demo, removing iframe');
+        // If it doesn't have a demo, ensure any previous iframe is removed
+        this.removeCurrentIframe();
+        // Also force iframeLoaded to true to hide loading indicator if visible
+        this.iframeLoaded = true;
+      }
+    },
+    
     // Create a completely new iframe element
     createNewIframe() {
       try {
+        console.log('Creating new iframe');
         // First, clean up any existing iframe
         this.removeCurrentIframe();
         
+        // Reset the iframe loaded state
+        this.iframeLoaded = false;
+        
         // Get the container
         const container = this.$refs.iframeContainer;
-        if (!container) return;
+        if (!container) {
+          console.error('Iframe container not found');
+          this.iframeLoaded = true; // Force loaded state to hide loader
+          return;
+        }
         
         // Create a new iframe element
         const iframe = document.createElement('iframe');
         
         // Set the source
         const src = this.getIframeSrc();
+        console.log('Setting iframe src to:', src);
         iframe.src = src;
         
         // Set common attributes
@@ -148,14 +181,30 @@ function modalData() {
         }
         
         // Add event listeners
-        const handleLoad = () => this.onIframeLoad();
-        iframe.addEventListener('load', handleLoad);
+        iframe.addEventListener('load', () => {
+          console.log('Iframe loaded event fired');
+          this.onIframeLoad();
+        });
+        
+        // Add error event listener
+        iframe.addEventListener('error', (e) => {
+          console.error('Iframe load error:', e);
+          this.iframeLoaded = true; // Force loaded state to hide loader on error
+        });
         
         // Store reference to the iframe
         this.iframeElement = iframe;
         
         // Add to DOM
         container.appendChild(iframe);
+        
+        // Set a fallback timeout to hide the loader if the load event never fires
+        setTimeout(() => {
+          if (!this.iframeLoaded) {
+            console.log('Fallback timeout fired - force setting iframe as loaded');
+            this.iframeLoaded = true;
+          }
+        }, 10000); // 10 seconds timeout
       } catch (error) {
         console.error('Error creating iframe:', error);
         this.iframeLoaded = true; // Set to true so loading indicator disappears
@@ -165,6 +214,7 @@ function modalData() {
     // Remove the current iframe completely
     removeCurrentIframe() {
       try {
+        console.log('Removing current iframe');
         if (this.iframeElement) {
           // Remove from DOM
           if (this.iframeElement.parentNode) {
@@ -193,14 +243,18 @@ function modalData() {
       if (this.currentProject.demoType === 'itch') {
         // For itch.io embeds, add a cache-busting parameter
         return `${this.currentProject.demoPath}?v=${this.uniqueId}`;
-      } else {
+      } else if (this.currentProject.demoType === 'local') {
         // For local demos, build the path with the uniqueId to force refresh
         return `projects/${this.currentProject.id}/index.html?v=${this.uniqueId}`;
+      } else {
+        // Default case
+        return 'about:blank';
       }
     },
     
     // Handle iframe load event
     onIframeLoad() {
+      console.log('Setting iframe as loaded');
       this.iframeLoaded = true;
       
       // Apply sizing to the iframe container
@@ -230,6 +284,16 @@ function modalData() {
           container.style.height = this.iframeHeight + 'px';
         }
       }
+    },
+    
+    // Check if the current project has a demo
+    hasDemo() {
+      return this.currentProject && this.currentProject.demoType;
+    },
+    
+    // Check if we should show the loading overlay
+    showLoadingOverlay() {
+      return this.hasDemo() && !this.iframeLoaded && this.iframeCreationAttempted;
     }
   };
 }

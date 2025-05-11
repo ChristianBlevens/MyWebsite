@@ -234,94 +234,96 @@
     
     <!-- Enhanced Project Details Modal -->
     <div id="projectDetails" 
-         x-data="modalData()"
-         @open-project-modal.window="open($event.detail)"
-         x-show="isOpen" 
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center"
-         style="padding: 50px;" 
-         x-cloak
-         @click.self="close()">
-        <div class="bg-gray-800 rounded-lg w-full max-h-[calc(100vh-100px)] overflow-y-auto" 
-             @click.stop
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 transform scale-95"
-             x-transition:enter-end="opacity-100 transform scale-100">
-            <!-- Close button inside the modal container -->
-            <button class="modal-close" @click="close()">&times;</button>
-            
-            <template x-if="currentProject">
-                <div class="p-5 md:p-8 flex flex-col">
-                    <!-- Project Title -->
-                    <h2 class="text-3xl font-bold mb-4" x-text="currentProject.title"></h2>
-                    
-                    <!-- Demo Section -->
-                    <div class="mb-8 rounded-md overflow-hidden bg-gray-900 border border-gray-700">
-                        <div class="mx-auto w-full">
-                            <!-- Loading overlay with improved visibility -->
-                            <div x-show="!iframeLoaded" class="iframe-loading-overlay">
-                                <div class="mb-4 text-center">
-                                    <i class="fas fa-code text-5xl mb-3"></i>
-                                    <p class="text-lg">Loading project demo...</p>
-                                </div>
-                                <div class="loading-spinner mb-4"></div>
-                            </div>
-                            
-                            <div class="relative" x-show="iframeLoaded">
-                                <!-- Size control buttons -->
-                                <div class="size-controls">
-                                    <button @click="increaseHeight()" class="size-control-btn" title="Increase height">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                    <button @click="decreaseHeight()" class="size-control-btn" title="Decrease height">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Simplified iframe container that will be populated via JavaScript -->
-                            <div class="iframe-container" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
-                                <!-- Iframe is now created and managed entirely through JS -->
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Description and Details in the middle -->
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-bold mb-4">Project Details</h3>
-                        <p class="mb-6 text-gray-300" x-text="currentProject.details"></p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="text-xl font-bold mb-4">Features</h4>
-                                <div class="space-y-2 mb-6">
-                                    <template x-for="feature in currentProject.features" :key="feature">
-                                        <div class="flex items-start">
-                                            <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
-                                            <span x-text="feature"></span>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="text-xl font-bold mb-4">Skills & Technologies</h4>
-                                <div class="flex flex-wrap gap-2 mb-6">
-                                    <template x-for="skill in currentProject.skills" :key="skill">
-                                        <span class="bg-gray-900 text-white px-3 py-1 rounded-full text-sm" x-text="skill"></span>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Gallery at the bottom -->
-                    <div>
+		 x-data="modalData()"
+		 @open-project-modal.window="open($event.detail)"
+		 x-show="isOpen" 
+		 x-transition:enter="transition ease-out duration-300"
+		 x-transition:enter-start="opacity-0"
+		 x-transition:enter-end="opacity-100"
+		 x-transition:leave="transition ease-in duration-200"
+		 x-transition:leave-start="opacity-100"
+		 x-transition:leave-end="opacity-0"
+		 class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center"
+		 style="padding: 50px;" 
+		 x-cloak
+		 @click.self="close()">
+		<div class="bg-gray-800 rounded-lg w-full max-h-[calc(100vh-100px)] overflow-y-auto" 
+			 @click.stop
+			 x-transition:enter="transition ease-out duration-300"
+			 x-transition:enter-start="opacity-0 transform scale-95"
+			 x-transition:enter-end="opacity-100 transform scale-100">
+			<!-- Close button positioned absolutely -->
+			<button class="modal-close" @click="close()">&times;</button>
+			
+			<template x-if="currentProject">
+				<div class="p-5 md:p-8 flex flex-col">
+					<!-- Sticky Project Title Header -->
+					<div class="project-header">
+						<h2 class="text-3xl font-bold" x-text="currentProject.title"></h2>
+					</div>
+					
+					<!-- Demo Section - Always create container but only show if has demo -->
+					<div class="mb-8 rounded-md overflow-hidden bg-gray-900 border border-gray-700" x-show="hasDemo()">
+						<div class="mx-auto w-full">
+							<!-- Demo container with relative positioning -->
+							<div class="relative">
+								<!-- Size control buttons -->
+								<div class="size-controls" x-show="iframeLoaded">
+									<button @click="increaseHeight()" class="size-control-btn" title="Increase height">
+										<i class="fas fa-plus"></i>
+									</button>
+									<button @click="decreaseHeight()" class="size-control-btn" title="Decrease height">
+										<i class="fas fa-minus"></i>
+									</button>
+								</div>
+								
+								<!-- Iframe container that includes the loading overlay - ALWAYS CREATED -->
+								<div class="iframe-container" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
+									<!-- Loading overlay is now contained within the iframe container -->
+									<div x-show="showLoadingOverlay()" class="iframe-loading-overlay">
+										<div class="mb-4 text-center">
+											<i class="fas fa-code text-5xl mb-3"></i>
+											<p class="text-lg">Loading project demo...</p>
+										</div>
+										<div class="loading-spinner mb-4"></div>
+									</div>
+									<!-- Iframe will be created and managed by JavaScript -->
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Description and Details in the middle -->
+					<div class="mb-8">
+						<h3 class="text-2xl font-bold mb-4">Project Details</h3>
+						<p class="mb-6 text-gray-300" x-text="currentProject.details"></p>
+						
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div>
+								<h4 class="text-xl font-bold mb-4">Features</h4>
+								<div class="space-y-2 mb-6">
+									<template x-for="feature in currentProject.features" :key="feature">
+										<div class="flex items-start">
+											<i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+											<span x-text="feature"></span>
+										</div>
+									</template>
+								</div>
+							</div>
+							
+							<div>
+								<h4 class="text-xl font-bold mb-4">Skills & Technologies</h4>
+								<div class="flex flex-wrap gap-2 mb-6">
+									<template x-for="skill in currentProject.skills" :key="skill">
+										<span class="bg-gray-900 text-white px-3 py-1 rounded-full text-sm" x-text="skill"></span>
+									</template>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Gallery at the bottom -->
+					<div>
 						<h3 class="text-2xl font-bold mb-4">Project Gallery</h3>
 						<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 							<template x-for="(image, index) in currentProject.gallery" :key="index">
@@ -334,10 +336,10 @@
 							</template>
 						</div>
 					</div>
-                </div>
-            </template>
-        </div>
-    </div>
+				</div>
+			</template>
+		</div>
+	</div>
 
     <!-- Gallery image modal -->
     <div x-data="galleryModal()" 
