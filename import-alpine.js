@@ -38,8 +38,7 @@ function contactForm() {
   };
 }
 
-// Project modal functions with security-compliant approach
-// Project modal functions with improved iframe handling
+// Project modal functions
 function modalData() {
   return {
     isOpen: false,
@@ -76,11 +75,18 @@ function modalData() {
     },
     
     close() {
-      // Clean up iframe to prevent memory leaks
-      this.removeCurrentIframe();
+      // Important: Set isOpen to false first
       this.isOpen = false;
       document.body.style.overflow = 'auto';
-      this.currentProject = null;
+      
+      // Clean up iframe to prevent memory leaks
+      this.removeCurrentIframe();
+      
+      // Important: We need to defer nullifying currentProject to avoid Alpine.js errors
+      // when the template is still trying to access properties during transition
+      setTimeout(() => {
+        this.currentProject = null;
+      }, 300); // Delay slightly longer than the transition duration
     },
     
     // Create a completely new iframe element
@@ -99,10 +105,12 @@ function modalData() {
       const src = this.getIframeSrc();
       iframe.src = src;
       
-      // Set common attributes
+      // Set common attributes 
       iframe.style.width = '100%';
-      iframe.style.height = this.iframeHeight + 'px';
+      iframe.style.height = '100%'; // Set to 100% instead of fixed height
       iframe.style.border = '0';
+      iframe.style.margin = '0';
+      iframe.style.padding = '0';
       iframe.loading = 'lazy';
       
       // Set specific attributes based on demo type
@@ -111,15 +119,18 @@ function modalData() {
         iframe.allowFullscreen = true;
         iframe.style.backgroundColor = 'transparent';
         iframe.style.display = 'block';
-        iframe.style.margin = '0';
-        iframe.style.padding = '0';
+        
+        // Set explicit width/height to ensure itch.io iframe fills container
+        iframe.width = '100%';
+        iframe.height = '100%';
       } else {
         iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
         iframe.style.backgroundColor = 'white';
       }
       
       // Add event listeners
-      iframe.addEventListener('load', () => this.onIframeLoad());
+      const handleLoad = () => this.onIframeLoad();
+      iframe.addEventListener('load', handleLoad);
       
       // Store reference to the iframe
       this.iframeElement = iframe;
@@ -131,9 +142,6 @@ function modalData() {
     // Remove the current iframe completely
     removeCurrentIframe() {
       if (this.iframeElement) {
-        // Remove event listeners
-        this.iframeElement.removeEventListener('load', () => this.onIframeLoad());
-        
         // Remove from DOM
         if (this.iframeElement.parentNode) {
           this.iframeElement.parentNode.removeChild(this.iframeElement);
@@ -168,11 +176,7 @@ function modalData() {
     onIframeLoad() {
       this.iframeLoaded = true;
       
-      // Apply sizing to the iframe
-      if (this.iframeElement) {
-        this.iframeElement.style.height = this.iframeHeight + 'px';
-      }
-      
+      // Apply sizing to the iframe container
       const container = this.$refs.iframeContainer;
       if (container) {
         container.style.height = this.iframeHeight + 'px';
@@ -181,18 +185,38 @@ function modalData() {
       // If this is an itch.io project, inject CSS to make the content fill the iframe
       if (this.currentProject && this.currentProject.demoType === 'itch' && this.iframeElement) {
         try {
+          // Try to access contentWindow first 
+          if (this.iframeElement.contentWindow) {
+            // For itch.io iframes, we can try to resize via postMessage
+            this.iframeElement.contentWindow.postMessage({ 
+              msg: 'resize-iframe', 
+              width: '100%', 
+              height: '100%' 
+            }, '*');
+          }
+          
           // Add CSS to the iframe document if possible
           if (this.iframeElement.contentDocument) {
             const style = document.createElement('style');
             style.textContent = `
-              html, body, canvas {
-                width: 100% !important;
-                height: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
+              html, body { 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                width: 100% !important; 
+                height: 100% !important; 
                 overflow: hidden !important;
               }
-              .unity-canvas {
+              body > * {
+                width: 100% !important;
+                height: 100% !important;
+              }
+              canvas, .game, #unity-canvas, #gameContainer { 
+                width: 100% !important; 
+                height: 100% !important; 
+                margin: 0 !important;
+                padding: 0 !important;
+              }
+              .template-wrap, .unity-desktop, #unity-container {
                 width: 100% !important;
                 height: 100% !important;
               }
@@ -209,10 +233,6 @@ function modalData() {
     increaseHeight() {
       this.iframeHeight += 100;
       
-      if (this.iframeElement) {
-        this.iframeElement.style.height = this.iframeHeight + 'px';
-      }
-      
       const container = this.$refs.iframeContainer;
       if (container) {
         container.style.height = this.iframeHeight + 'px';
@@ -223,10 +243,6 @@ function modalData() {
     decreaseHeight() {
       if (this.iframeHeight > 300) {
         this.iframeHeight -= 100;
-        
-        if (this.iframeElement) {
-          this.iframeElement.style.height = this.iframeHeight + 'px';
-        }
         
         const container = this.$refs.iframeContainer;
         if (container) {

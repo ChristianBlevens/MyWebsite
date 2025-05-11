@@ -137,7 +137,7 @@ a, button {
   }
 }
 
-/* Enhanced iframe container */
+/* Enhanced iframe container styling */
 .iframe-container {
   position: relative;
   width: 100%;
@@ -148,20 +148,71 @@ a, button {
   transition: height 0.3s ease;
 }
 
-/* Ensure iframes fill their containers completely */
+/* Ensure iframes and their content fill the entire space */
 iframe {
-  display: block;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
   border: 0;
   margin: 0;
   padding: 0;
+  display: block;
   transition: height 0.3s ease;
+  background-color: white;
 }
 
 /* Target itch.io iframes specifically */
 iframe[src*="itch.io"] {
   background-color: transparent !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Force proper fullscreen for canvas elements in iframes */
+#projectDetails iframe canvas,
+#projectDetails iframe #unity-canvas,
+#projectDetails iframe #gameContainer {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Specifically target the Unity container classes */
+#projectDetails iframe .unity-desktop,
+#projectDetails iframe #unity-container,
+#projectDetails iframe .template-wrap,
+#projectDetails iframe .webgl-content {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Hide scrollbars in iframes */
+#projectDetails iframe::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Add CSS to prevent Alpine.js errors during transitions */
+[x-cloak], 
+.x-cloak {
+  display: none !important;
+}
+
+/* Improved visibility for itch.io embeds */
+iframe[src*="itch.io"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* Loading overlay with improved visibility */
@@ -210,15 +261,6 @@ iframe[src*="itch.io"] {
   overflow-y: auto; /* Enable scrolling in modal */
   max-width: 1400px; /* Prevent excessive width on large screens */
   margin: 0 auto;
-}
-
-/* Make sure iframe has correct background */
-iframe {
-  border: 0;
-  background-color: white;
-  display: block; /* Remove inline gaps */
-  width: 100%;
-  transition: height 0.3s ease; /* Smooth height changes */
 }
 
 /* Force iframe to occupy its space correctly */
