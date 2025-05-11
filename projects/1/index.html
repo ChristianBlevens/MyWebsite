@@ -3,1000 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roof Area Calculator</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-    <style>
-        body {
-			font-family: Arial, sans-serif;
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-			width: 100%;
-			overflow-x: hidden;
-		}
-
-		.container {
-			display: flex;
-			flex-direction: column;
-			gap: 20px;
-			width: 100%;
-			max-width: 800px;
-			margin: 0 auto;
-			padding: 10px;
-			box-sizing: border-box;
-		}
-
-		h1, h2, h3 {
-			text-align: center;
-			width: 100%;
-			margin: 10px 0;
-		}
-
-		.options {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 10px;
-			justify-content: center;
-			width: 100%;
-		}
-
-		button {
-			padding: 10px 15px;
-			background-color: #4285f4;
-			color: white;
-			border: none;
-			border-radius: 4px;
-			cursor: pointer;
-			min-width: 120px;
-			margin: 5px;
-			font-size: 14px;
-			-webkit-tap-highlight-color: transparent;
-		}
-
-		button:hover {
-			background-color: #3367d6;
-		}
-
-		#resetButton {
-			margin-top: 10px;
-			background-color: #f44336;
-		}
-
-		#resetButton:hover {
-			background-color: #d32f2f;
-		}
-
-		#clearSelection {
-			background-color: #FFA500;
-		}
-
-		#map {
-			height: 60vh;
-			width: 100%;
-			border: 1px solid #ccc;
-			display: none;
-			max-height: 500px;
-			position: relative; /* Important for html2canvas */
-			transform: translateZ(0); /* Force hardware acceleration */
-			-webkit-transform: translateZ(0);
-			-webkit-backface-visibility: hidden; /* Prevent flickering */
-			backface-visibility: hidden;
-		}
-
-		#mapContainer {
-			position: relative;
-			width: 100%;
-			height: 60vh;
-			max-height: 500px;
-			margin: 0 auto;
-			overflow: hidden; /* Prevent map controls from causing scrollbars */
-		}
-
-		#mapTypeToggle {
-			position: absolute;
-			top: 10px;
-			right: 10px;
-			z-index: 1000;
-			background-color: white;
-			border: 2px solid rgba(0,0,0,0.2);
-			border-radius: 4px;
-			padding: 6px 10px;
-			font-weight: bold;
-			color: #333;
-			display: none;
-			font-size: 14px;
-			touch-action: manipulation; /* Improve touch behavior */
-		}
-
-		#mapTypeToggle:hover {
-			background-color: #f4f4f4;
-		}
-
-		#roofDetectionStatus {
-			position: absolute;
-			top: 50px;
-			right: 10px;
-			z-index: 1000;
-			background-color: white;
-			border: 2px solid rgba(0,0,0,0.2);
-			border-radius: 4px;
-			padding: 6px 10px;
-			font-size: 12px;
-			display: none;
-			max-width: 130px;
-		}
-
-		.status-enabled {
-			background-color: #dff0d8 !important;
-			color: #3c763d;
-		}
-
-		.status-disabled {
-			background-color: #f2dede !important;
-			color: #a94442;
-		}
-
-		#locationInput {
-			padding: 10px;
-			width: 100%;
-			max-width: 300px;
-			display: none;
-			margin: 10px auto;
-			box-sizing: border-box;
-			font-size: 16px; /* Prevent zoom on mobile */
-		}
-
-		#submitLocation {
-			display: none;
-			margin: 10px auto;
-		}
-
-		#resultArea {
-			margin-top: 20px;
-			display: none;
-			padding: 15px;
-			background-color: #f1f8e9;
-			border-radius: 4px;
-			width: 100%;
-			box-sizing: border-box;
-		}
-
-		#loadingIndicator {
-			display: none;
-			text-align: center;
-			padding: 20px;
-			width: 100%;
-		}
-
-		#actionButtons {
-			display: none;
-			margin-top: 10px;
-			width: 100%;
-			text-align: center;
-		}
-
-		.instruction-text {
-			text-align: center;
-			font-weight: bold;
-			margin-bottom: 10px;
-			width: 100%;
-		}
-
-		#locationControls {
-			width: 100%;
-			text-align: center;
-		}
-
-		#locationControls div {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-		}
-
-		/* To ensure proper html2canvas capture */
-		.leaflet-control-container, .leaflet-top, .leaflet-bottom {
-			z-index: 800 !important; /* Lower than default to prevent issues with html2canvas */
-		}
-
-		.leaflet-pane {
-			z-index: 400 !important; /* Ensure proper stacking for canvas capture */
-		}
-
-		/* Prevent map controls from interfering with canvas capture */
-		.leaflet-control {
-			pointer-events: auto !important;
-		}
-
-		@media (max-width: 768px) {
-			body {
-				padding: 5px;
-			}
-			
-			h1 {
-				font-size: 1.5rem;
-			}
-			
-			h2 {
-				font-size: 1.2rem;
-			}
-			
-			button {
-				padding: 8px 12px;
-				min-width: auto;
-				width: calc(50% - 10px);
-				font-size: 14px;
-				margin: 5px;
-			}
-			
-			#mapTypeToggle, #roofDetectionStatus {
-				font-size: 11px;
-				padding: 4px 8px;
-			}
-			
-			#roofDetectionStatus {
-				top: 45px;
-				max-width: 110px;
-			}
-			
-			#mapContainer, #map {
-				height: 50vh;
-				min-height: 300px;
-			}
-			
-			.options {
-				justify-content: space-between;
-			}
-			
-			.container {
-				padding: 5px;
-			}
-		}
-
-		@media (max-width: 480px) {
-			button {
-				width: 100%;
-				margin: 3px 0;
-			}
-			
-			#mapContainer, #map {
-				height: 45vh;
-				min-height: 250px;
-			}
-			
-			.options {
-				flex-direction: column;
-			}
-			
-			h1 {
-				font-size: 1.3rem;
-			}
-			
-			h2 {
-				font-size: 1.1rem;
-			}
-		}
-
-		/* Fix for iOS Safari rendering issues */
-		@supports (-webkit-touch-callout: none) {
-			#map {
-				-webkit-transform: translateZ(0);
-				-webkit-backface-visibility: hidden;
-			}
-			
-			.leaflet-container {
-				-webkit-tap-highlight-color: transparent;
-			}
-		}
-    </style>
+    <title>Christmas Lights Photo App</title>
+    <link rel="icon" type="image/svg" href="./favicon.svg"/>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Description for SEO -->
+    <meta name="description" content="Create beautiful Christmas light displays on your photos with this interactive web app">
+    <!-- Prevent favicon.ico request -->
+    <link rel="icon" href="data:,">
 </head>
 <body>
     <div class="container">
-        <h1>Roof Area Calculator</h1>
-
-        <div id="locationControls">
-            <h2>Select a location method</h2>
-            <p class="options">
-			<button id="useLocation">Use My Location</button>
-			<button id="enterLocation">Enter Location</button>
-            </p>
-            <div>
-                <input type="text" id="locationInput" placeholder="Enter address or coordinates">
-                <button id="submitLocation">Submit</button>
+        <h1>Christmas Lights Photo App</h1>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <div id="cameraTab" class="tab active">Use Camera</div>
+            <div id="fileTab" class="tab">Upload Image</div>
+        </div>
+        
+        <!-- ===== Input Views ===== -->
+        
+        <!-- Camera View -->
+        <div id="cameraView">
+            <div class="input-container">
+                <div id="cameraPlaceholder" class="input-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                        <circle cx="12" cy="13" r="3"></circle>
+                    </svg>
+                    <p>Camera inactive</p>
+                </div>
+                <video id="video" class="hidden" autoplay playsinline></video>
+            </div>
+            <div class="button-container">
+                <button id="startCameraBtn" class="button button-green">Start Camera</button>
+                <button id="takePictureBtn" class="button button-blue hidden">Take Photo</button>
             </div>
         </div>
-
-        <div id="loadingIndicator">
-            <p>Loading map...</p>
+        
+        <!-- File Upload View -->
+        <div id="fileView" class="hidden">
+            <div class="input-container">
+                <div id="fileUploadPlaceholder" class="input-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p>Upload an image</p>
+                </div>
+                <img id="previewImage" class="hidden" alt="Preview">
+            </div>
+            <div class="button-container">
+                <input type="file" id="fileInput" class="file-input" accept="image/*">
+                <label for="fileInput" class="file-label">Choose Image</label>
+                <button id="useImageBtn" class="button button-green hidden">Use This Image</button>
+            </div>
         </div>
+        
+        <!-- ===== Editor View ===== -->
+        <div id="editorView" class="hidden">
+            <div class="editor-container">
+                <!-- Sidebar with controls -->
+                <div class="control-sidebar">
+                    <!-- Density Slider -->
+                    <div class="density-slider-container">
+                        <input type="range" min="0.5" max="2" step="0.01" value="1" class="density-slider" id="densitySlider">
+                        <div class="density-label">Density</div>
+                    </div>
+                    
+                    <!-- Color Bar -->
+                    <div class="color-bar-container" id="colorBar">
+                        <!-- Color markers will be added dynamically -->
+                    </div>
+                    
+                    <!-- Speed Slider -->
+                    <div class="speed-slider-container">
+                        <input type="range" min="0.1" max="2" step="0.1" value="1" class="speed-slider" id="speedSlider">
+                        <div class="speed-label">Speed</div>
+                    </div>
+                    
+                    <!-- Glow Size Slider -->
+                    <div class="glow-size-slider-container">
+                        <input type="range" min="0.5" max="3" step="0.1" value="1" class="glow-size-slider" id="glowSizeSlider">
+                        <div class="glow-size-label">Glow</div>
+                    </div>
+                </div>
 
-        <div id="mapContainer">
-            <div id="map"></div>
-            <button id="mapTypeToggle">Switch to Street Map</button>
-            <div id="roofDetectionStatus">Roof detection enabled</div>
+                <!-- Main Canvas Container -->
+                <div class="input-container">
+                    <!-- Main editing canvas -->
+                    <canvas id="canvas" class="crosshair"></canvas>
+                    
+                    <!-- Overlay canvases for different visualizations -->
+                    <canvas id="lightsOverlayCanvas" class="overlay-canvas"></canvas>
+                    <canvas id="depthOverlayCanvas" class="overlay-canvas hidden"></canvas>
+                    <canvas id="lineOverlayCanvas" class="overlay-canvas hidden"></canvas>
+                    
+                    <!-- Processing overlay -->
+                    <div id="processingOverlay" class="processing-overlay hidden">
+                        <p>Processing image...</p>
+                        <div class="progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="instructions" class="instructions">Click to add points for your Christmas lights</div>
+            
+            <div id="editorButtons" class="button-container">
+                <!-- Editing buttons -->
+                <button id="undoBtn" class="button button-purple" disabled>Undo</button>
+                <button id="clearBtn" class="button button-red" disabled>Clear All</button>
+                <button id="resetBtn" class="button button-gray">Start Over</button>
+                
+                <!-- Toggle buttons -->
+				<button id="toggleIndependentColorsBtn" class="button button-rainbow">Use Independent Colors</button>
+				<button id="toggleAnimationBtn" class="button button-purple">Pause Animation</button>
+                <button id="toggleSplinesBtn" class="button button-orange">Hide Splines</button>
+                <button id="depthToggleBtn" class="button button-blue">Toggle Depth Map</button>
+                <button id="lineToggleBtn" class="button button-orange">Toggle Line Data</button>
+                
+				<!-- Enhance buttons -->
+				<button id="enhanceBtn" class="button button-green" disabled>Enhance Image</button>
+                <button id="downloadBtn" class="button button-blue">Download Image</button>
+            </div>
+            
+            <!-- Results Container -->
+            <div id="resultsContainer" class="hidden">
+                <div class="input-container">
+                    <img id="enhancedImage" width="100%" alt="Enhanced Image">
+                </div>
+                <div class="instructions">AI Enhanced Image</div>
+            </div>
         </div>
-
-        <div id="actionButtons">
-            <p class="instruction-text">Click on the roof to detect its area. Drag to pan the view.</p>
-            <button id="resetButton">Calculate New Location</button>
-            <button id="clearSelection">Clear Selection</button>
-        </div>
-
-        <div id="resultArea">
-            <h3>Results</h3>
-            <p id="areaResult"></p>
+        
+        <!-- ===== Overlays ===== -->
+        
+        <!-- Color Picker Overlay -->
+        <div id="colorPickerOverlay" class="color-picker-overlay hidden">
+            <div class="color-picker-container">
+                <div class="color-picker-title">Choose Light Color</div>
+                <input type="color" id="colorPickerInput" class="color-picker-input" value="#ff0000">
+                <div class="color-picker-buttons">
+                    <button id="cancelColorBtn" class="button button-gray">Cancel</button>
+                    <button id="selectColorBtn" class="button button-blue">Select</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <script>
-        const useLocationBtn = document.getElementById('useLocation');
-        const enterLocationBtn = document.getElementById('enterLocation');
-        const locationInput = document.getElementById('locationInput');
-        const submitLocationBtn = document.getElementById('submitLocation');
-        const resultArea = document.getElementById('resultArea');
-        const areaResult = document.getElementById('areaResult');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const resetButton = document.getElementById('resetButton');
-        const clearSelectionBtn = document.getElementById('clearSelection');
-        const locationControls = document.getElementById('locationControls');
-        const actionButtons = document.getElementById('actionButtons');
-        const mapElement = document.getElementById('map');
-        const mapContainer = document.getElementById('mapContainer');
-        const mapTypeToggle = document.getElementById('mapTypeToggle');
-        const roofDetectionStatus = document.getElementById('roofDetectionStatus');
-
-        let map;
-        let currentLocation = null;
-        let isDragging = false;
-        let selectedRoofPolygon = null;
-        let roofOverlay = null;
-        let filledPixels = [];
-        let canvas, ctx;
-        let satelliteLayer, streetLayer;
-        let currentMapType = 'satellite';
-        let roofDetectionEnabled = false;
-
-        const DEFAULT_ZOOM = 19;
-        const MAX_AVAILABLE_ZOOM = 19;
-
-        function init() {
-            useLocationBtn.addEventListener('click', handleUseLocationClick);
-            enterLocationBtn.addEventListener('click', handleEnterLocationClick);
-            submitLocationBtn.addEventListener('click', handleSubmitLocationClick);
-            resetButton.addEventListener('click', resetApplication);
-            clearSelectionBtn.addEventListener('click', clearRoofSelection);
-            mapTypeToggle.addEventListener('click', toggleMapType);
-            
-            window.addEventListener('resize', function() {
-                if (map) {
-                    map.invalidateSize();
-                    centerMapView();
-                }
-            });
-        }
-
-        init();
-
-        function handleUseLocationClick() {
-            if (navigator.geolocation) {
-                startImageLoading();
-                navigator.geolocation.getCurrentPosition(
-                    position => {
-                        const location = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-                        handleLocationAcquired(location);
-                    },
-                    error => {
-                        loadingIndicator.style.display = 'none';
-                        alert("Error getting location. Please try entering your location manually.");
-                    }
-                );
-            } else {
-                alert("Geolocation is not supported by your browser. Please enter location manually.");
-            }
-        }
-
-        function handleEnterLocationClick() {
-            locationInput.style.display = 'block';
-            submitLocationBtn.style.display = 'block';
-        }
-
-        function handleSubmitLocationClick() {
-            const location = locationInput.value;
-            if (location.trim() === '') {
-                alert('Please enter a location');
-                return;
-            }
-            
-            startImageLoading();
-
-            if (location.includes(',')) {
-                const [lat, lng] = location.split(',').map(coord => parseFloat(coord.trim()));
-                if (!isNaN(lat) && !isNaN(lng)) {
-                    handleLocationAcquired({ lat, lng });
-                    return;
-                }
-            }
-
-            geocodeAddress(location);
-        }
-
-        function handleLocationAcquired(location) {
-            currentLocation = location;
-            initializeMap(location);
-        }
-
-        function geocodeAddress(address) {
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        const location = {
-                            lat: parseFloat(data[0].lat),
-                            lng: parseFloat(data[0].lon)
-                        };
-                        handleLocationAcquired(location);
-                    } else {
-                        alert('Could not find location. Please try a different address.');
-                        loadingIndicator.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    alert('Error finding location. Please try again.');
-                    loadingIndicator.style.display = 'none';
-                });
-        }
-
-        function startImageLoading() {
-            loadingIndicator.style.display = 'block';
-            mapElement.style.display = 'none';
-            resultArea.style.display = 'none';
-            actionButtons.style.display = 'none';
-        }
-
-        function initializeMap(location) {
-            if (!map) {
-                mapElement.style.display = 'block';
-                
-                map = L.map('map', {
-                    center: [location.lat, location.lng],
-                    zoom: DEFAULT_ZOOM,
-                    zoomControl: true,
-                    dragging: true,
-                    touchZoom: true,
-                    doubleClickZoom: false,
-                    scrollWheelZoom: true,
-                    boxZoom: false,
-                    tapHold: true,
-                    tap: false,
-                    keyboard: true,
-                    zoomSnap: 0.5,
-                    zoomDelta: 0.5,
-                    maxZoom: MAX_AVAILABLE_ZOOM
-                });
-
-                map.zoomControl.setPosition('bottomright');
-
-                satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-                    maxZoom: MAX_AVAILABLE_ZOOM,
-                    keepBuffer: 8,
-                    updateWhenIdle: false,
-                    updateWhenZooming: false
-                });
-
-                streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                    maxZoom: MAX_AVAILABLE_ZOOM,
-                    keepBuffer: 8,
-                    updateWhenIdle: false,
-                    updateWhenZooming: false
-                });
-
-                streetLayer.addTo(map);
-                currentMapType = 'street';
-
-                setupMapInteractions();
-
-                mapTypeToggle.textContent = 'Switch to Satellite';
-                roofDetectionStatus.textContent = 'Roof detection enabled';
-                roofDetectionStatus.className = 'status-enabled';
-
-                roofDetectionEnabled = true;
-                
-            } else {
-                map.setView([location.lat, location.lng], DEFAULT_ZOOM);
-            }
-            
-            setupAfterMapLoad();
-        }
-
-        function setupMapInteractions() {
-            map.whenReady(() => {
-                centerMapView();
-
-                setTimeout(() => {
-                    map.on('click', handleMapClick);
-                    map.on('mousedown', () => { isDragging = false; });
-                    map.on('touchstart', () => { isDragging = false; });
-                    map.on('mousemove', () => { isDragging = true; });
-                    map.on('touchmove', () => { isDragging = true; });
-                    map.on('mouseup', () => { isDragging = false; });
-                    map.on('touchend', () => { isDragging = false; });
-                }, 500);
-            });
-        }
-
-        function centerMapView() {
-            const containerWidth = mapContainer.offsetWidth;
-            const containerHeight = mapContainer.offsetHeight;
-
-            map.invalidateSize();
-
-            const currentCenter = map.getCenter();
-            map.setView(currentCenter, map.getZoom());
-        }
-
-        function setupAfterMapLoad() {
-            mapElement.style.display = 'block';
-            loadingIndicator.style.display = 'none';
-            locationControls.style.display = 'none';
-            actionButtons.style.display = 'block';
-            mapTypeToggle.style.display = 'block';
-            roofDetectionStatus.style.display = 'block';
-        }
-
-        function toggleMapType() {
-            if (currentMapType === 'satellite') {
-                map.removeLayer(satelliteLayer);
-                streetLayer.addTo(map);
-                currentMapType = 'street';
-                mapTypeToggle.textContent = 'Switch to Satellite';
-
-                roofDetectionEnabled = true;
-                roofDetectionStatus.textContent = 'Roof detection enabled';
-                roofDetectionStatus.className = 'status-enabled';
-            } else {
-                map.removeLayer(streetLayer);
-                satelliteLayer.addTo(map);
-                currentMapType = 'satellite';
-                mapTypeToggle.textContent = 'Switch to Street Map';
-
-                roofDetectionEnabled = false;
-                roofDetectionStatus.textContent = 'Roof detection disabled in satellite view';
-                roofDetectionStatus.className = 'status-disabled';
-            }
-            
-            roofDetectionStatus.style.display = 'block';
-        }
-
-        function handleMapClick(e) {
-			if (isDragging) return;
-			if (!roofDetectionEnabled) {
-				alert("Roof detection is only available in street map view. Please switch to street map to detect roofs.");
-				return;
-			}
-			const clickLatLng = e.latlng;
-			clearRoofSelection();
-			
-			const mapSize = map.getSize();
-			const clickPoint = map.latLngToContainerPoint(clickLatLng);
-			
-			// Get the actual map element
-			const mapElement = document.getElementById('map');
-			
-			// Use the exact same dimensions as the map reports
-			html2canvas(mapElement, {
-				useCORS: true,
-				allowTaint: true,
-				backgroundColor: null,
-				scale: 1, // Keep scale at 1 to prevent offset issues
-				logging: false,
-				width: mapSize.x,
-				height: mapSize.y,
-				// The key fix: ensure full height capture
-				onclone: function(clonedDoc) {
-					// Ensure the cloned element has the right dimensions
-					const clonedMap = clonedDoc.getElementById('map');
-					if (clonedMap) {
-						// Force the cloned map to match exactly the dimensions of the original
-						clonedMap.style.height = mapSize.y + 'px';
-						clonedMap.style.width = mapSize.x + 'px';
-						
-						// Force all child elements to be visible
-						const mapPanes = clonedMap.querySelectorAll('.leaflet-pane');
-						mapPanes.forEach(pane => {
-							pane.style.height = '100%';
-							pane.style.bottom = '0';
-							pane.style.position = 'absolute';
-						});
-					}
-				}
-			}).then(function(capturedCanvas) {
-				canvas = document.createElement('canvas');
-				canvas.width = capturedCanvas.width;
-				canvas.height = capturedCanvas.height;
-				ctx = canvas.getContext('2d');
-				ctx.drawImage(capturedCanvas, 0, 0);
-				
-				const startX = Math.round(clickPoint.x);
-				const startY = Math.round(clickPoint.y);
-				
-				fillRoofArea(startX, startY, clickLatLng);
-				
-				if (filledPixels && filledPixels.length > 0) {
-					calculateArea();
-				} else {
-					alert("Could not detect a roof at this location. Try clicking on a more distinct roof area.");
-				}
-			}).catch(function(error) {
-				console.error("Canvas capture error:", error);
-				alert("An error occurred while processing the roof detection. Please try again.");
-			});
-		}
-
-        function fillRoofArea(startX, startY, clickLatLng) {
-			const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-			const data = imageData.data;
-			
-			if (startX < 0 || startX >= canvas.width || startY < 0 || startY >= canvas.height) {
-				return;
-			}
-
-			const startPos = (startY * canvas.width + startX) * 4;
-			
-			// Get the color of the clicked pixel
-			const targetR = data[startPos];
-			const targetG = data[startPos + 1];
-			const targetB = data[startPos + 2];
-			
-			// Set color tolerance for fill operation
-			const colorTolerance = 25;
-			
-			const visited = new Array(canvas.width * canvas.height).fill(false);
-			const stack = [{x: startX, y: startY}];
-			filledPixels = [];
-
-			let minX = startX, maxX = startX, minY = startY, maxY = startY;
-
-			const tempCanvas = document.createElement('canvas');
-			tempCanvas.width = canvas.width;
-			tempCanvas.height = canvas.height;
-			const tempCtx = tempCanvas.getContext('2d');
-			tempCtx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-
-			// First pass: Fill pixels matching the target color
-			while (stack.length > 0) {
-				const {x, y} = stack.pop();
-				
-				// Skip processing if outside canvas or already visited
-				if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height || visited[y * canvas.width + x]) continue;
-				
-				// Skip pixels at the border of the shape (implemented as a 1-pixel internal border)
-				if (x === 0 || x === canvas.width - 1 || y === 0 || y === canvas.height - 1) continue;
-				
-				const pos = (y * canvas.width + x) * 4;
-				const r = data[pos];
-				const g = data[pos + 1];
-				const b = data[pos + 2];
-
-				const colorDiff = Math.sqrt(
-					Math.pow(r - targetR, 2) +
-					Math.pow(g - targetG, 2) +
-					Math.pow(b - targetB, 2)
-				);
-
-				if (colorDiff > colorTolerance) continue;
-
-				visited[y * canvas.width + x] = true;
-				filledPixels.push({x, y});
-
-				minX = Math.min(minX, x);
-				maxX = Math.max(maxX, x);
-				minY = Math.min(minY, y);
-				maxY = Math.max(maxY, y);
-
-				tempCtx.fillRect(x, y, 1, 1);
-
-				stack.push({x: x + 1, y});
-				stack.push({x: x - 1, y});
-				stack.push({x, y: y + 1});
-				stack.push({x, y: y - 1});
-			}
-
-			// Second pass: Add perimeter pixels that match a darker shade of the target color
-			const perimeterPixels = [];
-			const expandBy = 5;
-			const darkerTolerance = 35; // Higher tolerance for darker shades
-			
-			// Slightly darker roof color
-			const darkerR = Math.max(0, targetR - 30);
-			const darkerG = Math.max(0, targetG - 30);
-			const darkerB = Math.max(0, targetB - 30);
-
-			for (let y = Math.max(0, minY - expandBy); y <= Math.min(canvas.height - 1, maxY + expandBy); y++) {
-				for (let x = Math.max(0, minX - expandBy); x <= Math.min(canvas.width - 1, maxX + expandBy); x++) {
-					// Skip processing if already visited
-					if (visited[y * canvas.width + x]) continue;
-					
-					// Skip pixels at the border of the image (1-pixel internal border)
-					if (x === 0 || x === canvas.width - 1 || y === 0 || y === canvas.height - 1) continue;
-					
-					const pos = (y * canvas.width + x) * 4;
-					const r = data[pos];
-					const g = data[pos + 1];
-					const b = data[pos + 2];
-					
-					// Check if pixel is a darker shade of the target color
-					const darkerColorDiff = Math.sqrt(
-						Math.pow(r - darkerR, 2) +
-						Math.pow(g - darkerG, 2) +
-						Math.pow(b - darkerB, 2)
-					);
-
-					if (darkerColorDiff <= darkerTolerance) {
-						// Only add if pixel is adjacent to already filled area
-						const hasFilledNeighbor = 
-							(x+1 < canvas.width && visited[y * canvas.width + (x+1)]) ||
-							(x-1 >= 0 && visited[y * canvas.width + (x-1)]) ||
-							(y+1 < canvas.height && visited[(y+1) * canvas.width + x]) ||
-							(y-1 >= 0 && visited[(y-1) * canvas.width + x]);
-						
-						if (hasFilledNeighbor) {
-							perimeterPixels.push({x, y});
-							
-							visited[y * canvas.width + x] = true;
-							filledPixels.push({x, y});
-
-							minX = Math.min(minX, x);
-							maxX = Math.max(maxX, x);
-							minY = Math.min(minY, y);
-							maxY = Math.max(maxY, y);
-
-							tempCtx.fillRect(x, y, 1, 1);
-						}
-					}
-				}
-			}
-			
-			// Third pass: Fill any enclosed spaces (gaps) within the shape
-			const gapFillIterations = 1;
-			const maxGapSize = 30; // Max size for gaps to fill
-			
-			for (let iteration = 0; iteration < gapFillIterations; iteration++) {
-				// Create boundary representations
-				let xRanges = new Array(maxY - minY + 1).fill().map(() => ({ min: Infinity, max: -Infinity }));
-				let yRanges = new Array(maxX - minX + 1).fill().map(() => ({ min: Infinity, max: -Infinity }));
-				
-				for (const {x, y} of filledPixels) {
-					const relativeY = y - minY;
-					const relativeX = x - minX;
-					
-					// Update X ranges (for horizontal scanning)
-					if (relativeY >= 0 && relativeY < xRanges.length) {
-						xRanges[relativeY].min = Math.min(xRanges[relativeY].min, x);
-						xRanges[relativeY].max = Math.max(xRanges[relativeY].max, x);
-					}
-					
-					// Update Y ranges (for vertical scanning)
-					if (relativeX >= 0 && relativeX < yRanges.length) {
-						yRanges[relativeX].min = Math.min(yRanges[relativeX].min, y);
-						yRanges[relativeX].max = Math.max(yRanges[relativeX].max, y);
-					}
-				}
-				
-				// Track pixels that we've identified as horizontal and vertical gaps
-				const horizontalGaps = new Set();
-				const verticalGaps = new Set();
-				
-				// HORIZONTAL GAP FILLING: Look for gaps that are completely enclosed horizontally
-				for (let y = minY; y <= maxY; y++) {
-					const relativeY = y - minY;
-					if (relativeY < 0 || relativeY >= xRanges.length) continue;
-					
-					// Skip pixels at the border of the image (1-pixel internal border)
-					if (y === 0 || y === canvas.height - 1) continue;
-					
-					const range = xRanges[relativeY];
-					if (range.min === Infinity || range.max === -Infinity) continue;
-					
-					let inGap = false;
-					let gapStartX = -1;
-					
-					for (let x = range.min; x <= range.max; x++) {
-						// Skip pixels at the border of the image (1-pixel internal border)
-						if (x === 0 || x === canvas.width - 1) {
-							if (inGap) {
-								inGap = false;
-								gapStartX = -1;
-							}
-							continue;
-						}
-						
-						const isVisited = visited[y * canvas.width + x];
-						
-						if (isVisited && inGap) {
-							// End of gap
-							if (gapStartX !== -1 && x - gapStartX <= maxGapSize) { 
-								for (let gx = gapStartX; gx < x; gx++) {
-									// Skip pixels at the border
-									if (gx === 0 || gx === canvas.width - 1) continue;
-									horizontalGaps.add(`${gx},${y}`);
-								}
-							}
-							inGap = false;
-							gapStartX = -1;
-						} else if (!isVisited && !inGap) {
-							// Start of gap
-							inGap = true;
-							gapStartX = x;
-						}
-					}
-				}
-				
-				// VERTICAL GAP FILLING: Look for gaps that are completely enclosed vertically
-				for (let x = minX; x <= maxX; x++) {
-					const relativeX = x - minX;
-					if (relativeX < 0 || relativeX >= yRanges.length) continue;
-					
-					// Skip pixels at the border of the image (1-pixel internal border)
-					if (x === 0 || x === canvas.width - 1) continue;
-					
-					const range = yRanges[relativeX];
-					if (range.min === Infinity || range.max === -Infinity) continue;
-					
-					let inGap = false;
-					let gapStartY = -1;
-					
-					for (let y = range.min; y <= range.max; y++) {
-						// Skip pixels at the border of the image (1-pixel internal border)
-						if (y === 0 || y === canvas.height - 1) {
-							if (inGap) {
-								inGap = false;
-								gapStartY = -1;
-							}
-							continue;
-						}
-						
-						const isVisited = visited[y * canvas.width + x];
-						
-						if (isVisited && inGap) {
-							// End of gap
-							if (gapStartY !== -1 && y - gapStartY <= maxGapSize) { 
-								for (let gy = gapStartY; gy < y; gy++) {
-									// Skip pixels at the border
-									if (gy === 0 || gy === canvas.height - 1) continue;
-									verticalGaps.add(`${x},${gy}`);
-								}
-							}
-							inGap = false;
-							gapStartY = -1;
-						} else if (!isVisited && !inGap) {
-							// Start of gap
-							inGap = true;
-							gapStartY = y;
-						}
-					}
-				}
-				
-				// Find pixels that are confirmed as gaps by BOTH horizontal and vertical scans
-				const confirmedGaps = [];
-				for (const coordStr of horizontalGaps) {
-					if (verticalGaps.has(coordStr)) {
-						const [x, y] = coordStr.split(',').map(Number);
-						// Skip pixels at the border
-						if (x === 0 || x === canvas.width - 1 || y === 0 || y === canvas.height - 1) continue;
-						confirmedGaps.push({x, y});
-					}
-				}
-				
-				// Apply confirmed gap filling
-				for (const {x, y} of confirmedGaps) {
-					visited[y * canvas.width + x] = true;
-					filledPixels.push({x, y});
-					tempCtx.fillRect(x, y, 1, 1);
-				}
-			}
-
-			// Finalize the roof overlay
-			if (filledPixels.length > 0) {
-				const nwPoint = L.point(minX, minY);
-				const sePoint = L.point(maxX, maxY);
-				
-				const nwLatLng = map.containerPointToLatLng(nwPoint);
-				const seLatLng = map.containerPointToLatLng(sePoint);
-				
-				const bounds = L.latLngBounds(nwLatLng, seLatLng);
-
-				const croppedCanvas = document.createElement('canvas');
-				const width = maxX - minX + 1;
-				const height = maxY - minY + 1;
-				croppedCanvas.width = width;
-				croppedCanvas.height = height;
-				const croppedCtx = croppedCanvas.getContext('2d');
-
-				croppedCtx.drawImage(
-					tempCanvas, 
-					minX, minY, width, height,
-					0, 0, width, height
-				);
-
-				const dataUrl = croppedCanvas.toDataURL();
-
-				roofOverlay = L.imageOverlay(dataUrl, bounds);
-				roofOverlay.addTo(map);
-			}
-		}
-		
-        function calculateArea() {
-			const zoom = map.getZoom();
-			const center = map.getCenter();
-			
-			// Earth's equatorial radius in meters
-			const EARTH_RADIUS = 6378137;
-			
-			// Earth's equatorial circumference in meters
-			const EARTH_CIRCUMFERENCE = 2 * Math.PI * EARTH_RADIUS;
-			
-			// Calculate meters per pixel using the accurate OSM formula
-			// This handles fractional zoom levels correctly
-			const latRadians = center.lat * Math.PI / 180;
-			const metersPerPixel = EARTH_CIRCUMFERENCE * Math.cos(latRadians) / (256 * Math.pow(2, zoom));
-			
-			// Calculate area in square meters
-			const squareMeters = filledPixels.length * (metersPerPixel * metersPerPixel);
-			
-			// Convert to square feet and round appropriately
-			const squareFeet = Math.round(squareMeters * 10.7639);
-			const roundedSquareMeters = Math.round(squareMeters * 100) / 100;
-			
-			// Display the results
-			areaResult.textContent = `Estimated Roof Area: ${squareFeet} square feet (${roundedSquareMeters} m²)`;
-			resultArea.style.display = 'block';
-			
-			// Scroll to show the results
-			resultArea.scrollIntoView({ behavior: 'smooth' });
-		}
-
-        function resetApplication() {
-            mapElement.style.display = 'none';
-            resultArea.style.display = 'none';
-            actionButtons.style.display = 'none';
-            locationControls.style.display = 'block';
-            locationInput.style.display = 'none';
-            submitLocationBtn.style.display = 'none';
-            mapTypeToggle.style.display = 'none';
-            roofDetectionStatus.style.display = 'none';
-
-            clearRoofSelection();
-
-            currentLocation = null;
-            selectedRoofPolygon = null;
-
-            if (map) {
-                if (currentMapType === 'satellite' && satelliteLayer) {
-                    map.removeLayer(satelliteLayer);
-                    if (streetLayer) streetLayer.addTo(map);
-                    currentMapType = 'street';
-                    roofDetectionEnabled = true;
-                }
-            }
-        }
-
-        function clearRoofSelection() {
-            if (roofOverlay) {
-                map.removeLayer(roofOverlay);
-                roofOverlay = null;
-            }
-            
-            selectedRoofPolygon = null;
-            filledPixels = [];
-            resultArea.style.display = 'none';
-        }
-    </script>
+    <!-- ===== Scripts ===== -->
+    <!-- Core functionality -->
+    <script src="main.js"></script>
 </body>
 </html>

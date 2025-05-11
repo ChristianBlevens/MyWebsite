@@ -3,7 +3,6 @@
  * Alpine.js Component Functions
  * 
  * This file defines all the Alpine.js component functions used in the portfolio.
- * Alpine.js provides a lightweight JavaScript framework for reactivity and state management.
  */
 
 // Contact form function
@@ -77,6 +76,55 @@ function modalData() {
       document.body.style.overflow = 'auto';
     },
     
+    // Get the appropriate iframe src based on the demo type
+    getIframeSrc() {
+      if (!this.currentProject) return '';
+      
+      if (this.currentProject.demoType === 'itch') {
+        // For itch.io embeds, use the demoPath directly
+        return `${this.currentProject.demoPath}`;
+      } else {
+        // For local demos, build the path with the uniqueId to force refresh
+        return `projects/${this.currentProject.id}/index.html?v=${this.uniqueId}`;
+      }
+    },
+    
+    // Get appropriate iframe attributes as an object
+    getIframeAttributes() {
+      if (!this.currentProject) return {};
+      
+      const commonAttrs = {
+        'class': 'w-full border-0',
+        'loading': 'lazy',
+        'style': `height: ${this.iframeHeight}px; width: 100%;`,
+      };
+      
+      if (this.currentProject.demoType === 'itch') {
+        return {
+          ...commonAttrs,
+          'frameborder': '0',
+          'allowfullscreen': '',
+          'class': 'w-full border-0 bg-transparent', // Different background for itch embeds
+        };
+      } else {
+        return {
+          ...commonAttrs,
+          'sandbox': 'allow-scripts allow-same-origin allow-forms allow-pointer-lock',
+          'class': 'w-full border-0 bg-white', // White background for local demos
+        };
+      }
+    },
+    
+    // Get fallback content for iframe if needed
+    getIframeFallbackContent() {
+      if (!this.currentProject) return '';
+      
+      if (this.currentProject.demoType === 'itch' && this.currentProject.demoHref) {
+        return `<a href="${this.currentProject.demoHref}">Play ${this.currentProject.demoTitle} on itch.io</a>`;
+      }
+      return '';
+    },
+    
     // Handle iframe load event
     onIframeLoad() {
       this.iframeLoaded = true;
@@ -104,7 +152,7 @@ function modalData() {
       }
     },
     
-    // Decrease iframe height by 100px, but not below 600px (1:1 minimum)
+    // Decrease iframe height by 100px, but not below 300px minimum
     decreaseHeight() {
       if (this.iframeHeight > 300) {
         this.iframeHeight -= 100;
