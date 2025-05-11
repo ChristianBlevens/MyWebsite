@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Register service worker for offline capabilities if supported
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
+    navigator.serviceWorker.register('/js/service-worker.js')
       .then(registration => {
         console.log('ServiceWorker registered with scope:', registration.scope);
       })
