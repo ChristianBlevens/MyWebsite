@@ -105,9 +105,9 @@ function modalData() {
       const src = this.getIframeSrc();
       iframe.src = src;
       
-      // Set common attributes 
+      // Set common attributes
       iframe.style.width = '100%';
-      iframe.style.height = '100%'; // Set to 100% instead of fixed height
+      iframe.style.height = '100%'; 
       iframe.style.border = '0';
       iframe.style.margin = '0';
       iframe.style.padding = '0';
@@ -119,10 +119,6 @@ function modalData() {
         iframe.allowFullscreen = true;
         iframe.style.backgroundColor = 'transparent';
         iframe.style.display = 'block';
-        
-        // Set explicit width/height to ensure itch.io iframe fills container
-        iframe.width = '100%';
-        iframe.height = '100%';
       } else {
         iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
         iframe.style.backgroundColor = 'white';
@@ -180,52 +176,6 @@ function modalData() {
       const container = this.$refs.iframeContainer;
       if (container) {
         container.style.height = this.iframeHeight + 'px';
-      }
-      
-      // If this is an itch.io project, inject CSS to make the content fill the iframe
-      if (this.currentProject && this.currentProject.demoType === 'itch' && this.iframeElement) {
-        try {
-          // Try to access contentWindow first 
-          if (this.iframeElement.contentWindow) {
-            // For itch.io iframes, we can try to resize via postMessage
-            this.iframeElement.contentWindow.postMessage({ 
-              msg: 'resize-iframe', 
-              width: '100%', 
-              height: '100%' 
-            }, '*');
-          }
-          
-          // Add CSS to the iframe document if possible
-          if (this.iframeElement.contentDocument) {
-            const style = document.createElement('style');
-            style.textContent = `
-              html, body { 
-                margin: 0 !important; 
-                padding: 0 !important; 
-                width: 100% !important; 
-                height: 100% !important; 
-                overflow: hidden !important;
-              }
-              body > * {
-                width: 100% !important;
-                height: 100% !important;
-              }
-              canvas, .game, #unity-canvas, #gameContainer { 
-                width: 100% !important; 
-                height: 100% !important; 
-                margin: 0 !important;
-                padding: 0 !important;
-              }
-              .template-wrap, .unity-desktop, #unity-container {
-                width: 100% !important;
-                height: 100% !important;
-              }
-            `;
-            this.iframeElement.contentDocument.head.appendChild(style);
-          }
-        } catch (e) {
-          console.warn('Could not inject CSS into iframe', e);
-        }
       }
     },
     

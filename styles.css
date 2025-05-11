@@ -161,6 +161,17 @@ iframe {
   display: block;
   transition: height 0.3s ease;
   background-color: white;
+  box-sizing: border-box !important;
+  transform: none !important;
+}
+
+/* Force all iframe content to fill width with no maximum */
+iframe, 
+iframe html, 
+iframe body {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
 }
 
 /* Target itch.io iframes specifically */
@@ -178,22 +189,86 @@ iframe[src*="itch.io"] {
 /* Force proper fullscreen for canvas elements in iframes */
 #projectDetails iframe canvas,
 #projectDetails iframe #unity-canvas,
-#projectDetails iframe #gameContainer {
+#projectDetails iframe .emscripten canvas {
+  display: block !important;
   width: 100% !important;
   height: 100% !important;
+  max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
 /* Specifically target the Unity container classes */
-#projectDetails iframe .unity-desktop,
 #projectDetails iframe #unity-container,
-#projectDetails iframe .template-wrap,
-#projectDetails iframe .webgl-content {
+#projectDetails iframe #gameContainer,
+#projectDetails iframe #unityContainer,
+#projectDetails iframe .unity-desktop,
+#projectDetails iframe .webgl-content,
+#projectDetails iframe .template-wrap {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
   width: 100% !important;
   height: 100% !important;
   max-width: none !important;
   max-height: none !important;
+  transform: none !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Target itch.io specific iframe containers */
+iframe[src*="itch.io"] #gameContainer,
+iframe[src*="itch.io"] .template-wrap {
+  transform: none !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+}
+
+/* Special handling for centered content with predefined width */
+#projectDetails iframe [style*="margin: 0 auto"],
+#projectDetails iframe [style*="margin:0 auto"],
+#projectDetails iframe [style*="margin-left: auto"],
+#projectDetails iframe [style*="margin-right: auto"] {
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Target any direct children of body with max-width */
+#projectDetails iframe body > div {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Handle direct fixed positioning that might cause content to be centered rather than full-width */
+#projectDetails iframe .webgl-content[style*="position: absolute"],
+#projectDetails iframe .webgl-content[style*="position:absolute"] {
+  left: 0 !important;
+  transform: none !important;
+  margin-left: 0 !important;
+}
+
+/* Fix for Unity's common pattern of using absolute positioning with negative margins */
+#projectDetails iframe .webgl-content[style*="margin-left: -"],
+#projectDetails iframe .template-wrap[style*="margin-left: -"] {
+  margin-left: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+}
+
+/* Additional rule for common Unity container sizing */
+#projectDetails iframe .webgl-content,
+#projectDetails iframe .template-wrap {
+  position: static !important;
+  margin: 0 !important;
 }
 
 /* Hide scrollbars in iframes */
