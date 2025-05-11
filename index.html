@@ -204,7 +204,7 @@
     </footer>
     
     <!-- Enhanced Project Details Modal with size controls -->
-	<div id="projectDetails" 
+		<div id="projectDetails" 
 		 x-data="modalData()"
 		 @open-project-modal.window="open($event.detail)"
 		 x-show="isOpen" 
@@ -231,11 +231,11 @@
 					<!-- Project Title -->
 					<h2 class="text-3xl font-bold mb-4" x-text="currentProject.title"></h2>
 					
-					<!-- Demo Section with fixed height and manual controls -->
+					<!-- Demo Section with improved iframe handling -->
 					<div class="mb-8 rounded-md overflow-hidden bg-gray-900 border border-gray-700">
 						<div class="mx-auto" style="max-width: 800px;">
-							<!-- Loading overlay -->
-							<div x-show="!iframeLoaded" class="iframe-loading flex flex-col items-center justify-center py-16 text-gray-400">
+							<!-- Loading overlay with improved visibility -->
+							<div x-show="!iframeLoaded" class="iframe-loading-overlay flex flex-col items-center justify-center py-16 text-gray-400">
 								<div class="mb-4 text-center">
 									<i class="fas fa-code text-5xl mb-3"></i>
 									<p class="text-lg">Loading project demo...</p>
@@ -253,16 +253,11 @@
 										<i class="fas fa-minus"></i>
 									</button>
 								</div>
-								
-								<!-- Dynamic iframe container with project-specific attributes -->
-								<div class="iframe-container" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
-									<iframe :src="getIframeSrc()" 
-											:key="'iframe-' + currentProject.id + '-' + uniqueId"
-											x-bind="getIframeAttributes()"
-											x-ref="projectIframe"
-											@load="onIframeLoad()"
-											x-html="getIframeFallbackContent()"></iframe>
-								</div>
+							</div>
+							
+							<!-- Simplified iframe container that will be populated via JavaScript -->
+							<div class="iframe-container" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
+								<!-- Iframe is now created and managed entirely through JS -->
 							</div>
 						</div>
 					</div>

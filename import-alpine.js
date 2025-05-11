@@ -39,6 +39,7 @@ function contactForm() {
 }
 
 // Project modal functions with security-compliant approach
+// Project modal functions with improved iframe handling
 function modalData() {
   return {
     isOpen: false,
@@ -47,6 +48,7 @@ function modalData() {
     uniqueId: 1, // Used to force iframe reload
     // Default height
     iframeHeight: 600,
+    iframeElement: null, // Track the iframe element
     
     open(project) {
       // Generate new unique ID to force iframe reload
@@ -59,21 +61,94 @@ function modalData() {
       document.body.style.overflow = 'hidden';
       
       // Set iframe height based on project type
-      // You can customize heights for different project types if needed
       this.iframeHeight = 600;
       
-      // Reset scroll position when opening a new project
+      // Force a complete DOM refresh for the iframe container
       setTimeout(() => {
+        this.createNewIframe();
+        
+        // Reset scroll position when opening a new project
         const modalContent = document.querySelector('#projectDetails > div');
         if (modalContent) {
           modalContent.scrollTop = 0;
         }
-      }, 100);
+      }, 50);
     },
     
     close() {
+      // Clean up iframe to prevent memory leaks
+      this.removeCurrentIframe();
       this.isOpen = false;
       document.body.style.overflow = 'auto';
+      this.currentProject = null;
+    },
+    
+    // Create a completely new iframe element
+    createNewIframe() {
+      // First, clean up any existing iframe
+      this.removeCurrentIframe();
+      
+      // Get the container
+      const container = this.$refs.iframeContainer;
+      if (!container) return;
+      
+      // Create a new iframe element
+      const iframe = document.createElement('iframe');
+      
+      // Set the source
+      const src = this.getIframeSrc();
+      iframe.src = src;
+      
+      // Set common attributes
+      iframe.style.width = '100%';
+      iframe.style.height = this.iframeHeight + 'px';
+      iframe.style.border = '0';
+      iframe.loading = 'lazy';
+      
+      // Set specific attributes based on demo type
+      if (this.currentProject && this.currentProject.demoType === 'itch') {
+        iframe.frameBorder = '0';
+        iframe.allowFullscreen = true;
+        iframe.style.backgroundColor = 'transparent';
+        iframe.style.display = 'block';
+        iframe.style.margin = '0';
+        iframe.style.padding = '0';
+      } else {
+        iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
+        iframe.style.backgroundColor = 'white';
+      }
+      
+      // Add event listeners
+      iframe.addEventListener('load', () => this.onIframeLoad());
+      
+      // Store reference to the iframe
+      this.iframeElement = iframe;
+      
+      // Add to DOM
+      container.appendChild(iframe);
+    },
+    
+    // Remove the current iframe completely
+    removeCurrentIframe() {
+      if (this.iframeElement) {
+        // Remove event listeners
+        this.iframeElement.removeEventListener('load', () => this.onIframeLoad());
+        
+        // Remove from DOM
+        if (this.iframeElement.parentNode) {
+          this.iframeElement.parentNode.removeChild(this.iframeElement);
+        }
+        
+        // Clear reference
+        this.iframeElement = null;
+      }
+      
+      // Also clear any other iframes in the container
+      const container = this.$refs.iframeContainer;
+      if (container) {
+        const iframes = container.querySelectorAll('iframe');
+        iframes.forEach(iframe => iframe.parentNode.removeChild(iframe));
+      }
     },
     
     // Get the appropriate iframe src based on the demo type
@@ -81,73 +156,65 @@ function modalData() {
       if (!this.currentProject) return '';
       
       if (this.currentProject.demoType === 'itch') {
-        // For itch.io embeds, use the demoPath directly
-        return `${this.currentProject.demoPath}`;
+        // For itch.io embeds, add a cache-busting parameter
+        return `${this.currentProject.demoPath}?v=${this.uniqueId}`;
       } else {
         // For local demos, build the path with the uniqueId to force refresh
         return `projects/${this.currentProject.id}/index.html?v=${this.uniqueId}`;
       }
     },
     
-    // Get appropriate iframe attributes as an object
-    getIframeAttributes() {
-      if (!this.currentProject) return {};
-      
-      const commonAttrs = {
-        'class': 'w-full border-0',
-        'loading': 'lazy',
-        'style': `height: ${this.iframeHeight}px; width: 100%;`,
-      };
-      
-      if (this.currentProject.demoType === 'itch') {
-        return {
-          ...commonAttrs,
-          'frameborder': '0',
-          'allowfullscreen': '',
-          'class': 'w-full border-0 bg-transparent', // Different background for itch embeds
-        };
-      } else {
-        return {
-          ...commonAttrs,
-          'sandbox': 'allow-scripts allow-same-origin allow-forms allow-pointer-lock',
-          'class': 'w-full border-0 bg-white', // White background for local demos
-        };
-      }
-    },
-    
-    // Get fallback content for iframe if needed
-    getIframeFallbackContent() {
-      if (!this.currentProject) return '';
-      
-      if (this.currentProject.demoType === 'itch' && this.currentProject.demoHref) {
-        return `<a href="${this.currentProject.demoHref}">Play ${this.currentProject.demoTitle} on itch.io</a>`;
-      }
-      return '';
-    },
-    
     // Handle iframe load event
     onIframeLoad() {
       this.iframeLoaded = true;
       
-      // Get references to the iframe and its container
-      const iframe = this.$refs.projectIframe;
-      const container = this.$refs.iframeContainer;
+      // Apply sizing to the iframe
+      if (this.iframeElement) {
+        this.iframeElement.style.height = this.iframeHeight + 'px';
+      }
       
-      if (iframe && container) {
-        // Apply the height
-        iframe.style.height = this.iframeHeight + 'px';
+      const container = this.$refs.iframeContainer;
+      if (container) {
         container.style.height = this.iframeHeight + 'px';
+      }
+      
+      // If this is an itch.io project, inject CSS to make the content fill the iframe
+      if (this.currentProject && this.currentProject.demoType === 'itch' && this.iframeElement) {
+        try {
+          // Add CSS to the iframe document if possible
+          if (this.iframeElement.contentDocument) {
+            const style = document.createElement('style');
+            style.textContent = `
+              html, body, canvas {
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+              }
+              .unity-canvas {
+                width: 100% !important;
+                height: 100% !important;
+              }
+            `;
+            this.iframeElement.contentDocument.head.appendChild(style);
+          }
+        } catch (e) {
+          console.warn('Could not inject CSS into iframe', e);
+        }
       }
     },
     
     // Increase iframe height by 100px
     increaseHeight() {
       this.iframeHeight += 100;
-      const iframe = this.$refs.projectIframe;
-      const container = this.$refs.iframeContainer;
       
-      if (iframe && container) {
-        iframe.style.height = this.iframeHeight + 'px';
+      if (this.iframeElement) {
+        this.iframeElement.style.height = this.iframeHeight + 'px';
+      }
+      
+      const container = this.$refs.iframeContainer;
+      if (container) {
         container.style.height = this.iframeHeight + 'px';
       }
     },
@@ -156,11 +223,13 @@ function modalData() {
     decreaseHeight() {
       if (this.iframeHeight > 300) {
         this.iframeHeight -= 100;
-        const iframe = this.$refs.projectIframe;
-        const container = this.$refs.iframeContainer;
         
-        if (iframe && container) {
-          iframe.style.height = this.iframeHeight + 'px';
+        if (this.iframeElement) {
+          this.iframeElement.style.height = this.iframeHeight + 'px';
+        }
+        
+        const container = this.$refs.iframeContainer;
+        if (container) {
           container.style.height = this.iframeHeight + 'px';
         }
       }
