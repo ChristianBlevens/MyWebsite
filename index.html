@@ -11,13 +11,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="import-alpine.js" as="script">
-    
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
 </head>
-<body class="text-gray-100 antialiased bg-gray-900 font-sans" x-data="portfolioApp" x-init="init()">
+<body class="text-gray-100 antialiased bg-gray-900 font-sans" x-data="portfolioApp">
     <!-- Header with gradient accent -->
     <header class="py-12 text-center relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-purple-900 opacity-20"></div>
@@ -32,7 +29,7 @@
         <div class="container px-4 mx-auto">
             <!-- Mobile menu button -->
             <div class="flex md:hidden justify-between items-center">
-                <button @click="toggleMobileMenu()" 
+                <button @click="mobileMenuOpen = !mobileMenuOpen" 
                         class="text-gray-100 focus:outline-none">
                     <i class="fas" :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
                 </button>
@@ -96,62 +93,62 @@
                 <h2 class="text-4xl font-bold text-center mb-8">Projects</h2>
                 
                 <!-- Project filtering options -->
-                <div x-data="projectsFilter()">
+                <div x-data="{ activeFilter: 'all' }">
                     <div class="flex flex-wrap justify-center mb-10 gap-2">
-                        <button @click="setFilter('all')" 
-                                :class="{'bg-blue-600': isActive('all'), 'bg-gray-700': !isActive('all')}"
+                        <button @click="activeFilter = 'all'" 
+                                :class="{'bg-blue-600': activeFilter === 'all', 'bg-gray-700': activeFilter !== 'all'}"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
                             All Projects
                         </button>
-                        <button @click="setFilter('C++')" 
-                                :class="{'bg-blue-600': isActive('C++'), 'bg-gray-700': !isActive('C++')}"
+                        <button @click="activeFilter = 'C++'" 
+                                :class="{'bg-blue-600': activeFilter === 'C++', 'bg-gray-700': activeFilter !== 'C++'}"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
                             C++
                         </button>
-                        <button @click="setFilter('Unity')" 
-                                :class="{'bg-blue-600': isActive('Unity'), 'bg-gray-700': !isActive('Unity')}"
+                        <button @click="activeFilter = 'Unity'" 
+                                :class="{'bg-blue-600': activeFilter === 'Unity', 'bg-gray-700': activeFilter !== 'Unity'}"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
                             Unity
                         </button>
-                        <button @click="setFilter('AI')" 
-                                :class="{'bg-blue-600': isActive('AI'), 'bg-gray-700': !isActive('AI')}"
+                        <button @click="activeFilter = 'AI'" 
+                                :class="{'bg-blue-600': activeFilter === 'AI', 'bg-gray-700': activeFilter !== 'AI'}"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
                             AI & Simulation
                         </button>
                     </div>
                 
                     <!-- Project Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8" id="projectsGrid">
-                        <template x-for="project in window.projects" :key="project.id">
-                            <div x-show="activeFilter === 'all' || project.skills.includes(activeFilter)"
-                                x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="opacity-0 transform scale-95"
-                                x-transition:enter-end="opacity-100 transform scale-100"
-                                class="bg-gray-700 rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-                                @click="$dispatch('open-project-modal', project)">
-                                <div class="h-48 bg-center bg-cover relative" :style="`background-image: url('${project.image}')`">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
-                                </div>
-                                <div class="p-6">
-                                    <h3 class="text-xl font-bold mb-2" x-text="project.title"></h3>
-                                    <p class="mb-4 text-gray-300" x-text="project.description"></p>
-                                    <div class="space-y-2">
-                                        <template x-for="feature in project.features.slice(0, 2)" :key="feature">
-                                            <div class="text-sm text-gray-400" x-text="`• ${feature}`"></div>
-                                        </template>
-                                    </div>
-                                    <div class="mt-4 flex flex-wrap gap-2">
-                                        <template x-for="(skill, index) in project.skills.slice(0, 2)" :key="index">
-                                            <span class="bg-gray-900 text-xs px-2 py-1 rounded-full" x-text="skill"></span>
-                                        </template>
-                                        <template x-if="project.skills.length > 2">
-                                            <span class="bg-gray-900 text-xs px-2 py-1 rounded-full" x-text="`+${project.skills.length - 2}`"></span>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+						<template x-for="project in projects" :key="project.id">
+							<div x-show="activeFilter === 'all' || project.skills.includes(activeFilter)"
+								x-transition:enter="transition ease-out duration-300"
+								x-transition:enter-start="opacity-0 transform scale-95"
+								x-transition:enter-end="opacity-100 transform scale-100"
+								class="bg-gray-700 rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+								@click="openProject(project)">
+								<div class="h-48 bg-center bg-cover relative" :style="`background-image: url('${project.image}')`">
+									<div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
+								</div>
+								<div class="p-6">
+									<h3 class="text-xl font-bold mb-2" x-text="project.title"></h3>
+									<p class="mb-4 text-gray-300" x-text="project.description"></p>
+									<div class="space-y-2">
+										<template x-for="feature in project.features.slice(0, 2)" :key="feature">
+											<div class="text-sm text-gray-400" x-text="`• ${feature}`"></div>
+										</template>
+									</div>
+									<div class="mt-4 flex flex-wrap gap-2">
+										<template x-for="(skill, index) in project.skills.slice(0, 2)" :key="index">
+											<span class="bg-gray-900 text-xs px-2 py-1 rounded-full" x-text="skill"></span>
+										</template>
+										<template x-if="project.skills.length > 2">
+											<span class="bg-gray-900 text-xs px-2 py-1 rounded-full" x-text="`+${project.skills.length - 2}`"></span>
+										</template>
+									</div>
+								</div>
+							</div>
+						</template>
+					</div>
                 </div>
             </div>
         </section>
@@ -162,9 +159,8 @@
                 <h2 class="text-4xl font-bold mb-8">Get In Touch</h2>
                 <p class="text-xl max-w-3xl mx-auto mb-8">Interested in working together or have questions about my projects? Feel free to reach out!</p>
                 <form id="contactForm" class="max-w-lg mx-auto flex flex-col space-y-4" 
-                      x-data="contactForm()" 
-                      @submit.prevent="handleSubmit"
-                      :class="{ 'form-submitting': submitting }">
+                      x-data="contactForm" 
+                      @submit.prevent="handleSubmit">
                     <div class="form-control">
                         <input type="text" 
                                x-model="formData.name" 
@@ -236,117 +232,118 @@
         </div>
     </footer>
     
-    <!-- Enhanced Project Details Modal -->
-    <div id="projectDetails" 
-         x-data="modalData()"
-         @open-project-modal.window="open($event.detail)"
-         x-show="isOpen" 
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center"
-         style="padding: 50px;" 
-         x-cloak
-         @click.self="close()">
-        <div class="bg-gray-800 rounded-lg w-full max-h-[calc(100vh-100px)] overflow-y-auto" 
-             @click.stop
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 transform scale-95"
-             x-transition:enter-end="opacity-100 transform scale-100">
-            <!-- Close button positioned absolutely -->
-            <button class="modal-close" @click="close()">&times;</button>
-            
-            <template x-if="currentProject">
-                <div class="p-5 md:p-8 flex flex-col">
-                    <!-- Sticky Project Title Header -->
-                    <div class="project-header">
-                        <h2 class="text-3xl font-bold" x-text="currentProject.title"></h2>
-                    </div>
-                    
-                    <!-- Demo Section - Only show if has demo -->
-                    <div class="mb-8 rounded-md overflow-hidden bg-gray-900 border border-gray-700" x-show="hasDemo()">
-                        <div class="mx-auto w-full">
-                            <!-- Demo container with relative positioning -->
-                            <div class="relative">
-                                <!-- Size control buttons -->
-                                <div class="size-controls" x-show="iframeLoaded">
-                                    <button @click="increaseHeight()" class="size-control-btn" title="Increase height">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                    <button @click="decreaseHeight()" class="size-control-btn" title="Decrease height">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
-                                
-                                <!-- Iframe container with loading overlay -->
-                                <div class="iframe-container" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
-                                    <!-- Loading overlay -->
-                                    <div x-show="showLoadingOverlay()" class="iframe-loading-overlay">
-                                        <div class="mb-4 text-center">
-                                            <i class="fas fa-code text-5xl mb-3"></i>
-                                            <p class="text-lg">Loading project demo...</p>
-                                        </div>
-                                        <div class="loading-spinner mb-4"></div>
-                                    </div>
-                                    <!-- Iframe will be created via JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Description and Details -->
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-bold mb-4">Project Details</h3>
-                        <p class="mb-6 text-gray-300" x-text="currentProject.details"></p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="text-xl font-bold mb-4">Features</h4>
-                                <div class="space-y-2 mb-6">
-                                    <template x-for="feature in currentProject.features" :key="feature">
-                                        <div class="flex items-start">
-                                            <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
-                                            <span x-text="feature"></span>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="text-xl font-bold mb-4">Skills & Technologies</h4>
-                                <div class="flex flex-wrap gap-2 mb-6">
-                                    <template x-for="skill in currentProject.skills" :key="skill">
-                                        <span class="bg-gray-900 text-white px-3 py-1 rounded-full text-sm" x-text="skill"></span>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Gallery -->
-                    <div>
-                        <h3 class="text-2xl font-bold mb-4">Project Gallery</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <template x-for="(image, index) in currentProject.gallery" :key="index">
-                                <div class="cursor-pointer gallery-image" @click="$dispatch('open-gallery-modal', {image: image, title: currentProject.title, index: index})">
-                                    <img :src="image" 
-                                         :alt="'Project image ' + (index + 1)" 
-                                         class="w-full h-48 object-cover rounded-md hover:opacity-90 transition-opacity">
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </div>
-    </div>
+	<!-- Project Details Modal -->
+	<div id="projectDetails" 
+		 x-data="projectModal"
+		 x-show="isOpen" 
+		 x-transition:enter="transition ease-out duration-300"
+		 x-transition:enter-start="opacity-0"
+		 x-transition:enter-end="opacity-100"
+		 x-transition:leave="transition ease-in duration-200"
+		 x-transition:leave-start="opacity-100"
+		 x-transition:leave-end="opacity-0"
+		 class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 md:p-12"
+		 @click.self="close"
+		 x-cloak>
+		<!-- Modal container -->
+		<div class="bg-gray-800 rounded-lg w-full overflow-auto max-w-5xl max-h-[calc(100vh-100px)]"
+			 @click.stop
+			 x-transition:enter="transition ease-out duration-300"
+			 x-transition:enter-start="opacity-0 transform scale-95"
+			 x-transition:enter-end="opacity-100 transform scale-100">
+			<!-- Close button positioned absolutely -->
+			<button class="modal-close" @click="close">&times;</button>
+			
+			<template x-if="project">
+				<div class="flex flex-col">
+					<!-- Sticky Project Title Header -->
+					<div class="project-header">
+						<h2 class="text-3xl font-bold" x-text="project.title"></h2>
+					</div>
+					
+					<!-- Scrollable content container -->
+					<div class="p-5 md:p-8">
+						<!-- Demo Section - Only show if has demo -->
+						<div class="mb-8 rounded-md overflow-hidden bg-gray-900 border border-gray-700" x-show="hasDemo()">
+							<div class="mx-auto w-full">
+								<!-- Demo container with relative positioning -->
+								<div class="relative">
+									<!-- Size control buttons -->
+									<div class="size-controls" x-show="iframeLoaded">
+										<button @click="increaseHeight" class="size-control-btn" title="Increase height">
+											<i class="fas fa-plus"></i>
+										</button>
+										<button @click="decreaseHeight" class="size-control-btn" title="Decrease height">
+											<i class="fas fa-minus"></i>
+										</button>
+									</div>
+									
+									<!-- Iframe container with loading overlay -->
+									<div class="iframe-container" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
+										<!-- Loading overlay -->
+										<div x-show="hasDemo() && !iframeLoaded" class="iframe-loading-overlay">
+											<div class="mb-4 text-center">
+												<i class="fas fa-code text-5xl mb-3"></i>
+												<p class="text-lg">Loading project demo...</p>
+											</div>
+											<div class="loading-spinner mb-4"></div>
+										</div>
+										<!-- Iframe created in JS -->
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Description and Details -->
+						<div class="mb-8">
+							<h3 class="text-2xl font-bold mb-4">Project Details</h3>
+							<p class="mb-6 text-gray-300" x-text="project.details"></p>
+							
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<div>
+									<h4 class="text-xl font-bold mb-4">Features</h4>
+									<div class="space-y-2 mb-6">
+										<template x-for="feature in project.features" :key="feature">
+											<div class="flex items-start">
+												<i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+												<span x-text="feature"></span>
+											</div>
+										</template>
+									</div>
+								</div>
+								
+								<div>
+									<h4 class="text-xl font-bold mb-4">Skills & Technologies</h4>
+									<div class="flex flex-wrap gap-2 mb-6">
+										<template x-for="skill in project.skills" :key="skill">
+											<span class="bg-gray-900 text-white px-3 py-1 rounded-full text-sm" x-text="skill"></span>
+										</template>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Gallery -->
+						<div>
+							<h3 class="text-2xl font-bold mb-4">Project Gallery</h3>
+							<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+								<template x-for="(image, index) in project.gallery" :key="index">
+									<div class="cursor-pointer gallery-image" @click="$dispatch('open-gallery', { image, title: project.title, index })">
+										<img :src="image" 
+											 :alt="'Project image ' + (index + 1)" 
+											 class="w-full h-48 object-cover rounded-md hover:opacity-90 transition-opacity">
+									</div>
+								</template>
+							</div>
+						</div>
+					</div>
+				</div>
+			</template>
+		</div>
+	</div>
 
     <!-- Gallery image modal -->
-    <div x-data="galleryModal()" 
-         @open-gallery-modal.window="open($event.detail)"
+    <div x-data="galleryModal"
          x-show="isOpen" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -356,16 +353,15 @@
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 bg-black bg-opacity-95 z-50 p-4 flex items-center justify-center"
          x-cloak
-         @click.self="close()">
+         @click.self="close">
         <div class="relative max-w-5xl max-h-full">
-            <button class="absolute top-0 right-0 m-4 text-white text-2xl bg-transparent border-none cursor-pointer hover:text-gray-300 z-10" @click="close()">&times;</button>
-            <img :src="currentImage" alt="Gallery image" class="max-w-full max-h-[80vh] object-contain">
+            <button class="absolute top-0 right-0 m-4 text-white text-2xl bg-transparent border-none cursor-pointer hover:text-gray-300 z-10" @click="close">&times;</button>
+            <img :src="image" alt="Gallery image" class="max-w-full max-h-[80vh] object-contain">
         </div>
     </div>
     
     <!-- Load JavaScript -->
     <script src="projects.js"></script>
-    <script src="import-alpine.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

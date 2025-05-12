@@ -1,9 +1,9 @@
-// Define projects data globally for Alpine.js to access
+// Project data for the portfolio
 window.projects = [
   {
     id: 1,
     title: "Voxel Collision Destruction",
-    image: "https://i.imgur.com/vWGYYSF.jpg", // Unique image (placeholder)
+    image: "https://i.imgur.com/vWGYYSF.jpg",
     description: "Innovative voxel-based collision and destruction system",
     features: [
       "Real-time voxel-based destruction physics",
@@ -24,7 +24,7 @@ window.projects = [
   {
     id: 2,
     title: "Object-Oriented Framework",
-    image: "https://i.imgur.com/qs8Yw6v.jpg", // Unique image (placeholder)
+    image: "https://i.imgur.com/qs8Yw6v.jpg",
     description: "Advanced OOP framework for game systems",
     features: [
       "Decoupled system architecture",
@@ -44,7 +44,7 @@ window.projects = [
   {
     id: 3,
     title: "Multiplayer Fighting Game With Destructible Terrain",
-    image: "https://i.imgur.com/gM5SuRE.jpg", // Unique image (placeholder)
+    image: "https://i.imgur.com/gM5SuRE.jpg",
     description: "Ability-based fighter with real-time terrain destruction",
     features: [
       "Component-based ability system",
@@ -61,5 +61,5 @@ window.projects = [
     ],
     demoType: "itch", // Itch.io embedded demo
     demoPath: "https://itch.io/embed-upload/8431679?color=333333"
-  },
+  }
 ];
