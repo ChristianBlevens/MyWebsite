@@ -90,27 +90,27 @@
     <main>
         <!-- About section with background video and scroll-based fade effects - removed padding -->
         <section id="about" class="relative" x-data="scrollFadeSection">
-            <!-- Background video that loops -->
-            <div class="video-container relative w-full overflow-hidden">
-                <video autoplay muted loop playsinline class="object-cover w-full h-full"
-                      style="opacity: 0.3;" :style="`opacity: ${videoOpacity}`">
-                    <source src="https://i.imgur.com/IAGSnvD.mp4" type="video/mp4">
-                </video>
-                
-                <!-- Content that fades in on scroll - positioned at bottom of video but overlaying it -->
-                <div class="absolute inset-x-0 bottom-0 w-full pb-8 z-10"
-                     style="opacity: 1;" :style="`opacity: ${contentOpacity}`">
-                    <div class="container px-4 mx-auto flex flex-col items-center text-center">
-                        <div id="profile-pic" class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-8">
-                            <img src="https://i.imgur.com/pb87Imr.png" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
-                        </div>
-                        <h2 class="text-4xl font-bold mb-4">Game Programmer & Developer</h2>
-                        <p class="text-xl max-w-3xl mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
-                        <a href="#contact" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-8 py-3 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Get In Touch</a>
-                    </div>
-                </div>
-            </div>
-        </section>
+			<!-- Background video that loops -->
+			<div class="video-container relative w-full overflow-hidden">
+				<video autoplay muted loop playsinline class="object-cover w-full h-full"
+					  style="opacity: 0.3;" :style="`opacity: ${videoOpacity}`">
+					<source src="https://i.imgur.com/IAGSnvD.mp4" type="video/mp4">
+				</video>
+				
+				<!-- Content that fades in on scroll - positioned at bottom of video but with size constraints -->
+				<div class="absolute inset-x-0 bottom-0 w-full pb-8 z-10 max-h-full overflow-y-auto"
+					 style="opacity: 1;" :style="`opacity: ${contentOpacity}`">
+					<div class="container px-4 mx-auto flex flex-col items-center text-center">
+						<div id="profile-pic" class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-4 md:mb-8">
+							<img src="https://i.imgur.com/pb87Imr.png" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
+						</div>
+						<h2 class="text-4xl font-bold mb-2 md:mb-4">Game Programmer & Developer</h2>
+						<p class="text-xl max-w-3xl mb-4 md:mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
+						<a href="#contact" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-8 py-3 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Get In Touch</a>
+					</div>
+				</div>
+			</div>
+		</section>
         
         <!-- Projects section with filtering capability -->
         <section id="projects" class="py-20 bg-gray-800 bg-opacity-50">

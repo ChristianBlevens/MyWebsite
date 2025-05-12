@@ -40,7 +40,7 @@ document.addEventListener('alpine:init', () => {
 		const profileRect = profilePic.getBoundingClientRect();
 		
 		// Calculate distance from the top of the viewport to profile picture (accounting for nav)
-		const distanceFromTop = profileRect.top - navHeight;
+		const distanceFromTop = profileRect.top - navHeight - 15;
 		
 		// Set the trigger threshold to 200px from the top
 		const triggerThreshold = 200;

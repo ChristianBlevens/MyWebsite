@@ -63,6 +63,7 @@ html {
   padding: 0;
   margin: 0;
   background-color: #1a202c;
+  min-height: 500px; /* Set minimum height to prevent too much shrinking */
 }
 
 #about video {
@@ -74,6 +75,54 @@ html {
   object-fit: cover;
   z-index: 0;
   transition: opacity 0.5s ease;
+}
+
+/* Make sure the content doesn't overflow the container */
+#about .absolute {
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Add responsive sizing for profile pic */
+#profile-pic {
+  margin-bottom: 8px;
+}
+
+@media (max-height: 700px) {
+  #profile-pic img {
+    width: 120px;
+    height: 120px;
+  }
+  
+  #about h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  #about p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-height: 500px) {
+  #profile-pic img {
+    width: 80px;
+    height: 80px;
+  }
+  
+  #about h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  #about p {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
 }
 
 /* Modal components */
