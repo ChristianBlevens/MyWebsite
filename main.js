@@ -1,23 +1,17 @@
-// Define main data object for Alpine.js application state
+// Main portfolio application state
 document.addEventListener('alpine:init', () => {
   Alpine.data('portfolioApp', () => ({
     // Application state
     mobileMenuOpen: false,
     
-    // Initialize the application
+    // Initialize application
     init() {
-      console.log('Initializing portfolio with Alpine.js...');
-      
-      // Set up event listener for anchor links smooth scrolling
+      console.log('Alpine.js Portfolio initialized');
       this.setupSmoothScrolling();
-      
-      // Set up lazy loading for images
-      this.setupLazyLoading();
-      
-      console.log('Portfolio initialized successfully with Alpine.js!');
+      this.preloadCriticalImages();
     },
     
-    // Method to handle smooth scrolling for anchor links
+    // Setup smooth scrolling
     setupSmoothScrolling() {
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
@@ -30,42 +24,26 @@ document.addEventListener('alpine:init', () => {
               top: targetElement.offsetTop - 80,
               behavior: 'smooth'
             });
+            
+            // Close mobile menu if open
+            const portfolioApp = document.querySelector('[x-data="portfolioApp"]').__x.$data;
+            if (portfolioApp.mobileMenuOpen) {
+              portfolioApp.mobileMenuOpen = false;
+            }
           }
         });
       });
     },
     
-    // Method to set up lazy loading for images
-    setupLazyLoading() {
-      // Check if browser supports IntersectionObserver
-      if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              const img = entry.target;
-              const src = img.getAttribute('data-src');
-              
-              if (src) {
-                img.src = src;
-                img.removeAttribute('data-src');
-              }
-              
-              observer.unobserve(img);
-            }
-          });
-        });
-        
-        // Get all images with data-src attribute
-        const lazyImages = document.querySelectorAll('img[data-src]');
-        lazyImages.forEach(img => {
-          imageObserver.observe(img);
-        });
-      } else {
-        // Fallback for browsers that don't support IntersectionObserver
-        const lazyImages = document.querySelectorAll('img[data-src]');
-        lazyImages.forEach(img => {
-          img.src = img.getAttribute('data-src');
-          img.removeAttribute('data-src');
+    // Preload critical images
+    preloadCriticalImages() {
+      if (window.projects) {
+        // Only preload the first few project images for performance
+        window.projects.slice(0, 3).forEach(project => {
+          if (project.image) {
+            const img = new Image();
+            img.src = project.image;
+          }
         });
       }
     },
@@ -80,18 +58,18 @@ document.addEventListener('alpine:init', () => {
 // Handle errors globally
 window.addEventListener('error', function(event) {
   console.error('Global error caught:', event.error);
-  
-  // You could add more sophisticated error handling here,
-  // such as sending errors to a logging service
-  
-  // Prevent the error from showing in the console
-  // event.preventDefault();
+  // You could add more sophisticated error handling here
 });
 
-// Initialize the portfolio when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM fully loaded and parsed');
-  
-  // Add any additional initialization that should happen
-  // after the DOM is fully loaded
+// Preload additional project images once the page has fully loaded
+window.addEventListener('load', () => {
+  if (window.projects) {
+    // Preload remaining project images and first gallery image for each
+    window.projects.forEach(project => {
+      if (project.gallery && project.gallery.length > 0) {
+        const img = new Image();
+        img.src = project.gallery[0];
+      }
+    });
+  }
 });
