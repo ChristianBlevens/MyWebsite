@@ -391,17 +391,17 @@
              x-transition:enter-end="opacity-100 transform scale-100">
             
             <!-- Resume header -->
-            <div class="sticky top-0 bg-gray-100 py-4 px-6 border-b border-gray-200 flex justify-between items-center">
+            <div class="sticky top-0 bg-gray-100 py-4 px-6 border-b border-gray-200 flex justify-between items-center z-30">
                 <h2 class="text-xl font-bold text-gray-800">My Resume</h2>
                 <button @click="close" class="text-gray-600 hover:text-gray-800 focus:outline-none">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             
-            <!-- Resume content -->
-            <div class="flex-grow overflow-auto p-12">
+            <!-- Resume content area with overflow -->
+            <div class="flex-grow overflow-auto relative">
                 <!-- Loading overlay -->
-                <div x-show="!resumeLoaded" class="flex flex-col items-center justify-center py-12">
+                <div x-show="!resumeLoaded" class="absolute inset-0 flex flex-col items-center justify-center py-12 bg-white z-20">
                     <div class="loading-spinner mb-4"></div>
                     <p class="text-gray-700">Loading resume...</p>
                 </div>
