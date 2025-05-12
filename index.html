@@ -50,6 +50,9 @@
                     <li class="mx-4">
                         <a href="#contact" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">Contact</a>
                     </li>
+                    <li class="mx-4">
+                        <a href="#" @click.prevent="$dispatch('open-resume')" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">Resume</a>
+                    </li>
                 </ul>
             </div>
             
@@ -72,6 +75,9 @@
                     </li>
                     <li class="block">
                         <a href="#contact" @click="mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">Contact</a>
+                    </li>
+                    <li class="block">
+                        <a href="#" @click.prevent="$dispatch('open-resume'); mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">Resume</a>
                     </li>
                 </ul>
             </div>
@@ -361,6 +367,53 @@
         <div class="relative max-w-5xl max-h-full">
             <button class="absolute top-0 right-0 m-4 text-white text-2xl bg-transparent border-none cursor-pointer hover:text-gray-300 z-10" @click="close">&times;</button>
             <img :src="image" alt="Gallery image" class="max-w-full max-h-[80vh] object-contain">
+        </div>
+    </div>
+    
+    <!-- Resume Modal -->
+    <div id="resumeModal" 
+         x-data="resumeModal"
+         x-show="isOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 md:p-12"
+         @click.self="close"
+         x-cloak>
+        <!-- Modal container -->
+        <div class="bg-white rounded-lg overflow-hidden max-w-5xl max-h-[calc(100vh-100px)] flex flex-col"
+             @click.stop
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100">
+            
+            <!-- Resume header -->
+            <div class="sticky top-0 bg-gray-100 py-4 px-6 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-800">My Resume</h2>
+                <button @click="close" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Resume content -->
+            <div class="flex-grow overflow-auto p-12">
+                <!-- Loading overlay -->
+                <div x-show="!resumeLoaded" class="flex flex-col items-center justify-center py-12">
+                    <div class="loading-spinner mb-4"></div>
+                    <p class="text-gray-700">Loading resume...</p>
+                </div>
+                
+                <!-- Google Doc iframe -->
+                <iframe x-ref="resumeFrame"
+                        @load="resumeLoaded = true"
+                        class="w-full h-full border-0"
+                        style="min-height: 800px;"
+                        x-bind:src="resumeUrl">
+                </iframe>
+            </div>
         </div>
     </div>
     

@@ -292,6 +292,36 @@ document.addEventListener('alpine:init', () => {
       document.body.style.overflow = 'auto';
     }
   }));
+  
+  // Resume modal component
+  Alpine.data('resumeModal', () => ({
+    isOpen: false,
+    resumeLoaded: false,
+    resumeUrl: 'https://docs.google.com/document/d/1purg7IyVGjn9Mu3oNINaXV6l9QY-MBYi_blIqYnCzNM/preview',
+    
+    init() {
+      // Listen for global open-resume event
+      window.addEventListener('open-resume', () => {
+        this.open();
+      });
+    },
+    
+    open() {
+      this.isOpen = true;
+      this.resumeLoaded = false;
+      document.body.style.overflow = 'hidden';
+      
+      // Reset iframe load state
+      if (this.$refs.resumeFrame) {
+        this.$refs.resumeFrame.src = this.resumeUrl;
+      }
+    },
+    
+    close() {
+      this.isOpen = false;
+      document.body.style.overflow = 'auto';
+    }
+  }));
 });
 
 // Handle additional image preloading

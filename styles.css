@@ -205,6 +205,44 @@ html {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* Resume modal styles */
+#resumeModal .bg-white {
+  width: 90%;
+  max-width: 900px;
+  height: 85vh;
+}
+
+#resumeModal iframe {
+  background-color: #ffffff;
+}
+
+/* Custom scrollbar for the resume iframe */
+#resumeModal iframe::-webkit-scrollbar {
+  width: 8px;
+}
+
+#resumeModal iframe::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+#resumeModal iframe::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 0.25rem;
+}
+
+#resumeModal iframe::-webkit-scrollbar-thumb:hover {
+  background-color: #a1a1a1;
+}
+
+#resumeModal .bg-white > div:first-child {
+  margin: 0;
+}
+
+/* Fix loading spinner in resume modal */
+#resumeModal .loading-spinner {
+  border-top-color: #3b82f6;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   #projectDetails {
@@ -223,5 +261,10 @@ html {
   .project-header {
     height: 60px;
     padding: 10px 15px;
+  }
+  
+  #resumeModal .bg-white {
+    width: 95%;
+    height: 80vh;
   }
 }
