@@ -15,8 +15,8 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
 </head>
 <body class="text-gray-100 antialiased bg-gray-900 font-sans" x-data="portfolioApp">
-    <!-- Header with gradient accent -->
-    <header class="py-12 text-center relative overflow-hidden">
+    <!-- Header with reduced size and padding -->
+    <header id="header" class="py-5 text-center relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-purple-900 opacity-20"></div>
         <div class="container px-4 mx-auto relative z-10">
             <h1 class="text-5xl md:text-6xl font-bold tracking-tight">Christian Blevens</h1>
@@ -38,11 +38,14 @@
             <!-- Desktop menu - Centered -->
             <div class="hidden md:flex justify-center">
                 <ul class="flex justify-center flex-wrap">
+					<li class="mx-4">
+						<a href="#header" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">Top</a>
+					</li>
                     <li class="mx-4">
-                        <a href="#projects" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">Projects</a>
+                        <a href="#profile-pic" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">About</a>
                     </li>
-                    <li class="mx-4">
-                        <a href="#about" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">About</a>
+					<li class="mx-4">
+                        <a href="#projects" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">Projects</a>
                     </li>
                     <li class="mx-4">
                         <a href="#contact" class="text-lg text-gray-100 px-4 py-2 rounded-md hover:bg-gray-700 transition-all duration-300">Contact</a>
@@ -65,7 +68,7 @@
                         <a href="#projects" @click="mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">Projects</a>
                     </li>
                     <li class="block">
-                        <a href="#about" @click="mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">About</a>
+                        <a href="#profile-pic" @click="mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">About</a>
                     </li>
                     <li class="block">
                         <a href="#contact" @click="mobileMenuOpen = false" class="block px-6 py-3 hover:bg-gray-700">Contact</a>
@@ -76,14 +79,27 @@
     </nav>
     
     <main>
-        <section id="about" class="py-20">
-            <div class="container px-4 mx-auto flex flex-col items-center text-center">
-                <div class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-8">
-                    <img src="https://i.imgur.com/pb87Imr.png" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
+        <!-- About section with background video and scroll-based fade effects - removed padding -->
+        <section id="about" class="relative" x-data="scrollFadeSection">
+            <!-- Background video that loops -->
+            <div class="video-container relative w-full overflow-hidden">
+                <video autoplay muted loop playsinline class="object-cover w-full h-full"
+                      style="opacity: 0.3;" :style="`opacity: ${videoOpacity}`">
+                    <source src="https://i.imgur.com/IAGSnvD.mp4" type="video/mp4">
+                </video>
+                
+                <!-- Content that fades in on scroll - positioned at bottom of video but overlaying it -->
+                <div class="absolute inset-x-0 bottom-0 w-full pb-8 z-10"
+                     style="opacity: 1;" :style="`opacity: ${contentOpacity}`">
+                    <div class="container px-4 mx-auto flex flex-col items-center text-center">
+                        <div id="profile-pic" class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-8">
+                            <img src="https://i.imgur.com/pb87Imr.png" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
+                        </div>
+                        <h2 class="text-4xl font-bold mb-4">Game Programmer & Developer</h2>
+                        <p class="text-xl max-w-3xl mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
+                        <a href="#contact" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-8 py-3 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Get In Touch</a>
+                    </div>
                 </div>
-                <h2 class="text-4xl font-bold mb-4">Game Programmer & Developer</h2>
-                <p class="text-xl max-w-3xl mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
-                <a href="#contact" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-8 py-3 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Get In Touch</a>
             </div>
         </section>
         
@@ -300,18 +316,6 @@
 							<p class="mb-6 text-gray-300" x-text="project.details"></p>
 							
 							<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<div>
-									<h4 class="text-xl font-bold mb-4">Features</h4>
-									<div class="space-y-2 mb-6">
-										<template x-for="feature in project.features" :key="feature">
-											<div class="flex items-start">
-												<i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
-												<span x-text="feature"></span>
-											</div>
-										</template>
-									</div>
-								</div>
-								
 								<div>
 									<h4 class="text-xl font-bold mb-4">Skills & Technologies</h4>
 									<div class="flex flex-wrap gap-2 mb-6">

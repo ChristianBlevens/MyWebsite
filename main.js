@@ -4,27 +4,77 @@ document.addEventListener('alpine:init', () => {
     selectedProject: null
   });
   
+  // Scroll fade component for About section
+  Alpine.data('scrollFadeSection', () => ({
+    videoOpacity: 0.3,
+    contentOpacity: 1,
+    
+    init() {
+      // Set initial state based on current scroll position
+      this.updateOpacity();
+      
+      // Add scroll event listener
+      window.addEventListener('scroll', () => this.updateOpacity());
+      
+      // Force update after a small delay to ensure DOM is ready
+      setTimeout(() => this.updateOpacity(), 10);
+    },
+    
+    updateOpacity() {
+      // Get elements and positions
+      const aboutSection = document.getElementById('about');
+      if (!aboutSection) return; // Safety check
+      
+      const videoContainer = aboutSection.querySelector('.video-container');
+      if (!videoContainer) return; // Safety check
+      
+      const scrollPosition = window.scrollY;
+      const aboutTop = aboutSection.offsetTop;
+      const videoHeight = videoContainer.offsetHeight;
+      const triggerPoint = aboutTop + 50; // Start fade effect earlier
+      
+      // Calculate fade values based on scroll position
+      if (scrollPosition >= triggerPoint) {
+        // Calculate how far through the video container we've scrolled
+        // Use a shorter distance to complete the transition - make content appear earlier
+        const scrollProgress = Math.min(1, (scrollPosition - triggerPoint) / (videoHeight / 3));
+        
+        // Update opacity values
+        this.videoOpacity = Math.max(0.3, 1 - scrollProgress); // Min 30% opacity for video
+        this.contentOpacity = Math.min(1, scrollProgress * 1.5); // Fade in content faster
+      } else {
+        // Reset to initial state when above the trigger point
+        this.videoOpacity = 1;
+        this.contentOpacity = 0;
+      }
+    }
+  }));
+  
   // Main application
   Alpine.data('portfolioApp', () => ({
     mobileMenuOpen: false,
     projects: window.projects || [],
     
     init() {
-      // Setup smooth scrolling for navigation
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-          e.preventDefault();
-          const targetId = this.getAttribute('href');
-          const targetElement = document.querySelector(targetId);
-          
-          if (targetElement) {
-            window.scrollTo({
-              top: targetElement.offsetTop - 80,
-              behavior: 'smooth'
-            });
-          }
-        });
-      });
+	  // Setup smooth scrolling for navigation
+	  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+		anchor.addEventListener('click', function(e) {
+		  e.preventDefault();
+		  const targetId = this.getAttribute('href');
+		  const targetElement = document.querySelector(targetId);
+		  
+		  if (targetElement) {
+			// Adjust scroll position so nav doesn't cover the element
+			const navHeight = document.querySelector('nav').offsetHeight;
+			const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight;
+			
+			window.scrollTo({
+			  top: targetPosition,
+			  behavior: 'smooth'
+			});
+		  }
+		});
+	  });
       
       // Preload critical images
       if (this.projects && this.projects.length > 0) {

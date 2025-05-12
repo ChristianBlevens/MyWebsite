@@ -48,6 +48,34 @@ html {
   100% { transform: rotate(360deg); }
 }
 
+/* About section video background */
+#about {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.video-container {
+  height: 85vh;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  background-color: #1a202c;
+}
+
+#about video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  transition: opacity 0.5s ease;
+}
+
 /* Modal components */
 /* Iframe container */
 .iframe-container {
