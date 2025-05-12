@@ -43,7 +43,7 @@ document.addEventListener('alpine:init', () => {
 		const distanceFromTop = profileRect.top - navHeight;
 		
 		// Set the trigger threshold to 200px from the top
-		const triggerThreshold = 200;
+		const triggerThreshold = 400;
 		
 		// Default states
 		if (distanceFromTop >= triggerThreshold) {
@@ -55,7 +55,7 @@ document.addEventListener('alpine:init', () => {
 		
 		// Only start the fade when profile picture is within 200px from the top
 		// Calculate progress: 0 when at threshold, 1 when at top
-		const fadeProgress = 1 - ((distanceFromTop - 50) / triggerThreshold);
+		const fadeProgress = 1 - ((distanceFromTop - 100) / triggerThreshold);
 		
 		// Ensure progress is between 0 and 1
 		const clampedProgress = Math.max(0, Math.min(1, fadeProgress));
