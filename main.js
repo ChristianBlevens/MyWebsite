@@ -4,51 +4,67 @@ document.addEventListener('alpine:init', () => {
     selectedProject: null
   });
   
-  // Scroll fade component for About section
-  Alpine.data('scrollFadeSection', () => ({
-    videoOpacity: 0.3,
-    contentOpacity: 1,
-    
-    init() {
-      // Set initial state based on current scroll position
-      this.updateOpacity();
-      
-      // Add scroll event listener
-      window.addEventListener('scroll', () => this.updateOpacity());
-      
-      // Force update after a small delay to ensure DOM is ready
-      setTimeout(() => this.updateOpacity(), 10);
-    },
-    
-    updateOpacity() {
-      // Get elements and positions
-      const aboutSection = document.getElementById('about');
-      if (!aboutSection) return; // Safety check
-      
-      const videoContainer = aboutSection.querySelector('.video-container');
-      if (!videoContainer) return; // Safety check
-      
-      const scrollPosition = window.scrollY;
-      const aboutTop = aboutSection.offsetTop;
-      const videoHeight = videoContainer.offsetHeight;
-      const triggerPoint = aboutTop + 50; // Start fade effect earlier
-      
-      // Calculate fade values based on scroll position
-      if (scrollPosition >= triggerPoint) {
-        // Calculate how far through the video container we've scrolled
-        // Use a shorter distance to complete the transition - make content appear earlier
-        const scrollProgress = Math.min(1, (scrollPosition - triggerPoint) / (videoHeight / 3));
-        
-        // Update opacity values
-        this.videoOpacity = Math.max(0.3, 1 - scrollProgress); // Min 30% opacity for video
-        this.contentOpacity = Math.min(1, scrollProgress * 1.5); // Fade in content faster
-      } else {
-        // Reset to initial state when above the trigger point
-        this.videoOpacity = 1;
-        this.contentOpacity = 0;
-      }
-    }
-  }));
+	// Scroll fade component for About section
+	Alpine.data('scrollFadeSection', () => ({
+	  videoOpacity: 0.3,
+	  contentOpacity: 1,
+	  
+	  init() {
+		// Set initial state based on current scroll position
+		this.updateOpacity();
+		
+		// Add scroll event listener
+		window.addEventListener('scroll', () => this.updateOpacity());
+		
+		// Force update after a small delay to ensure DOM is ready
+		setTimeout(() => this.updateOpacity(), 100);
+		
+		// Also update on window resize as profile picture position might change
+		window.addEventListener('resize', () => this.updateOpacity());
+	  },
+	  
+	  updateOpacity() {
+		// Get profile picture element
+		const profilePic = document.getElementById('profile-pic');
+		if (!profilePic) return; // Safety check
+		
+		const aboutSection = document.getElementById('about');
+		if (!aboutSection) return; // Safety check
+		
+		const videoContainer = aboutSection.querySelector('.video-container');
+		if (!videoContainer) return; // Safety check
+		
+		const navHeight = document.querySelector('nav').offsetHeight || 0;
+		
+		// Get profile picture position relative to the viewport
+		const profileRect = profilePic.getBoundingClientRect();
+		
+		// Calculate distance from the top of the viewport to profile picture (accounting for nav)
+		const distanceFromTop = profileRect.top - navHeight;
+		
+		// Set the trigger threshold to 200px from the top
+		const triggerThreshold = 200;
+		
+		// Default states
+		if (distanceFromTop >= triggerThreshold) {
+		  // Profile picture is more than 200px from top - keep default state
+		  this.videoOpacity = 1;
+		  this.contentOpacity = 0;
+		  return;
+		}
+		
+		// Only start the fade when profile picture is within 200px from the top
+		// Calculate progress: 0 when at threshold, 1 when at top
+		const fadeProgress = 1 - (distanceFromTop / triggerThreshold);
+		
+		// Ensure progress is between 0 and 1
+		const clampedProgress = Math.max(0, Math.min(1, fadeProgress));
+		
+		// Update opacity values
+		this.videoOpacity = Math.max(0.3, 1 - clampedProgress);
+		this.contentOpacity = Math.min(1, clampedProgress * 1.5); // Fade in content faster
+	  }
+	}));
   
   // Main application
   Alpine.data('portfolioApp', () => ({
