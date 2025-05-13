@@ -118,38 +118,79 @@ document.addEventListener('alpine:init', () => {
   
   // Contact form component
   Alpine.data('contactForm', () => ({
-    formData: {
-      name: '',
-      email: '',
-      message: ''
-    },
-    formSubmitted: false,
-    submitting: false,
-    errorMessage: null,
-    
-    async handleSubmit() {
-      this.submitting = true;
-      this.errorMessage = null;
-      
-      try {
-        // Simulate API call with delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Reset form after successful submission
-        this.formData = { name: '', email: '', message: '' };
-        this.formSubmitted = true;
-        
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-          this.formSubmitted = false;
-        }, 5000);
-      } catch (error) {
-        this.errorMessage = 'There was an error submitting the form. Please try again.';
-      } finally {
-        this.submitting = false;
-      }
-    }
-  }));
+	  formData: {
+		name: '',
+		email: '',
+		message: ''
+	  },
+	  formSubmitted: false,
+	  submitting: false,
+	  errorMessage: null,
+	  
+	  init() {
+		// Initialize EmailJS with your public key
+		// We use the init function to make sure EmailJS is loaded only once
+		if (window.emailjs && !window.emailjsInitialized) {
+		  emailjs.init("8KsxmH3Rj7JplezyY");
+		  window.emailjsInitialized = true;
+		}
+	  },
+	  
+	  async handleSubmit() {
+			this.submitting = true;
+			this.errorMessage = null;
+			
+			try {
+			  // Simple validation
+			  if (!this.formData.name || !this.formData.email || !this.formData.message) {
+				throw new Error("Please fill out all fields");
+			  }
+			  
+			  // Email format validation
+			  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			  if (!emailRegex.test(this.formData.email)) {
+				throw new Error("Please enter a valid email address");
+			  }
+			  
+			  // Send the email using EmailJS
+			  const templateParams = {
+				from_name: this.formData.name,
+				reply_to: this.formData.email,
+				message: this.formData.message,
+				to_email: 'christianblevensroot@gmail.com'
+			  };
+			  
+			  await emailjs.send(
+				'service_ml0hcx1',
+				'template_kpvuafn',
+				templateParams
+			  );
+			  
+			  // Reset form after successful submission
+			  this.formData = { name: '', email: '', message: '' };
+			  this.formSubmitted = true;
+			  
+			  // Hide success message after 5 seconds
+			  setTimeout(() => {
+				this.formSubmitted = false;
+			  }, 5000);
+			} catch (error) {
+			  console.error("Form submission error:", error);
+			  this.errorMessage = error.message || 'There was an error submitting the form. Please try again.';
+			} finally {
+			  this.submitting = false;
+			}
+		  },
+		  
+		  // Add a keydown handler to support pressing Enter to submit
+		  handleKeydown(event) {
+			// Only trigger if the Enter key is pressed and not in a textarea (where Enter should create a new line)
+			if (event.key === 'Enter' && event.target.tagName.toLowerCase() !== 'textarea') {
+			  event.preventDefault();
+			  this.handleSubmit();
+			}
+		  }
+		}));
   
   // Project modal component
   Alpine.data('projectModal', () => ({
@@ -226,7 +267,7 @@ document.addEventListener('alpine:init', () => {
       iframe.style.padding = '0';
       iframe.loading = 'lazy';
       
-      if (this.project.demoType === 'itch') {
+      if (this.project.demoType === 'web') {
         iframe.frameBorder = '0';
         iframe.allowFullscreen = true;
         iframe.style.backgroundColor = 'transparent';
@@ -255,7 +296,7 @@ document.addEventListener('alpine:init', () => {
     getIframeSrc() {
       if (!this.project) return '';
       
-      if (this.project.demoType === 'itch') {
+      if (this.project.demoType === 'web') {
         return `${this.project.demoPath}?v=${this.uniqueId}`;
       } else if (this.project.demoType === 'local') {
         return `projects/${this.project.id}/index.html?v=${this.uniqueId}`;
