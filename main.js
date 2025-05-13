@@ -273,42 +273,42 @@ document.addEventListener('alpine:init', () => {
     
     // Demo type configuration objects
     getDemoTypeConfig() {
-      return {
-        "external": () => {
-          const externalContainer = document.createElement('div');
-          externalContainer.className = 'external-demo-container';
-          
-          const img = document.createElement('img');
-          img.src = this.project.image;
-          img.className = 'external-demo-image';
-          img.alt = `${this.project.title} preview`;
-          
-          const linkButton = document.createElement('a');
-          linkButton.href = this.project.demoPath;
-          linkButton.target = '_blank';
-          linkButton.rel = 'noopener noreferrer';
-          linkButton.className = 'external-demo-button';
-          linkButton.textContent = 'Visit Demo';
-          
-          externalContainer.appendChild(img);
-          externalContainer.appendChild(linkButton);
-          return externalContainer;
-        },
-        "itch": () => {
-          const iframe = this.createBaseIframe();
-          iframe.frameBorder = '0';
-          iframe.allowFullscreen = true;
-          iframe.style.backgroundColor = 'transparent';
-          return iframe;
-        },
-        "local": () => {
-          const iframe = this.createBaseIframe();
-          iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
-          iframe.style.backgroundColor = 'white';
-          return iframe;
-        }
-      };
-    },
+	  return {
+		"external": () => {
+		  const externalContainer = document.createElement('div');
+		  externalContainer.className = 'external-demo-container';
+		  
+		  const img = document.createElement('img');
+		  img.src = this.project.image;
+		  img.className = 'external-demo-image';
+		  img.alt = `${this.project.title} preview`;
+		  
+		  const linkButton = document.createElement('a');
+		  linkButton.href = this.project.demoPath;
+		  linkButton.target = '_blank';
+		  linkButton.rel = 'noopener noreferrer';
+		  linkButton.className = 'external-demo-button';
+		  linkButton.textContent = 'Visit Demo';
+		  
+		  externalContainer.appendChild(img);
+		  externalContainer.appendChild(linkButton);
+		  return externalContainer;
+		},
+		"itch": () => {
+		  const iframe = this.createBaseIframe();
+		  iframe.frameBorder = '0';
+		  iframe.allowFullscreen = true;
+		  iframe.style.backgroundColor = 'transparent';
+		  return iframe;
+		},
+		"local": () => {
+		  const iframe = this.createBaseIframe();
+		  iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
+		  iframe.style.backgroundColor = 'white';
+		  return iframe;
+		}
+	  };
+	},
     
     createIframe() {
       this.removeIframe();

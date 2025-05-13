@@ -90,7 +90,7 @@
     createProject(
       4,
       "AI-Driven NPC Behavior System",
-      "https://i.imgur.com/Lz9R7jS.jpg",
+      "https://i.imgur.com/pb87Imr.png",
       "Advanced AI system for realistic NPC interactions",
       [
         "Emergent behavior through goal-oriented action planning",
