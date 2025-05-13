@@ -419,12 +419,17 @@
              x-transition:enter-end="opacity-100 transform scale-100">
             
             <!-- Resume header -->
-            <div class="sticky top-0 bg-gray-100 py-4 px-6 border-b border-gray-200 flex justify-between items-center z-30">
-                <h2 class="text-xl font-bold text-gray-800">My Resume</h2>
-                <button @click="close" class="text-gray-600 hover:text-gray-800 focus:outline-none">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
+			<div class="sticky top-0 bg-gray-100 py-4 px-6 border-b border-gray-200 flex justify-between items-center z-30">
+				<h2 class="text-xl font-bold text-gray-800">My Resume</h2>
+				<div class="flex items-center">
+					<button @click="downloadResume()" class="text-gray-600 hover:text-gray-800 focus:outline-none mr-4" title="Download Resume">
+						<i class="fas fa-download text-xl"></i>
+					</button>
+					<button @click="close" class="text-gray-600 hover:text-gray-800 focus:outline-none" title="Close">
+						<i class="fas fa-times text-xl"></i>
+					</button>
+				</div>
+			</div>
             
             <!-- Resume content area with overflow -->
             <div class="flex-grow overflow-auto relative">

@@ -376,7 +376,7 @@ document.addEventListener('alpine:init', () => {
     },
     
     getGithubUrl() {
-      return this.project && this.project.githubUrl ? this.project.githubUrl : '#';
+      return this.project && this.project.githubUrl ? this.project.githubUrl : null;
     }
   }));
   
@@ -414,7 +414,7 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('resumeModal', () => ({
     isOpen: false,
     resumeLoaded: false,
-    resumeUrl: 'https://docs.google.com/document/d/1purg7IyVGjn9Mu3oNINaXV6l9QY-MBYi_blIqYnCzNM/preview',
+    resumeUrl: 'https://docs.google.com/document/d/1purg7IyVGjn9Mu3oNINaXV6l9QY-MBYi_blIqYnCzNM',
     isInitialized: false,
     
     init() {
@@ -437,14 +437,32 @@ document.addEventListener('alpine:init', () => {
       
       // Reset iframe load state
       if (this.$refs.resumeFrame) {
-        this.$refs.resumeFrame.src = this.resumeUrl;
+        this.$refs.resumeFrame.src = this.resumeUrl + "/preview";
       }
     },
     
     close() {
       this.isOpen = false;
       document.body.style.overflow = 'auto';
-    }
+    },
+	
+	downloadResume() {
+		// Google Drive export formats: 
+		// pdf, docx, txt, rtf, odt, epub, html, zip
+		const exportFormat = 'pdf';
+		const downloadUrl = `${this.resumeUrl}/export?format=${exportFormat}`;
+		
+		// Create a temporary anchor element to trigger the download
+		const tempLink = document.createElement('a');
+		tempLink.href = downloadUrl;
+		tempLink.setAttribute('download', 'Christian_Blevens_Resume.pdf');
+		tempLink.setAttribute('target', '_blank');
+		
+		// Append to body, click to trigger download, then remove
+		document.body.appendChild(tempLink);
+		tempLink.click();
+		document.body.removeChild(tempLink);
+	  }
   }));
   
   Alpine.data('dynamicSkillTags', (skills) => ({
