@@ -194,70 +194,98 @@ document.addEventListener('alpine:init', () => {
   
   // Project modal component
   Alpine.data('projectModal', () => ({
-    isOpen: false,
-    project: null,
-    iframeLoaded: false,
-    iframeHeight: 600,
-    uniqueId: 1,
-    
-    init() {
-      // Listen for global open-project event
-      this.$root.addEventListener('open-project', (event) => {
-        console.log('Project modal received open event');
-        if (event.detail && event.detail.project) {
-          this.openProjectModal(event.detail.project);
-        }
-      });
-      
-      // Add a backup using global store
-      this.$watch('$store.portfolio.selectedProject', (project) => {
-        if (project && !this.isOpen) {
-          console.log('Opening project from store:', project.title);
-          this.openProjectModal(project);
-        }
-      });
-    },
-    
-    openProjectModal(project) {
-      console.log('Modal opening project:', project.title);
-      this.project = project;
-      this.isOpen = true;
-      this.iframeLoaded = false;
-      this.uniqueId = Date.now();
-      document.body.style.overflow = 'hidden';
-      
-      // Reset iframe height to default
-      this.iframeHeight = 600;
-      
-      // Reset modal scroll position
-      setTimeout(() => {
-        const modalContainer = document.querySelector('#projectDetails > div');
-        if (modalContainer) {
-          modalContainer.scrollTop = 0;
-        }
-      }, 50);
-      
-      if (this.project && this.project.demoType) {
-        setTimeout(() => this.createIframe(), 50);
-      } else {
-        this.iframeLoaded = true;
+  isOpen: false,
+  project: null,
+  iframeLoaded: false,
+  iframeHeight: 600,
+  uniqueId: 1,
+  
+  init() {
+    // Listen for global open-project event
+    this.$root.addEventListener('open-project', (event) => {
+      console.log('Project modal received open event');
+      if (event.detail && event.detail.project) {
+        this.openProjectModal(event.detail.project);
       }
-    },
+    });
     
-    close() {
-      this.removeIframe();
-      this.isOpen = false;
-      document.body.style.overflow = 'auto';
-      // Clear selected project from store
-      Alpine.store('portfolio').selectedProject = null;
-    },
+    // Add a backup using global store
+    this.$watch('$store.portfolio.selectedProject', (project) => {
+      if (project && !this.isOpen) {
+        console.log('Opening project from store:', project.title);
+        this.openProjectModal(project);
+      }
+    });
+  },
+  
+  openProjectModal(project) {
+    console.log('Modal opening project:', project.title);
+    this.project = project;
+    this.isOpen = true;
+    this.iframeLoaded = false;
+    this.uniqueId = Date.now();
+    document.body.style.overflow = 'hidden';
     
-    createIframe() {
-      this.removeIframe();
+    // Reset iframe height to default
+    this.iframeHeight = 600;
+    
+    // Reset modal scroll position
+    setTimeout(() => {
+      const modalContainer = document.querySelector('#projectDetails > div');
+      if (modalContainer) {
+        modalContainer.scrollTop = 0;
+      }
+    }, 50);
+    
+    if (this.project && this.project.demoType) {
+      setTimeout(() => this.createIframe(), 50);
+    } else {
+      this.iframeLoaded = true;
+    }
+  },
+  
+  close() {
+    this.removeIframe();
+    this.isOpen = false;
+    document.body.style.overflow = 'auto';
+    // Clear selected project from store
+    Alpine.store('portfolio').selectedProject = null;
+  },
+  
+  createIframe() {
+    this.removeIframe();
+    
+    const container = this.$refs.iframeContainer;
+    if (!container) return;
+    
+    if (this.project.demoType === "external") {
+      // For external projects, create a container with the project image and a link button
+      const externalContainer = document.createElement('div');
+      externalContainer.className = 'external-demo-container';
       
-      const container = this.$refs.iframeContainer;
-      if (!container) return;
+      // Create the image element using the project's main image
+      const img = document.createElement('img');
+      img.src = this.project.image;
+      img.className = 'external-demo-image';
+      img.alt = `${this.project.title} preview`;
       
+      // Create the button to link to the external site
+      const linkButton = document.createElement('a');
+      linkButton.href = this.project.demoPath;
+      linkButton.target = '_blank';
+      linkButton.rel = 'noopener noreferrer';
+      linkButton.className = 'external-demo-button';
+      linkButton.textContent = 'Visit Demo';
+      
+      // Append elements to container
+      externalContainer.appendChild(img);
+      externalContainer.appendChild(linkButton);
+      container.appendChild(externalContainer);
+      
+      // Set loaded state
+      this.iframeLoaded = true;
+    } else {
+      // For normal demos (local, itch), create an iframe
       const iframe = document.createElement('iframe');
       iframe.src = this.getIframeSrc();
       iframe.style.width = '100%';
@@ -280,45 +308,55 @@ document.addEventListener('alpine:init', () => {
       iframe.addEventListener('error', () => this.iframeLoaded = true);
       
       container.appendChild(iframe);
-      
-      // Failsafe for iframe loading
-      setTimeout(() => this.iframeLoaded = true, 8000);
-    },
-    
-    removeIframe() {
-      const container = this.$refs.iframeContainer;
-      if (container) {
-        const iframes = container.querySelectorAll('iframe');
-        iframes.forEach(iframe => iframe.parentNode.removeChild(iframe));
-      }
-    },
-    
-    getIframeSrc() {
-      if (!this.project) return '';
-      
-      if (this.project.demoType === 'itch') {
-        return `${this.project.demoPath}?v=${this.uniqueId}`;
-      } else if (this.project.demoType === 'local') {
-        return `projects/${this.project.id}/index.html?v=${this.uniqueId}`;
-      }
-      
-      return 'about:blank';
-    },
-    
-    increaseHeight() {
-      this.iframeHeight += 100;
-    },
-    
-    decreaseHeight() {
-      if (this.iframeHeight > 300) {
-        this.iframeHeight -= 100;
-      }
-    },
-    
-    hasDemo() {
-      return this.project && this.project.demoType;
     }
-  }));
+    
+    // Failsafe for iframe loading
+    setTimeout(() => this.iframeLoaded = true, 8000);
+  },
+  
+  removeIframe() {
+    const container = this.$refs.iframeContainer;
+    if (container) {
+      while (container.firstChild) {
+        container.firstChild.remove();
+      }
+    }
+  },
+  
+  getIframeSrc() {
+    if (!this.project) return '';
+    
+    if (this.project.demoType === 'itch') {
+      return `${this.project.demoPath}?v=${this.uniqueId}`;
+    } else if (this.project.demoType === 'local') {
+      return `projects/${this.project.id}/index.html?v=${this.uniqueId}`;
+    }
+    
+    return 'about:blank';
+  },
+  
+  increaseHeight() {
+    this.iframeHeight += 100;
+  },
+  
+  decreaseHeight() {
+    if (this.iframeHeight > 300) {
+      this.iframeHeight -= 100;
+    }
+  },
+  
+  hasDemo() {
+    return this.project && this.project.demoType;
+  },
+  
+  hasGithub() {
+    return this.project && this.project.githubUrl;
+  },
+  
+  getGithubUrl() {
+    return this.project && this.project.githubUrl ? this.project.githubUrl : '#';
+  }
+}));
   
   // Gallery modal component
   Alpine.data('galleryModal', () => ({
