@@ -298,7 +298,7 @@
 								<!-- Demo container with relative positioning -->
 								<div class="relative">
 									<!-- Size control buttons -->
-									<div class="size-controls" x-show="iframeLoaded">
+									<div class="size-controls" x-show="iframeLoaded && project.demoType !== 'external'">
 										<button @click="increaseHeight" class="size-control-btn" title="Increase height">
 											<i class="fas fa-plus"></i>
 										</button>
@@ -321,6 +321,19 @@
 									</div>
 								</div>
 							</div>
+						</div>
+						
+						<!-- GitHub button -->
+						<div class="mb-6 flex justify-center">
+							<a :href="getGithubUrl()" 
+							   target="_blank" 
+							   rel="noopener noreferrer" 
+							   class="github-button"
+							   :class="{ 'github-button-active': hasGithub(), 'github-button-disabled': !hasGithub() }"
+							   :aria-disabled="!hasGithub()">
+								<i class="fab fa-github mr-2"></i>
+								GitHub Repository
+							</a>
 						</div>
 						
 						<!-- Description and Details -->

@@ -19,7 +19,8 @@ window.projects = [
       "https://i.imgur.com/DjfPpaL.jpg"
     ],
     demoType: "local", // Local file demo
-    demoPath: "projects/1/index.html"
+    demoPath: "projects/1/index.html",
+    githubUrl: "https://github.com/christianblevens/voxel-destruction"
   },
   {
     id: 2,
@@ -40,7 +41,8 @@ window.projects = [
       "https://i.imgur.com/2vRBtqq.jpg"
     ],
     demoType: "local", // Local file demo
-    demoPath: "projects/2/index.html"
+    demoPath: "projects/2/index.html",
+    githubUrl: null // No GitHub link available
   },
   {
     id: 3,
@@ -61,6 +63,47 @@ window.projects = [
       "https://i.imgur.com/FGCnMbR.jpg"
     ],
     demoType: "itch", // Itch.io embedded demo
-    demoPath: "https://itch.io/embed-upload/8431679?color=333333"
+    demoPath: "https://itch.io/embed-upload/8431679?color=333333",
+    githubUrl: "https://github.com/christianblevens/terrain-fighter"
+  },
+  {
+    id: 4,
+    title: "AI-Driven NPC Behavior System",
+    image: "https://i.imgur.com/Lz9R7jS.jpg",
+    description: "Advanced AI system for realistic NPC interactions",
+    features: [
+      "Emergent behavior through goal-oriented action planning",
+      "Dynamic personality traits affecting decision making",
+      "Memory system with emotional weighting",
+      "Procedural dialogue generation"
+    ],
+    details: "This project demonstrates advanced artificial intelligence techniques for creating believable non-player characters in open-world games. The system combines utility-based decision making with influence maps and behavior trees to create NPCs that respond realistically to player actions and environmental changes. The architecture supports scalability across hundreds of NPCs with minimal performance impact.",
+    skills: ["C++", "AI", "Behavior Trees", "Machine Learning"],
+    gallery: [
+      "https://i.imgur.com/Lz9R7jS.jpg",
+      "https://i.imgur.com/UzHfGtQ.jpg",
+      "https://i.imgur.com/R3ZvMpL.jpg"
+    ],
+    demoType: "external", // External demo that can't be embedded
+    demoPath: "https://aibehaviordemo.example.com",
+  },
+  {
+    id: 5,
+    title: "AI-Driven NPC Behavior System",
+    image: "https://i.imgur.com/Lz9R7jS.jpg",
+    description: "Advanced AI system for realistic NPC interactions",
+    features: [
+      "Emergent behavior through goal-oriented action planning",
+      "Dynamic personality traits affecting decision making",
+      "Memory system with emotional weighting",
+      "Procedural dialogue generation"
+    ],
+    details: "This project demonstrates advanced artificial intelligence techniques for creating believable non-player characters in open-world games. The system combines utility-based decision making with influence maps and behavior trees to create NPCs that respond realistically to player actions and environmental changes. The architecture supports scalability across hundreds of NPCs with minimal performance impact.",
+    skills: ["C++", "AI", "Behavior Trees", "Machine Learning"],
+    gallery: [
+      "https://i.imgur.com/Lz9R7jS.jpg",
+      "https://i.imgur.com/UzHfGtQ.jpg",
+      "https://i.imgur.com/R3ZvMpL.jpg"
+    ],
   }
 ];
