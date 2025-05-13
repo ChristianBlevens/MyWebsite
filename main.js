@@ -58,7 +58,7 @@ document.addEventListener('alpine:init', () => {
       const triggerThreshold = 400;
       
       // Calculate progress: 0 when at threshold, 1 when at top
-      const fadeProgress = distanceFromTop >= triggerThreshold ? 0 : (1 - (distanceFromTop / triggerThreshold)) * 1.5;
+      const fadeProgress = distanceFromTop >= triggerThreshold ? 0 : (1 - (distanceFromTop / triggerThreshold)) * 1.25;
       
       // Ensure progress is between 0 and 1
       const clampedProgress = Math.max(0, Math.min(1, fadeProgress));
@@ -446,4 +446,149 @@ document.addEventListener('alpine:init', () => {
       document.body.style.overflow = 'auto';
     }
   }));
+  
+  Alpine.data('dynamicSkillTags', (skills) => ({
+	  // Store the original skills array
+	  allSkills: skills || [],
+	  
+	  // State variables
+	  containerWidth: 0,
+	  visibleSkills: [],
+	  remainingCount: 0,
+	  maxRows: 2, // Allow up to 2 rows of skills (can be adjusted)
+	  
+	  // Initialize measurements and calculations
+	  init() {
+		// Initial calculation after Alpine hydrates the DOM
+		this.$nextTick(() => {
+		  this.measureAndUpdate();
+		  
+		  // Create a debounced resize handler
+		  const debouncedResize = debounce(() => this.measureAndUpdate(), 100);
+		  window.addEventListener('resize', debouncedResize);
+		});
+	  },
+	  
+	  // Measure container and calculate visible skills
+	  measureAndUpdate() {
+		// Get current container width
+		this.containerWidth = this.$el.clientWidth;
+		
+		// Calculate how many skills can fit
+		this.calculateVisibleSkills();
+	  },
+	  
+	  // Calculate which skills to show with multi-row support
+	  calculateVisibleSkills() {
+		// Guard against empty skills array
+		if (!this.allSkills || this.allSkills.length === 0) {
+		  this.visibleSkills = [];
+		  this.remainingCount = 0;
+		  return;
+		}
+		
+		// Create a hidden test element to measure skill widths
+		const testEl = document.createElement('span');
+		testEl.className = 'skill-tag';
+		testEl.style.position = 'absolute';
+		testEl.style.visibility = 'hidden';
+		testEl.style.whiteSpace = 'nowrap';
+		document.body.appendChild(testEl);
+		
+		const gap = 8; // 8px gap between tags (as specified in the div's 'gap-2' class)
+		const rows = [];
+		let currentRow = [];
+		let currentRowWidth = 0;
+		let currentRowIndex = 0;
+		
+		// Measure the "+N" tag width (we'll need this later)
+		const maxPlusNumber = this.allSkills.length;
+		testEl.textContent = `+${maxPlusNumber}`;
+		const plusTagWidth = testEl.offsetWidth;
+		
+		// First, ensure we can at least fit one skill
+		if (this.allSkills.length > 0) {
+		  // Measure first skill
+		  testEl.textContent = this.allSkills[0];
+		  const firstSkillWidth = testEl.offsetWidth;
+		  
+		  // If we can't even fit one skill, just show the count
+		  if (firstSkillWidth > this.containerWidth) {
+			this.visibleSkills = [];
+			this.remainingCount = this.allSkills.length;
+			document.body.removeChild(testEl);
+			return;
+		  }
+		}
+		
+		// Process each skill to see if it fits in the multi-row layout
+		for (let i = 0; i < this.allSkills.length; i++) {
+		  const skill = this.allSkills[i];
+		  
+		  // Measure this skill's width
+		  testEl.textContent = skill;
+		  const skillWidth = testEl.offsetWidth;
+		  
+		  // Check if this skill fits in the current row
+		  if (currentRowWidth + skillWidth <= this.containerWidth) {
+			// This skill fits in the current row
+			currentRow.push(skill);
+			currentRowWidth += skillWidth + gap;
+		  } else {
+			// This skill doesn't fit in current row - start a new row if allowed
+			if (currentRowIndex < this.maxRows - 1) {
+			  // We can start a new row
+			  rows.push([...currentRow]);
+			  currentRow = [skill];
+			  currentRowWidth = skillWidth + gap;
+			  currentRowIndex++;
+			} else {
+			  // We've reached max rows, need to consider the "+N" tag
+			  
+			  // Check if we can fit the "+N" remainder tag in the current row
+			  const remainingCount = this.allSkills.length - i;
+			  testEl.textContent = `+${remainingCount}`;
+			  const currentPlusTagWidth = testEl.offsetWidth;
+			  
+			  if (currentRowWidth + currentPlusTagWidth <= this.containerWidth) {
+				// The "+N" tag fits in the current row
+				this.remainingCount = remainingCount;
+			  } else {
+				// Need to replace the last skill with the "+N" tag
+				if (currentRow.length > 0) {
+				  // Remove the last skill to make room for the "+N" tag
+				  currentRow.pop();
+				  this.remainingCount = remainingCount + 1;
+				} else {
+				  // Edge case: empty row but still need to show remainder
+				  this.remainingCount = remainingCount;
+				}
+			  }
+			  
+			  // We've reached our limit
+			  break;
+			}
+		  }
+		}
+		
+		// Add the last row if it has content and we haven't hit the break
+		if (currentRow.length > 0 && rows.length < this.maxRows) {
+		  rows.push([...currentRow]);
+		}
+		
+		// Clean up test element
+		document.body.removeChild(testEl);
+		
+		// Flatten the rows into a single array of visible skills
+		this.visibleSkills = rows.flat();
+		
+		// If we've shown all skills, no remainder
+		if (this.visibleSkills.length === this.allSkills.length) {
+		  this.remainingCount = 0;
+		} else if (this.remainingCount === 0) {
+		  // If we haven't explicitly set a remainder but haven't shown all skills
+		  this.remainingCount = this.allSkills.length - this.visibleSkills.length;
+		}
+	  }
+	}));
 });
