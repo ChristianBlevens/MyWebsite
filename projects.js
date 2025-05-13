@@ -60,28 +60,7 @@ window.projects = [
       "https://i.imgur.com/8QFx1PD.jpg",
       "https://i.imgur.com/FGCnMbR.jpg"
     ],
-    demoType: "web", // Web embedded demo
+    demoType: "itch", // Itch.io embedded demo
     demoPath: "https://itch.io/embed-upload/8431679?color=333333"
-  },
-  {
-    id: 4,
-    title: "Multiplayer Fighting Game With Destructible Terrain",
-    image: "https://i.imgur.com/gM5SuRE.jpg",
-    description: "Ability-based fighter with real-time terrain destruction",
-    features: [
-      "Component-based ability system",
-      "Networked multiplayer with rollback",
-      "Procedurally generated arenas",
-      "Dynamic terrain deformation"
-    ],
-    details: "Created a highly flexible ability system that allows for modular composition of character skills and powers. The system is designed to be mod-safe, enabling easy expansion and customization without compromising the core functionality. The game features real-time terrain destruction that affects gameplay, creating dynamic battlefields that evolve during matches.",
-    skills: ["C#", "Unity", "Game Design", "UI/UX", "Networking"],
-    gallery: [
-      "https://i.imgur.com/gM5SuRE.jpg",
-      "https://i.imgur.com/8QFx1PD.jpg",
-      "https://i.imgur.com/FGCnMbR.jpg"
-    ],
-    demoType: "web", // Web embedded demo
-    demoPath: "https://christianblevens.me/"
   }
 ];

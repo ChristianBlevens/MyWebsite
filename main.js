@@ -267,7 +267,7 @@ document.addEventListener('alpine:init', () => {
       iframe.style.padding = '0';
       iframe.loading = 'lazy';
       
-      if (this.project.demoType === 'web') {
+      if (this.project.demoType === 'itch') {
         iframe.frameBorder = '0';
         iframe.allowFullscreen = true;
         iframe.style.backgroundColor = 'transparent';
@@ -296,7 +296,7 @@ document.addEventListener('alpine:init', () => {
     getIframeSrc() {
       if (!this.project) return '';
       
-      if (this.project.demoType === 'web') {
+      if (this.project.demoType === 'itch') {
         return `${this.project.demoPath}?v=${this.uniqueId}`;
       } else if (this.project.demoType === 'local') {
         return `projects/${this.project.id}/index.html?v=${this.uniqueId}`;
