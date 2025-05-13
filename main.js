@@ -58,9 +58,7 @@ document.addEventListener('alpine:init', () => {
       const triggerThreshold = 400;
       
       // Calculate progress: 0 when at threshold, 1 when at top
-      const fadeProgress = distanceFromTop >= triggerThreshold 
-        ? 0 
-        : 1 - ((distanceFromTop - 100) / triggerThreshold);
+      const fadeProgress = distanceFromTop >= triggerThreshold ? 0 : (1 - (distanceFromTop / triggerThreshold)) * 1.5;
       
       // Ensure progress is between 0 and 1
       const clampedProgress = Math.max(0, Math.min(1, fadeProgress));
