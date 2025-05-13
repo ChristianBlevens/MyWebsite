@@ -474,12 +474,7 @@ html {
   .iframe-container {
     height: 400px;
   }
-  
-  .project-header {
-    height: 60px;
-    padding: 10px 15px;
-  }
-  
+
   #resumeModal .bg-white {
     width: 95%;
     height: 80vh;
