@@ -288,7 +288,7 @@ document.addEventListener('alpine:init', () => {
 		  linkButton.target = '_blank';
 		  linkButton.rel = 'noopener noreferrer';
 		  linkButton.className = 'external-demo-button';
-		  linkButton.textContent = 'Visit Demo';
+		  linkButton.textContent = 'Visit Site';
 		  
 		  externalContainer.appendChild(img);
 		  externalContainer.appendChild(linkButton);

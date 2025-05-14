@@ -101,9 +101,9 @@
       "This project demonstrates advanced artificial intelligence techniques for creating believable non-player characters in open-world games. The system combines utility-based decision making with influence maps and behavior trees to create NPCs that respond realistically to player actions and environmental changes. The architecture supports scalability across hundreds of NPCs with minimal performance impact.",
       ["C++", "AI", "Behavior Trees", "Machine Learning"],
       [
-        "https://i.imgur.com/Lz9R7jS.jpg",
+        "https://i.imgur.com/pb87Imr.png",
         "https://i.imgur.com/UzHfGtQ.jpg",
-        "https://i.imgur.com/R3ZvMpL.jpg"
+        "https://i.imgur.com/pb87Imr.png"
       ],
       "external",
       "https://aibehaviordemo.example.com"
