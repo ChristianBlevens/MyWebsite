@@ -1,14 +1,14 @@
 // Project data for the portfolio
 (function() {
   // Project factory function to reduce redundancy
-  function createProject(id, title, image, description, features, details, skills, gallery, demoType = null, demoPath = null, githubUrl = null) {
+  function createProject(id, title, image, summary, features, description, skills, gallery, demoType = null, demoPath = null, githubUrl = null) {
     return {
       id,
       title,
       image,
-      description,
+      summary,
       features,
-      details,
+      description,
       skills,
       gallery,
       ...(demoType && { demoType }),
@@ -21,66 +21,77 @@
   window.projects = [
     createProject(
       1,
-      "Voxel Collision Destruction",
-      "https://i.imgur.com/vWGYYSF.jpg",
-      "Innovative voxel-based collision and destruction system",
+      "Christmas Lights AI Demo",
+      "https://i.imgur.com/m0Wfsrh.png",
+      "Intuitive and comprehensive digital christmas light demo designed to encourage sales",
       [
-        "Real-time voxel-based destruction physics",
-        "Optimized collision detection algorithm",
-        "Memory-efficient object pooling system",
-        "Configurable destruction parameters"
+        "Easy to use",
+		"Beautiful result",
       ],
-      "A sophisticated voxel-based destruction system that allows for realistic and dynamic object destruction based on collision points and forces. The architecture is designed to be highly modular and scalable, supporting complex scenes with numerous destructible objects without sacrificing performance. The system uses spatial partitioning to efficiently handle collision detection and custom memory management to minimize garbage collection overhead.",
-      ["C++", "Physics", "Optimization", "Voxel Technology"],
+      "",
+      ["Webdev", "AI", "Google Cloud Run", "Cloud Compute", "API Usage", "Javascript"],
       [
-        "https://i.imgur.com/vWGYYSF.jpg",
-        "https://i.imgur.com/TFwXuRk.jpg",
-        "https://i.imgur.com/DjfPpaL.jpg"
+        "https://i.imgur.com/9p8linJ.png",
+		"https://i.imgur.com/SMNiBJf.jpeg",
+		"https://i.imgur.com/m0Wfsrh.png"
       ],
       "local",
       "projects/1/index.html",
-      "https://github.com/christianblevens/voxel-destruction"
+      "https://github.com/ChristianBlevens/FullWebAddSplineToPictureThenAI"
     ),
     
     createProject(
       2,
-      "Object-Oriented Framework",
-      "https://i.imgur.com/qs8Yw6v.jpg",
-      "Advanced OOP framework for game systems",
+      "Roof Area Calculator",
+      "https://i.imgur.com/ldkbu25.png",
+      "Simple web app to calculate the area of a roof",
       [
-        "Decoupled system architecture",
-        "Event-driven communication pattern",
-        "Automated dependency resolution",
-        "Comprehensive unit test coverage"
+		"Basic tech demo",
+		"Simple file structure"
       ],
-      "Developed a robust object-oriented programming framework that allows for clean separation of concerns across game systems. The framework promotes maintainability and extensibility while ensuring efficient data-oriented communication between components. It includes a custom reflection system to facilitate serialization and editor integration.",
-      ["C++", "Object-Oriented Design", "Data-Oriented Design", "Systems Architecture"],
+      "",
+      ["Webdev", "API Usage", "Map Tile API", "Javascript"],
       [
-        "https://i.imgur.com/qs8Yw6v.jpg",
-        "https://i.imgur.com/qsZ37mS.jpg",
-        "https://i.imgur.com/2vRBtqq.jpg"
+		"https://i.imgur.com/ldkbu25.png"
       ],
       "local",
-      "projects/2/index.html"
+      "projects/2/index.html",
+	  "https://github.com/ChristianBlevens/RoofAreaCalculator"
+    ),
+	
+	createProject(
+      3,
+      "This Website",
+      "https://i.imgur.com/WYd2iPv.png",
+      "A full display of what I can do using Alpine.js, Tailwind.css, and custom js/css",
+      [
+		"Wide ranging usage of iframe to showcase previous projects",
+		"Comprehensive usage of Alpine.js and Tailwind.css",
+		"Complex website presented in a simple package"
+      ],
+      "",
+      ["Webdev", "Alpine.js", "Tailwind.css", "API Usage", "Iframes", "Javascript"],
+      [
+		"https://i.imgur.com/WYd2iPv.png",
+      ],
+      "",
+      "",
+      "https://github.com/ChristianBlevens/MyWebsite"
     ),
     
     createProject(
-      3,
-      "Multiplayer Fighting Game With Destructible Terrain",
-      "https://i.imgur.com/gM5SuRE.jpg",
-      "Ability-based fighter with real-time terrain destruction",
+      4,
+      "Impact Based Descructible Environment",
+      "https://i.imgur.com/I7ZkATK.gif",
+      "Muliplayer game with an intuitive and reactive desctructible environment",
       [
-        "Component-based ability system",
-        "Networked multiplayer with rollback",
-        "Procedurally generated arenas",
-        "Dynamic terrain deformation"
+		"Performant terain destruction",
+		"Basic dumb fun gameplay"
       ],
-      "Created a highly flexible ability system that allows for modular composition of character skills and powers. The system is designed to be mod-safe, enabling easy expansion and customization without compromising the core functionality. The game features real-time terrain destruction that affects gameplay, creating dynamic battlefields that evolve during matches.",
-      ["C#", "Unity", "Game Design", "UI/UX", "Networking"],
+      "",
+      ["Unity", "C#", "Fish Networking", "Data Oriented Design", "OOP"],
       [
-        "https://i.imgur.com/gM5SuRE.jpg",
-        "https://i.imgur.com/8QFx1PD.jpg",
-        "https://i.imgur.com/FGCnMbR.jpg"
+		"https://i.imgur.com/I7ZkATK.gif",
       ],
       "itch",
       "https://itch.io/embed-upload/8431679?color=333333",
@@ -88,45 +99,233 @@
     ),
     
     createProject(
-      4,
-      "AI-Driven NPC Behavior System",
-      "https://i.imgur.com/pb87Imr.png",
-      "Advanced AI system for realistic NPC interactions",
+      5,
+      "Unity ECS MOBA",
+      "https://i.imgur.com/rBJsZzW.gif",
+      "Data oriented MOBA with custom ability creation",
       [
-        "Emergent behavior through goal-oriented action planning",
-        "Dynamic personality traits affecting decision making",
-        "Memory system with emotional weighting",
-        "Procedural dialogue generation"
+		"Full Unity DOTS with ECS",
+		"Steam Networking based online"
       ],
-      "This project demonstrates advanced artificial intelligence techniques for creating believable non-player characters in open-world games. The system combines utility-based decision making with influence maps and behavior trees to create NPCs that respond realistically to player actions and environmental changes. The architecture supports scalability across hundreds of NPCs with minimal performance impact.",
-      ["C++", "AI", "Behavior Trees", "Machine Learning"],
+      "",
+      ["Unity", "C#", "Steam Networking", "Dynamic Ability System", "Data Oriented Design"],
       [
-        "https://i.imgur.com/pb87Imr.png",
-        "https://i.imgur.com/UzHfGtQ.jpg",
-        "https://i.imgur.com/pb87Imr.png"
+		"https://i.imgur.com/rBJsZzW.gif",
       ],
-      "external",
-      "https://aibehaviordemo.example.com"
+	  "",
+	  "",
+	  "https://github.com/ChristianBlevens/UltimateMoba"
     ),
     
     createProject(
-      5,
-      "AI-Driven NPC Behavior System",
-      "https://i.imgur.com/Lz9R7jS.jpg",
-      "Advanced AI system for realistic NPC interactions",
+      6,
+      "Van Home Design Presentation",
+      "https://i.imgur.com/zW5XWYm.gif",
+      "Simple home demo using interactive environments build with ProBuilder",
       [
-        "Emergent behavior through goal-oriented action planning",
-        "Dynamic personality traits affecting decision making",
-        "Memory system with emotional weighting",
-        "Procedural dialogue generation"
+		"Quickly built ProBuilder homes",
+		"Modular interaction system",
+		"Production ready website deployment"
       ],
-      "This project demonstrates advanced artificial intelligence techniques for creating believable non-player characters in open-world games. The system combines utility-based decision making with influence maps and behavior trees to create NPCs that respond realistically to player actions and environmental changes. The architecture supports scalability across hundreds of NPCs with minimal performance impact.",
-      ["C++", "AI", "Behavior Trees", "Machine Learning"],
+      "",
+      ["Unity", "C#", "Probuilder", "Javascript Plugins"],
       [
-        "https://i.imgur.com/Lz9R7jS.jpg",
-        "https://i.imgur.com/UzHfGtQ.jpg",
-        "https://i.imgur.com/R3ZvMpL.jpg"
-      ]
+		"https://i.imgur.com/zW5XWYm.gif",
+      ],
+	  "itch",
+	  "https://itch.io/embed-upload/12942892?color=333333"
+    ),
+	
+	createProject(
+      7,
+      "Group Pathfinding",
+      "https://i.imgur.com/9ff2MqU.gif",
+      "Performant giant group pathfinding hybrid solution",
+      [
+		"Hybrid approach using clasic pathfinding and boids",
+		"Descriptive visual representations"
+      ],
+      "",
+      ["Unity", "C#", "Pathfinding", "Data Visualization"],
+      [
+		"https://i.imgur.com/9ff2MqU.gif",
+      ],
+    ),
+	
+	createProject(
+      8,
+      "Camera And Radar Collaboration",
+      "https://i.imgur.com/klahjti.gif",
+      "University capstone project to point a camera at targets detected from a radar",
+      [
+		"Capable of working with arbitrary placements and rotations",
+		"Can be accessed remotely to use or iterate on software"
+      ],
+      "",
+      ["Webdev", "C#", "Database", "Python", "Data Visualization", "Data Visualization", "Unity"],
+      [
+		"https://i.imgur.com/klahjti.gif",
+      ],
+    ),
+
+	createProject(
+      9,
+      "Object-Oriented Networking ECS",
+      "https://i.imgur.com/Rt6xMLu.gif",
+      "Complex abstraction that enables ECS with popular OOP multiplayer frameworks by making systems objects",
+      [
+		"Dynamic system to entity communication",
+		"Fully abstracted concept for easy implementation"
+      ],
+      "",
+      ["Unity", "C#", "Fish Networking", "Data Oriented Design", "OOP"],
+      [
+		"https://i.imgur.com/Rt6xMLu.gif",
+      ],
+    ),
+	
+	createProject(
+      10,
+      "Walkable Surface Detection And 3d Pathfinding",
+      "https://i.imgur.com/voSAMvC.gif",
+      "Brute force 3d pathfinding with crude floor detection",
+      [
+		"Optimizes search time by combining nodes",
+		"Visualizes nodes using gizmos"
+      ],
+      "",
+      ["Unity", "C#", "Pathfinding", "2D Texture Visualization"],
+      [
+		"https://i.imgur.com/voSAMvC.gif",
+      ],
+    ),
+	
+	createProject(
+      11,
+      "365 Holiday Lighting Website",
+      "https://i.imgur.com/1llffvH.png",
+      "A simple website that I built for 365 Holiday Lighting with Wix",
+      [
+		
+      ],
+      "",
+      ["Webdev", "Wix"],
+      [
+
+      ],
+	  "external",
+	  "https://www.365holidaylighting.com/"
+    ),
+	
+	createProject(
+      12,
+      "My Old Personal Website",
+      "https://i.imgur.com/TsxhPjO.png",
+      "My first personal website that I built with Squarespace",
+      [
+		
+      ],
+      "",
+      ["Webdev", "Squarespace"],
+      [
+
+      ],
+	  "external",
+	  "https://www.christianblevens.me/"
+    ),
+	
+	createProject(
+      13,
+      "Point Attraction",
+      "https://i.imgur.com/Hjzf1Ua.gif",
+      "Fun little demonstration of emergent behavior",
+      [
+		"Visual example of basic rules producing complex behavior",
+		"Rough approximation of particle interactions"
+      ],
+      "",
+      ["Unity", "C#", "Emergent Behavior"],
+      [
+		"https://i.imgur.com/Hjzf1Ua.gif",
+      ],
+    ),
+	
+	createProject(
+      14,
+      "TF2 Dodgeball Inspired Game",
+      "https://i.imgur.com/UkeeOav.gif",
+      "A recreation of my favorite TF2 gamemode, but with some added features I thought were fun",
+      [
+		"Basic player controller",
+      ],
+      "",
+      ["Unity", "C#", "Player Controller"],
+      [
+		"https://i.imgur.com/UkeeOav.gif",
+      ],
+    ),
+	
+	createProject(
+      15,
+      "Line Physics",
+      "https://i.imgur.com/EIKLGGE.gif",
+      "Basic implementation of some 2d physics and canvas drawing",
+      [
+		"Basic 2d physics",
+      ],
+      "",
+      ["Unity", "C#", "2D Texture Visualization"],
+      [
+		"https://i.imgur.com/EIKLGGE.gif",
+      ],
+    ),
+	
+	createProject(
+      16,
+      "Life Simulation",
+      "https://i.imgur.com/GyREhiS.gif",
+      "Basic framework for some 2d life simulation",
+      [
+		"Basic interactions",
+		"Extremely performant array access"
+      ],
+      "",
+      ["Unity", "C#", "Performance Optimization", "2D Texture Visualization"],
+      [
+		"https://i.imgur.com/GyREhiS.gif",
+      ],
+    ),
+	
+	createProject(
+      17,
+      "Van Home Build",
+      "https://i.imgur.com/eXJvpxP.jpeg",
+      "My build of a van home setup focused on optimizing space",
+      [
+		"Long-term extensive planning",
+		"Cooperation based leadership"
+      ],
+      "",
+      ["Project Planning"],
+      [
+		"https://i.imgur.com/9Ji5EVP.jpeg",
+		"https://i.imgur.com/qfgWDI2.jpeg",
+		"https://i.imgur.com/BZt7BnV.jpeg",
+		"https://i.imgur.com/foM22NM.jpeg",
+		"https://i.imgur.com/Ea8cxzh.jpeg",
+		"https://i.imgur.com/PHWVpWO.jpeg",
+		"https://i.imgur.com/dMpJQKg.jpeg",
+		"https://i.imgur.com/pBnOhHv.jpeg",
+		"https://i.imgur.com/MBz96x3.jpeg",
+		"https://i.imgur.com/9CYflgR.jpeg",
+		"https://i.imgur.com/oAyfHAf.jpeg",
+		"https://i.imgur.com/GvjEwam.jpeg",
+		"https://i.imgur.com/priYcgM.jpeg",
+		"https://i.imgur.com/eXJvpxP.jpeg",
+		"https://i.imgur.com/J68eZ37.jpeg",
+		"https://i.imgur.com/8UCcSz5.jpeg",
+		"https://i.imgur.com/riq73EK.jpeg"
+      ],
     )
   ];
   

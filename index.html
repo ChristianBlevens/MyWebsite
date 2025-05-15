@@ -107,7 +107,7 @@
 					 :style="`opacity: ${contentOpacity}`">
 					<div class="container-padded flex flex-col items-center text-center">
 						<div id="profile-pic" class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-4 md:mb-8">
-							<img src="https://i.imgur.com/pb87Imr.png" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
+							<img src="https://i.imgur.com/z7NBCHn.jpeg" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
 						</div>
 						<h2 class="text-4xl font-bold mb-2 md:mb-4">Game Programmer & Developer</h2>
 						<p class="text-xl max-w-3xl mb-4 md:mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
@@ -130,10 +130,10 @@
 								class="filter-button px-4 py-2 rounded-md text-sm font-medium">
 							All Projects
 						</button>
-						<button @click="activeFilter = 'C++'" 
-								:class="{'bg-blue-600': activeFilter === 'C++', 'bg-gray-700': activeFilter !== 'C++'}"
+						<button @click="activeFilter = 'Webdev'" 
+								:class="{'bg-blue-600': activeFilter === 'Webdev', 'bg-gray-700': activeFilter !== 'Webdev'}"
 								class="filter-button px-4 py-2 rounded-md text-sm font-medium">
-							C++
+							Webdev
 						</button>
 						<button @click="activeFilter = 'Unity'" 
 								:class="{'bg-blue-600': activeFilter === 'Unity', 'bg-gray-700': activeFilter !== 'Unity'}"
@@ -143,7 +143,7 @@
 						<button @click="activeFilter = 'AI'" 
 								:class="{'bg-blue-600': activeFilter === 'AI', 'bg-gray-700': activeFilter !== 'AI'}"
 								class="filter-button px-4 py-2 rounded-md text-sm font-medium">
-							AI & Simulation
+							AI
 						</button>
 						
 						<!-- More Dropdown Button -->
@@ -199,7 +199,7 @@
 								</div>
 								<div class="p-6">
 									<h3 class="text-xl font-bold mb-2" x-text="project.title"></h3>
-									<p class="mb-4 text-gray-300" x-text="project.description"></p>
+									<p class="mb-4 text-gray-300" x-text="project.summary"></p>
 									<div class="space-y-2">
 										<template x-for="feature in project.features.slice(0, 2)" :key="feature">
 											<div class="text-sm text-gray-400" x-text="`• ${feature}`"></div>
@@ -386,7 +386,7 @@
 						<!-- Description and Details -->
 						<div class="mb-8">
 							<h3 class="text-2xl font-bold mb-4">Project Details</h3>
-							<p class="mb-6 text-gray-300" x-text="project.details"></p>
+							<p class="mb-6 text-gray-300" x-text="project.description"></p>
 							
 							<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<div>
@@ -401,7 +401,7 @@
 						</div>
 						
 						<!-- Gallery -->
-						<div>
+						<div x-show="project.gallery && project.gallery.length > 0">
 							<h3 class="text-2xl font-bold mb-4">Project Gallery</h3>
 							<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 								<template x-for="(image, index) in project.gallery" :key="index">
