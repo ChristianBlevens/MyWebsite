@@ -162,7 +162,7 @@
 		"Can be accessed remotely to use or iterate on software"
       ],
       "",
-      ["Webdev", "C#", "Database", "Python", "Data Visualization", "Data Visualization", "Unity"],
+      ["Webdev", "C#", "Database", "Python", "Data Visualization", "Unity"],
       [
 		"https://i.imgur.com/klahjti.gif",
       ],
@@ -194,7 +194,7 @@
 		"Visualizes nodes using gizmos"
       ],
       "",
-      ["Unity", "C#", "Pathfinding", "2D Texture Visualization"],
+      ["Unity", "C#", "Pathfinding", "Data Visualization"],
       [
 		"https://i.imgur.com/voSAMvC.gif",
       ],
@@ -274,7 +274,7 @@
 		"Basic 2d physics",
       ],
       "",
-      ["Unity", "C#", "2D Texture Visualization"],
+      ["Unity", "C#", "Data Visualization"],
       [
 		"https://i.imgur.com/EIKLGGE.gif",
       ],
@@ -290,7 +290,7 @@
 		"Extremely performant array access"
       ],
       "",
-      ["Unity", "C#", "Performance Optimization", "2D Texture Visualization"],
+      ["Unity", "C#", "Performance Optimization", "Data Visualization"],
       [
 		"https://i.imgur.com/GyREhiS.gif",
       ],

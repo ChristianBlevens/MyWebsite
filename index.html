@@ -165,20 +165,10 @@
 								 class="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 py-1">
 								
 								<!-- Add your additional filter buttons here -->
-								<button @click="activeFilter = 'Physics'; open = false" 
-										:class="{'bg-blue-600': activeFilter === 'Physics', 'bg-gray-800': activeFilter !== 'Physics'}"
+								<button @click="activeFilter = 'Data Visualization'; open = false" 
+										:class="{'bg-blue-600': activeFilter === 'Data Visualization', 'bg-gray-800': activeFilter !== 'Data Visualization'}"
 										class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
-									Physics
-								</button>
-								<button @click="activeFilter = 'Networking'; open = false" 
-										:class="{'bg-blue-600': activeFilter === 'Networking', 'bg-gray-800': activeFilter !== 'Networking'}"
-										class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
-									Networking
-								</button>
-								<button @click="activeFilter = 'UI/UX'; open = false" 
-										:class="{'bg-blue-600': activeFilter === 'UI/UX', 'bg-gray-800': activeFilter !== 'UI/UX'}"
-										class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
-									UI/UX
+									Data Visualization
 								</button>
 								<!-- You can easily add more buttons here -->
 							</div>
