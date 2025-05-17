@@ -36,7 +36,7 @@ document.addEventListener('alpine:init', () => {
       
       // Add debounced scroll event listener
       const debouncedUpdateOpacity = debounce(() => this.updateOpacity());
-      window.addEventListener('scroll', debouncedUpdateOpacity);
+      window.addEventListener('scroll', () => this.updateOpacity());//debouncedUpdateOpacity);
       
       // Force update after a small delay to ensure DOM is ready
       setTimeout(() => this.updateOpacity(), 100);
