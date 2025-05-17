@@ -119,43 +119,31 @@
         
         <!-- Projects section with filtering capability -->
         <section id="projects" class="py-20 bg-gray-800 bg-opacity-50">
-            <div class="container-padded">
-                <h2 class="text-4xl font-bold text-center mb-8">Projects</h2>
-                
-                <!-- Project filtering options -->
-                <div x-data="{ activeFilter: 'all' }">
-                    <div class="flex flex-wrap justify-center mb-10 gap-2">
-						<button @click="activeFilter = 'all'" 
-								:class="{'bg-blue-600': activeFilter === 'all', 'bg-gray-700': activeFilter !== 'all'}"
-								class="filter-button px-4 py-2 rounded-md text-sm font-medium">
-							All Projects
-						</button>
-						<button @click="activeFilter = 'Webdev'" 
-								:class="{'bg-blue-600': activeFilter === 'Webdev', 'bg-gray-700': activeFilter !== 'Webdev'}"
-								class="filter-button px-4 py-2 rounded-md text-sm font-medium">
-							Webdev
-						</button>
-						<button @click="activeFilter = 'Unity'" 
-								:class="{'bg-blue-600': activeFilter === 'Unity', 'bg-gray-700': activeFilter !== 'Unity'}"
-								class="filter-button px-4 py-2 rounded-md text-sm font-medium">
-							Unity
-						</button>
-						<button @click="activeFilter = 'AI'" 
-								:class="{'bg-blue-600': activeFilter === 'AI', 'bg-gray-700': activeFilter !== 'AI'}"
-								class="filter-button px-4 py-2 rounded-md text-sm font-medium">
-							AI
-						</button>
+			<div class="container-padded">
+				<h2 class="text-4xl font-bold text-center mb-8">Projects</h2>
+				
+				<!-- Project filtering options -->
+				<div x-data="projectFilters">
+					<div x-ref="filterContainer" class="flex flex-wrap justify-center mb-10 gap-2">
+						<!-- Visible filter buttons -->
+						<template x-for="option in visibleFilters" :key="option.id">
+							<button @click="setFilter(option.id)" 
+									:class="{'bg-blue-600': activeFilter === option.id, 'bg-gray-700': activeFilter !== option.id}"
+									class="filter-button px-4 py-2 rounded-md text-sm font-medium">
+								<span x-text="option.label"></span>
+							</button>
+						</template>
 						
-						<!-- More Dropdown Button -->
-						<div x-data="{ open: false }" class="relative">
-							<button @click="open = !open" 
+						<!-- More dropdown (only appears when needed) -->
+						<div x-show="overflowFilters.length > 0" class="relative">
+							<button @click="moreDropdownOpen = !moreDropdownOpen" 
 									class="filter-button px-4 py-2 rounded-md text-sm font-medium bg-gray-700 flex items-center">
 								More <i class="fas fa-chevron-down ml-2 text-xs"></i>
 							</button>
 							
-							<!-- Dropdown Menu -->
-							<div x-show="open" 
-								 @click.away="open = false"
+							<!-- Dropdown menu -->
+							<div x-show="moreDropdownOpen" 
+								 @click.away="moreDropdownOpen = false"
 								 x-transition:enter="transition ease-out duration-200"
 								 x-transition:enter-start="opacity-0 transform scale-95"
 								 x-transition:enter-end="opacity-100 transform scale-100"
@@ -164,26 +152,28 @@
 								 x-transition:leave-end="opacity-0 transform scale-95"
 								 class="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 py-1">
 								
-								<!-- Add your additional filter buttons here -->
-								<button @click="activeFilter = 'Data Visualization'; open = false" 
-										:class="{'bg-blue-600': activeFilter === 'Data Visualization', 'bg-gray-800': activeFilter !== 'Data Visualization'}"
-										class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
-									Data Visualization
-								</button>
-								<!-- You can easily add more buttons here -->
+								<!-- Overflow filter buttons -->
+								<template x-for="option in overflowFilters" :key="option.id">
+									<button @click="setFilter(option.id)" 
+											:class="{'bg-blue-600': activeFilter === option.id, 'bg-gray-800': activeFilter !== option.id}"
+											class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+										<span x-text="option.label"></span>
+									</button>
+								</template>
 							</div>
 						</div>
 					</div>
-                
-                    <!-- Project Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-						<template x-for="project in projects" :key="project.id">
+					
+					<!-- Project Grid -->
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+						<template x-for="project in window.projects" :key="project.id">
 							<div x-show="activeFilter === 'all' || project.skills.includes(activeFilter)"
-								x-transition:enter="transition ease-out duration-300"
-								x-transition:enter-start="opacity-0 transform scale-95"
-								x-transition:enter-end="opacity-100 transform scale-100"
-								class="project-card rounded-lg overflow-hidden cursor-pointer"
-								@click="openProject(project)">
+							  x-transition:enter="transition ease-out duration-300"
+							  x-transition:enter-start="opacity-0 transform scale-95"
+							  x-transition:enter-end="opacity-100 transform scale-100"
+							  class="project-card rounded-lg overflow-hidden cursor-pointer"
+							  :data-project-id="project.id"
+							  @click="$dispatch('open-project', { project })">
 								<div class="h-48 bg-center bg-cover relative" :style="`background-image: url('${project.image}')`">
 									<div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
 								</div>
@@ -213,9 +203,9 @@
 							</div>
 						</template>
 					</div>
-                </div>
-            </div>
-        </section>
+				</div>
+			</div>
+		</section>
         
         <!-- Contact section with improved form -->
         <section id="contact" class="py-20">

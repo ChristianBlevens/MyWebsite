@@ -118,6 +118,93 @@ document.addEventListener('alpine:init', () => {
     }
   }));
   
+  // New component for responsive filter buttons
+  Alpine.data('projectFilters', () => ({
+    activeFilter: 'all',
+    filterOptions: [
+      { id: 'all', label: 'All Projects' },
+      { id: 'Webdev', label: 'Webdev' },
+      { id: 'Unity', label: 'Unity' },
+      { id: 'AI', label: 'AI' },
+      { id: 'Data Visualization', label: 'Data Visualization' },
+      { id: 'OOP', label: 'OOP' },
+      { id: 'Pathfinding', label: 'Pathfinding' }
+      // Add more filter options as needed
+    ],
+    visibleFilters: [],
+    overflowFilters: [],
+    moreDropdownOpen: false,
+    
+    init() {
+      // Initial calculation of visible filters
+      this.calculateVisibleFilters();
+      
+      // Recalculate on window resize
+      const debouncedRecalculate = debounce(() => this.calculateVisibleFilters(), 200);
+      window.addEventListener('resize', debouncedRecalculate);
+      
+      // Make sure we calculate after everything is fully loaded
+      window.addEventListener('load', () => this.calculateVisibleFilters());
+    },
+    
+    calculateVisibleFilters() {
+      // Get container width
+      const containerWidth = this.$refs.filterContainer.clientWidth;
+      
+      // Create a test element to measure button widths
+      const testBtn = document.createElement('button');
+      testBtn.className = 'filter-button px-4 py-2 rounded-md text-sm font-medium invisible';
+      testBtn.style.position = 'absolute';
+      document.body.appendChild(testBtn);
+      
+      // Estimate "More" dropdown button width
+      testBtn.innerHTML = 'More <i class="fas fa-chevron-down ml-2 text-xs"></i>';
+      const moreButtonWidth = testBtn.offsetWidth + 16; // Add margin
+      
+      // Start fresh
+      this.visibleFilters = [];
+      this.overflowFilters = [];
+      
+      // Track used width
+      let usedWidth = 0;
+      let needsMoreButton = false;
+      
+      // For each filter option
+      for (let i = 0; i < this.filterOptions.length; i++) {
+        const option = this.filterOptions[i];
+        
+        // Measure this option's button width
+        testBtn.textContent = option.label;
+        const buttonWidth = testBtn.offsetWidth + 16; // Add margin
+        
+        // See if we need a "More" button based on remaining options
+        const remainingOptions = this.filterOptions.length - i - 1;
+        needsMoreButton = remainingOptions > 0;
+        
+        // Available width (considering "More" button if needed)
+        const availableWidth = containerWidth - (needsMoreButton ? moreButtonWidth : 0);
+        
+        // If this button fits
+        if (usedWidth + buttonWidth <= availableWidth) {
+          this.visibleFilters.push(option);
+          usedWidth += buttonWidth;
+        } else {
+          // This and all remaining options go to overflow
+          this.overflowFilters = this.filterOptions.slice(i);
+          break;
+        }
+      }
+      
+      // Clean up
+      document.body.removeChild(testBtn);
+    },
+    
+    setFilter(filterId) {
+      this.activeFilter = filterId;
+      this.moreDropdownOpen = false;
+    }
+  }));
+  
   // Contact form component
   Alpine.data('contactForm', () => ({
     formData: {
@@ -207,21 +294,21 @@ document.addEventListener('alpine:init', () => {
     uniqueId: 1,
     
     init() {
-      // Listen for global open-project event
-      this.$root.addEventListener('open-project', (event) => {
-        console.log('Project modal received open event');
-        if (event.detail && event.detail.project) {
-          this.openProjectModal(event.detail.project);
-        }
-      });
-      
-      // Add a backup using global store
-      this.$watch('$store.portfolio.selectedProject', (project) => {
-        if (project && !this.isOpen) {
-          console.log('Opening project from store:', project.title);
-          this.openProjectModal(project);
-        }
-      });
+      // Listen for events on window instead of $root
+        window.addEventListener('open-project', (event) => {
+            console.log('Project modal received open event', event.detail);
+            if (event.detail && event.detail.project) {
+                this.openProjectModal(event.detail.project);
+            }
+        });
+        
+        // Keep the store watcher as a backup
+        this.$watch('$store.portfolio.selectedProject', (project) => {
+            if (project && !this.isOpen) {
+                console.log('Opening project from store:', project.title);
+                this.openProjectModal(project);
+            }
+        });
     },
     
     openProjectModal(project) {
