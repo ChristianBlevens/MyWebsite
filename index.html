@@ -500,6 +500,53 @@
         templateId: "template_kpvuafn"
       }
     };
+	
+	// Direct initialization approach for markdown-it-video
+	document.addEventListener('DOMContentLoaded', function() {
+		if (typeof window.markdownit !== 'undefined') {
+		  // Create a test instance to initialize the plugin system
+		  const md = window.markdownit();
+		  
+		  // Check if the plugin is loaded under its original namespace
+		  if (typeof window.markdownitVideo === 'undefined' && typeof window.markdownItVideo === 'undefined') {
+			// The plugin might be available but not properly exposed to window
+			// Try to define it from the returned function of the script
+			try {
+			  // Get the script element that contains markdown-it-video
+			  const scriptElement = document.querySelector('script[src*="markdown-it-video"]');
+			  
+			  if (scriptElement) {
+				// Load the script again but execute it in a way that captures the return value
+				fetch(scriptElement.src)
+				  .then(response => response.text())
+				  .then(scriptText => {
+					// Try to extract and execute the plugin function
+					try {
+					  // This is a simplified approach - the actual structure might vary
+					  const pluginFunction = new Function('markdownit', `
+						const module = { exports: {} };
+						const exports = module.exports;
+						${scriptText}
+						return module.exports;
+					  `)(window.markdownit);
+					  
+					  // Store the plugin function globally
+					  window.markdownitVideo = pluginFunction;
+					  console.log('Successfully extracted markdown-it-video plugin function');
+					} catch (execError) {
+					  console.error('Failed to execute plugin script:', execError);
+					}
+				  })
+				  .catch(error => {
+					console.error('Failed to fetch plugin script:', error);
+				  });
+			  }
+			} catch (e) {
+			  console.error('Error setting up markdown-it-video manually:', e);
+			}
+		  }
+		}
+	});
 	</script>
 </body>
 </html>
