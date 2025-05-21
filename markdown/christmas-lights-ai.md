@@ -5,4 +5,5 @@
 test
 ![alt](https://i.imgur.com/z7NBCHn.jpeg)
 Test
-![alt](https://www.youtube.com/watch?v=Z5ABdKWj7bA)
+@[youtube](Z5ABdKWj7bA)
+

@@ -1,4 +1,28 @@
 document.addEventListener('alpine:init', () => {
+  // Initialize markdown-it with video plugin
+  function initializeMarkdownParser() {
+    if (window.markdownit && window.markdownitVideo) {
+      window.mdParser = window.markdownit({
+        html: true,
+        linkify: true,
+        breaks: true,
+        typographer: true
+      }).use(window.markdownitVideo, {
+        youtube: { width: 640, height: 390 },
+        vimeo: { width: 640, height: 390 },
+        vine: { width: 640, height: 390 }
+      });
+      console.log('Markdown-it with video plugin initialized successfully');
+      return window.mdParser;
+    } else {
+      console.warn('Markdown-it or its video plugin not loaded correctly, falling back to marked');
+      return null;
+    }
+  }
+
+  // Initialize markdown parser
+  const mdParser = initializeMarkdownParser();
+
   // Utility function for debouncing events
   function debounce(func, wait = 20) {
     let timeout;
@@ -374,67 +398,125 @@ document.addEventListener('alpine:init', () => {
     },
     
     parseMarkdown(text) {
-      if (!text || typeof marked === 'undefined') return text || '';
+      if (!text || text.trim() === '') return '';
       
       try {
-        // Configure marked options
-        marked.setOptions({
-          breaks: true,
-          gfm: true
-        });
+        // Try to use markdown-it with video plugin first (if available)
+        if (window.mdParser) {
+          console.log('Using markdown-it parser with video support');
+          return window.mdParser.render(text);
+        }
         
-        const renderer = new marked.Renderer();
-        
-        // Override image rendering with extensive debugging
-        renderer.image = function(href, title, text) {
-          console.log('Image renderer called with:', {
-            href: href,
-            hrefType: typeof href,
-            title: title,
-            titleType: typeof title,
-            text: text,
-            textType: typeof text
+        // Fallback to marked if markdown-it is not available
+        if (typeof marked !== 'undefined') {
+          console.log('Falling back to marked parser');
+          
+          // Configure marked options
+          marked.setOptions({
+            breaks: true,
+            gfm: true
           });
           
-          // Handle the case where href might be an object or token
-          let actualHref = href;
-          if (typeof href === 'object' && href !== null) {
-            // If href is an object, try to extract the actual URL
-            actualHref = href.href || href.src || href.url || href.raw || String(href);
-            console.log('Extracted href from object:', actualHref);
-          }
+          const renderer = new marked.Renderer();
           
-          // Safely convert all inputs to strings
-          const safeHref = String(actualHref || '');
-          const safeAlt = String(text || '');
-          const safeTitle = String(title || '');
+          // Override image rendering with extensive debugging
+          renderer.image = function(href, title, text) {
+            console.log('Image renderer called with:', {
+              href: href,
+              hrefType: typeof href,
+              title: title,
+              titleType: typeof title,
+              text: text,
+              textType: typeof text
+            });
+            
+            // Handle the case where href might be an object or token
+            let actualHref = href;
+            if (typeof href === 'object' && href !== null) {
+              // If href is an object, try to extract the actual URL
+              actualHref = href.href || href.src || href.url || href.raw || String(href);
+              console.log('Extracted href from object:', actualHref);
+            }
+            
+            // Safely convert all inputs to strings
+            const safeHref = String(actualHref || '');
+            const safeAlt = String(text || '');
+            const safeTitle = String(title || '');
+            
+            console.log('Final safe values:', { safeHref, safeAlt, safeTitle });
+            
+            // Simple validation - if no valid URL, return basic img tag
+            if (!safeHref || safeHref === 'undefined' || safeHref === '[object Object]') {
+              console.warn('Invalid href detected, skipping image');
+              return `<p><em>Invalid image URL</em></p>`;
+            }
+            
+            // Escape HTML attributes
+            const escapedHref = safeHref.replace(/"/g, '&quot;');
+            const escapedAlt = safeAlt.replace(/"/g, '&quot;');
+            const escapedTitle = safeTitle.replace(/"/g, '&quot;');
+            
+            return `<a href="${escapedHref}" target="_blank" rel="noopener noreferrer" class="inline-block markdown-image-link">
+                      <img src="${escapedHref}" alt="${escapedAlt}" title="${escapedTitle}" 
+                           class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity markdown-image" 
+                           style="max-height: 400px; object-fit: contain; display: block; margin: 1rem 0;" />
+                    </a>`;
+          };
           
-          console.log('Final safe values:', { safeHref, safeAlt, safeTitle });
+          // Handle video links in text content
+          const videoLinkParser = function(text) {
+            // YouTube regex patterns
+            const ytRegex1 = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(?:&.+)?/g;
+            const ytRegex2 = /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:\?.+)?/g;
+            
+            // Vimeo regex pattern
+            const vimeoRegex = /(?:https?:\/\/)?(?:www\.)?vimeo\.com\/([0-9]+)(?:\/|$|\?)/g;
+            
+            // Replace YouTube links
+            text = text.replace(ytRegex1, function(match, videoId) {
+              return `<div class="video-container">
+                <iframe width="640" height="390" src="https://www.youtube.com/embed/${videoId}" 
+                  frameborder="0" allowfullscreen class="rounded-md"></iframe>
+              </div>`;
+            });
+            
+            text = text.replace(ytRegex2, function(match, videoId) {
+              return `<div class="video-container">
+                <iframe width="640" height="390" src="https://www.youtube.com/embed/${videoId}" 
+                  frameborder="0" allowfullscreen class="rounded-md"></iframe>
+              </div>`;
+            });
+            
+            // Replace Vimeo links
+            text = text.replace(vimeoRegex, function(match, videoId) {
+              return `<div class="video-container">
+                <iframe width="640" height="390" src="https://player.vimeo.com/video/${videoId}" 
+                  frameborder="0" allowfullscreen class="rounded-md"></iframe>
+              </div>`;
+            });
+            
+            return text;
+          };
           
-          // Simple validation - if no valid URL, return basic img tag
-          if (!safeHref || safeHref === 'undefined' || safeHref === '[object Object]') {
-            console.warn('Invalid href detected, skipping image');
-            return `<p><em>Invalid image URL</em></p>`;
-          }
+          // Parse the markdown normally
+          let html = marked.parse(text, { renderer: renderer });
           
-          // Escape HTML attributes
-          const escapedHref = safeHref.replace(/"/g, '&quot;');
-          const escapedAlt = safeAlt.replace(/"/g, '&quot;');
-          const escapedTitle = safeTitle.replace(/"/g, '&quot;');
+          // Process video links in the resulting HTML
+          html = videoLinkParser(html);
           
-          return `<a href="${escapedHref}" target="_blank" rel="noopener noreferrer" class="inline-block markdown-image-link">
-                    <img src="${escapedHref}" alt="${escapedAlt}" title="${escapedTitle}" 
-                         class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity markdown-image" 
-                         style="max-height: 400px; object-fit: contain; display: block; margin: 1rem 0;" />
-                  </a>`;
-        };
+          return html;
+        }
         
-        return marked.parse(text, { renderer: renderer });
+        return text; // If no parser is available, return raw text
       } catch (error) {
         console.error('Markdown parsing error:', error);
         // Fallback: try parsing without custom renderer
         try {
-          return marked.parse(text);
+          if (window.mdParser) {
+            return window.mdParser.render(text);
+          } else if (typeof marked !== 'undefined') {
+            return marked.parse(text);
+          }
         } catch (fallbackError) {
           console.error('Fallback parsing also failed:', fallbackError);
           return text;
@@ -765,40 +847,40 @@ document.addEventListener('alpine:init', () => {
 				this.remainingCount = remainingCount;
 			  } else {
 				// Need to replace the last skill with the "+N" tag
-				if (currentRow.length > 0) {
-				  // Remove the last skill to make room for the "+N" tag
-				  currentRow.pop();
-				  this.remainingCount = remainingCount + 1;
-				} else {
-				  // Edge case: empty row but still need to show remainder
-				  this.remainingCount = remainingCount;
-				}
-			  }
-			  
-			  // We've reached our limit
-			  break;
-			}
-		  }
-		}
-		
-		// Add the last row if it has content and we haven't hit the break
-		if (currentRow.length > 0 && rows.length < this.maxRows) {
-		  rows.push([...currentRow]);
-		}
-		
-		// Clean up test element
-		document.body.removeChild(testEl);
-		
-		// Flatten the rows into a single array of visible skills
-		this.visibleSkills = rows.flat();
-		
-		// If we've shown all skills, no remainder
-		if (this.visibleSkills.length === this.allSkills.length) {
-		  this.remainingCount = 0;
-		} else if (this.remainingCount === 0) {
-		  // If we haven't explicitly set a remainder but haven't shown all skills
-		  this.remainingCount = this.allSkills.length - this.visibleSkills.length;
-		}
-	  }
-	}));
+                if (currentRow.length > 0) {
+                  // Remove the last skill to make room for the "+N" tag
+                  currentRow.pop();
+                  this.remainingCount = remainingCount + 1;
+                } else {
+                  // Edge case: empty row but still need to show remainder
+                  this.remainingCount = remainingCount;
+                }
+              }
+              
+              // We've reached our limit
+              break;
+            }
+          }
+        }
+        
+        // Add the last row if it has content and we haven't hit the break
+        if (currentRow.length > 0 && rows.length < this.maxRows) {
+          rows.push([...currentRow]);
+        }
+        
+        // Clean up test element
+        document.body.removeChild(testEl);
+        
+        // Flatten the rows into a single array of visible skills
+        this.visibleSkills = rows.flat();
+        
+        // If we've shown all skills, no remainder
+        if (this.visibleSkills.length === this.allSkills.length) {
+          this.remainingCount = 0;
+        } else if (this.remainingCount === 0) {
+          // If we haven't explicitly set a remainder but haven't shown all skills
+          this.remainingCount = this.allSkills.length - this.visibleSkills.length;
+        }
+      }
+    }));
 });
