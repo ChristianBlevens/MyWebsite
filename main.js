@@ -343,14 +343,22 @@ document.addEventListener('alpine:init', () => {
     },
     
     async loadProjectDescription(project) {
+      // Ensure description is a string
+      const description = typeof project.description === 'string' ? project.description : '';
+      
+      console.log('Loading description for project:', project.title, 'Description:', description, 'Type:', typeof project.description);
+      
       // Check if description is a markdown filename
-      if (project.description && project.description.endsWith('.md')) {
+      if (description && description.endsWith('.md')) {
         this.loadingMarkdown = true;
         try {
-          const response = await fetch(`markdown/${project.description}`);
+          const fetchUrl = `markdown/${description}`;
+          console.log('Fetching markdown from:', fetchUrl);
+          const response = await fetch(fetchUrl);
           if (response.ok) {
             this.markdownContent = await response.text();
           } else {
+            console.error('Failed to fetch markdown:', response.status, response.statusText);
             this.markdownContent = 'Description not available.';
           }
         } catch (error) {
@@ -360,7 +368,7 @@ document.addEventListener('alpine:init', () => {
         this.loadingMarkdown = false;
       } else {
         // Use the description directly (for backwards compatibility)
-        this.markdownContent = project.description || '';
+        this.markdownContent = description || '';
         this.loadingMarkdown = false;
       }
     },
@@ -369,14 +377,25 @@ document.addEventListener('alpine:init', () => {
       if (!text || typeof marked === 'undefined') return text || '';
       
       try {
+        // Configure marked options
+        marked.setOptions({
+          breaks: true,
+          gfm: true
+        });
+        
         const renderer = new marked.Renderer();
         
-        // Override image rendering to make them clickable
+        // Override image rendering to make them clickable and properly escape attributes
         renderer.image = function(href, title, text) {
-          return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="inline-block">
-                    <img src="${href}" alt="${text}" title="${title || ''}" 
-                         class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity" 
-                         style="max-height: 400px; object-fit: contain;" />
+          // Escape HTML attributes to prevent issues
+          const escapedHref = href.replace(/"/g, '&quot;');
+          const escapedAlt = (text || '').replace(/"/g, '&quot;');
+          const escapedTitle = (title || '').replace(/"/g, '&quot;');
+          
+          return `<a href="${escapedHref}" target="_blank" rel="noopener noreferrer" class="inline-block markdown-image-link">
+                    <img src="${escapedHref}" alt="${escapedAlt}" title="${escapedTitle}" 
+                         class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity markdown-image" 
+                         style="max-height: 400px; object-fit: contain; display: block; margin: 1rem 0;" />
                   </a>`;
         };
         
