@@ -385,14 +385,39 @@ document.addEventListener('alpine:init', () => {
         
         const renderer = new marked.Renderer();
         
-        // Override image rendering to make them clickable and safely handle all input types
+        // Override image rendering with extensive debugging
         renderer.image = function(href, title, text) {
-          // Safely convert all inputs to strings and handle null/undefined
-          const safeHref = String(href || '');
+          console.log('Image renderer called with:', {
+            href: href,
+            hrefType: typeof href,
+            title: title,
+            titleType: typeof title,
+            text: text,
+            textType: typeof text
+          });
+          
+          // Handle the case where href might be an object or token
+          let actualHref = href;
+          if (typeof href === 'object' && href !== null) {
+            // If href is an object, try to extract the actual URL
+            actualHref = href.href || href.src || href.url || href.raw || String(href);
+            console.log('Extracted href from object:', actualHref);
+          }
+          
+          // Safely convert all inputs to strings
+          const safeHref = String(actualHref || '');
           const safeAlt = String(text || '');
           const safeTitle = String(title || '');
           
-          // Escape HTML attributes to prevent issues
+          console.log('Final safe values:', { safeHref, safeAlt, safeTitle });
+          
+          // Simple validation - if no valid URL, return basic img tag
+          if (!safeHref || safeHref === 'undefined' || safeHref === '[object Object]') {
+            console.warn('Invalid href detected, skipping image');
+            return `<p><em>Invalid image URL</em></p>`;
+          }
+          
+          // Escape HTML attributes
           const escapedHref = safeHref.replace(/"/g, '&quot;');
           const escapedAlt = safeAlt.replace(/"/g, '&quot;');
           const escapedTitle = safeTitle.replace(/"/g, '&quot;');
@@ -407,7 +432,13 @@ document.addEventListener('alpine:init', () => {
         return marked.parse(text, { renderer: renderer });
       } catch (error) {
         console.error('Markdown parsing error:', error);
-        return text;
+        // Fallback: try parsing without custom renderer
+        try {
+          return marked.parse(text);
+        } catch (fallbackError) {
+          console.error('Fallback parsing also failed:', fallbackError);
+          return text;
+        }
       }
     },
     
