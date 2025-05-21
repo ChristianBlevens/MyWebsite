@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     
+    <!-- Markdown parser - MUST load before Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
 	
@@ -367,7 +370,20 @@
 						<!-- Description and Details -->
 						<div class="mb-8">
 							<h3 class="text-2xl font-bold mb-4">Project Details</h3>
-							<p class="mb-6 text-gray-300" x-text="project.description"></p>
+							
+							<!-- Loading markdown indicator -->
+							<template x-if="loadingMarkdown">
+								<div class="mb-6 text-center">
+									<div class="loading-spinner mb-2"></div>
+									<p class="text-gray-400">Loading description...</p>
+								</div>
+							</template>
+							
+							<!-- Markdown content -->
+							<template x-if="!loadingMarkdown">
+								<div class="mb-6 text-gray-300 prose prose-invert max-w-none" 
+									 x-html="parseMarkdown(markdownContent)"></div>
+							</template>
 							
 							<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<div>

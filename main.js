@@ -292,6 +292,8 @@ document.addEventListener('alpine:init', () => {
     iframeLoaded: false,
     iframeHeight: 600,
     uniqueId: 1,
+    markdownContent: '',
+    loadingMarkdown: false,
     
     init() {
       // Listen for events on window instead of $root
@@ -311,7 +313,7 @@ document.addEventListener('alpine:init', () => {
         });
     },
     
-    openProjectModal(project) {
+    async openProjectModal(project) {
       console.log('Modal opening project:', project.title);
       this.project = project;
       this.isOpen = true;
@@ -330,10 +332,58 @@ document.addEventListener('alpine:init', () => {
         }
       }, 50);
       
+      // Load markdown description
+      await this.loadProjectDescription(project);
+      
       if (this.project && this.project.demoType) {
         setTimeout(() => this.createIframe(), 50);
       } else {
         this.iframeLoaded = true;
+      }
+    },
+    
+    async loadProjectDescription(project) {
+      // Check if description is a markdown filename
+      if (project.description && project.description.endsWith('.md')) {
+        this.loadingMarkdown = true;
+        try {
+          const response = await fetch(`markdown/${project.description}`);
+          if (response.ok) {
+            this.markdownContent = await response.text();
+          } else {
+            this.markdownContent = 'Description not available.';
+          }
+        } catch (error) {
+          console.error('Error loading markdown:', error);
+          this.markdownContent = 'Error loading description.';
+        }
+        this.loadingMarkdown = false;
+      } else {
+        // Use the description directly (for backwards compatibility)
+        this.markdownContent = project.description || '';
+        this.loadingMarkdown = false;
+      }
+    },
+    
+    parseMarkdown(text) {
+      if (!text || typeof marked === 'undefined') return text || '';
+      
+      try {
+        const renderer = new marked.Renderer();
+        
+        // Override image rendering to make them clickable
+        renderer.image = function(href, title, text) {
+          return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="inline-block">
+                    <img src="${href}" alt="${text}" title="${title || ''}" 
+                         class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity" 
+                         style="max-height: 400px; object-fit: contain;" />
+                  </a>`;
+        };
+        
+        return marked.parse(text, { renderer: renderer });
+      } catch (error) {
+        console.error('Markdown parsing error:', error);
+        return text;
       }
     },
     

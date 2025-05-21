@@ -28,7 +28,7 @@
         "Easy to use",
 		"Beautiful result",
       ],
-      "",
+      "christmas-lights-ai.md",
       ["Webdev", "AI", "Google Cloud Run", "Cloud Compute", "API Usage", "Javascript"],
       [
         "https://i.imgur.com/9p8linJ.png",
