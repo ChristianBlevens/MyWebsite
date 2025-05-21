@@ -385,17 +385,137 @@ document.addEventListener('alpine:init', () => {
 		  typographer: true  // Enable some language-neutral replacement + quotes beautification
 		});
 		
-		// Add the video plugin if available
-		if (typeof window.markdownitVideo !== 'undefined') {
-		  md.use(window.markdownitVideo, {
-			youtube: { width: 640, height: 390 },
-			vimeo: { width: 640, height: 360 },
-			vine: { width: 600, height: 600, embed: 'simple' },
-			prezi: { width: 550, height: 400 }
-		  });
-		} else {
-		  console.warn('markdown-it-video plugin not found');
+		// YouTube URL parser - extracts video ID from various YouTube URL formats
+		function getYoutubeId(url) {
+		  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+		  const match = url.match(regExp);
+		  return (match && match[2].length === 11) ? match[2] : null;
 		}
+
+		// Vimeo URL parser - extracts video ID from Vimeo URLs
+		function getVimeoId(url) {
+		  const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/;
+		  const match = url.match(regExp);
+		  return (match && match[5]) ? match[5] : null;
+		}
+		
+		// Custom rule for video links
+		// This will create responsive embeds for YouTube and Vimeo links that are on their own line
+		const defaultRender = md.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+		  return self.renderToken(tokens, idx, options);
+		};
+		
+		// Track if we're inside a potential video link
+		let videoUrl = null;
+		
+		// Override link_open renderer
+		md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
+		  const token = tokens[idx];
+		  const hrefIndex = token.attrIndex('href');
+		  
+		  if (hrefIndex >= 0) {
+			const href = token.attrs[hrefIndex][1];
+			
+			// Check if it's a YouTube or Vimeo URL
+			const youtubeId = getYoutubeId(href);
+			const vimeoId = getVimeoId(href);
+			
+			if (youtubeId || vimeoId) {
+			  // Store the URL for the text renderer
+			  videoUrl = {
+				url: href,
+				type: youtubeId ? 'youtube' : 'vimeo',
+				id: youtubeId || vimeoId
+			  };
+			  
+			  // Add a class to identify this as a video link
+			  token.attrPush(['class', 'video-link']);
+			}
+		  }
+		  
+		  // Use the default renderer
+		  return defaultRender(tokens, idx, options, env, self);
+		};
+		
+		// Override link_close renderer to check if we need to convert to an embed
+		const defaultLinkCloseRender = md.renderer.rules.link_close || function(tokens, idx, options, env, self) {
+		  return self.renderToken(tokens, idx, options);
+		};
+		
+		md.renderer.rules.link_close = function(tokens, idx, options, env, self) {
+		  // If we have a stored video URL and this is the matching close tag
+		  if (videoUrl) {
+			// Get the full link with text
+			const linkTextToken = tokens[idx - 1];
+			
+			// Check if link text is just the URL or looks like an embed indicator
+			const isVideoEmbed = linkTextToken && 
+								(linkTextToken.content === videoUrl.url || 
+								 linkTextToken.content.match(/^\s*(video|youtube|vimeo|watch|embed)\s*$/i));
+			
+			// Check if the link is alone in a paragraph (own line)
+			const isAloneInParagraph = (idx >= 2 && 
+									   tokens[idx - 2].type === 'paragraph_open' && 
+									   idx + 1 < tokens.length && 
+									   tokens[idx + 1].type === 'paragraph_close');
+			
+			// If it's likely meant to be an embed, replace with an iframe
+			if (isVideoEmbed || isAloneInParagraph) {
+			  // Generate embed HTML based on video type
+			  let embedHtml = '';
+			  if (videoUrl.type === 'youtube') {
+				embedHtml = `<div class="embed-responsive embed-responsive-16by9">
+							  <iframe class="embed-responsive-item" width="640" height="390" 
+									  src="https://www.youtube.com/embed/${videoUrl.id}" 
+									  frameborder="0" allowfullscreen></iframe>
+							</div>`;
+			  } else if (videoUrl.type === 'vimeo') {
+				embedHtml = `<div class="embed-responsive embed-responsive-16by9">
+							  <iframe class="embed-responsive-item" width="640" height="360" 
+									  src="https://player.vimeo.com/video/${videoUrl.id}" 
+									  frameborder="0" allowfullscreen></iframe>
+							</div>`;
+			  }
+			  
+			  // Clear stored video URL
+			  videoUrl = null;
+			  
+			  // Return the embed HTML instead of link close tag
+			  return embedHtml;
+			}
+			
+			// Clear stored video URL if not used
+			videoUrl = null;
+		  }
+		  
+		  // Use the default renderer
+		  return defaultLinkCloseRender(tokens, idx, options, env, self);
+		};
+
+		// Also support a more explicit video embedding syntax: !video[optional text](url)
+		// Similar to !image[alt](src) syntax
+		const videoRegex = /!video\[(.*?)\]\((.*?)\)(?:{(.*?)})?/g;
+		text = text.replace(videoRegex, (match, alt, url, attributes) => {
+		  const youtubeId = getYoutubeId(url);
+		  const vimeoId = getVimeoId(url);
+		  
+		  if (youtubeId) {
+			return `<div class="embed-responsive embed-responsive-16by9">
+					  <iframe class="embed-responsive-item" width="640" height="390" 
+							  src="https://www.youtube.com/embed/${youtubeId}" 
+							  frameborder="0" allowfullscreen></iframe>
+					</div>`;
+		  } else if (vimeoId) {
+			return `<div class="embed-responsive embed-responsive-16by9">
+					  <iframe class="embed-responsive-item" width="640" height="360" 
+							  src="https://player.vimeo.com/video/${vimeoId}" 
+							  frameborder="0" allowfullscreen></iframe>
+					</div>`;
+		  }
+		  
+		  // If not recognized as a video, return the original text
+		  return match;
+		});
 		
 		// Custom image renderer for better handling
 		md.renderer.rules.image = function(tokens, idx, options, env, self) {
