@@ -500,6 +500,17 @@
         templateId: "template_kpvuafn"
       }
     };
+	
+	// Ensure markdown-it-video is properly attached to the window object
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof markdownit !== 'undefined' && typeof markdownitVideo !== 'undefined') {
+      window.markdownit = markdownit;
+      window.markdownitVideo = markdownitVideo;
+      console.log('Markdown libraries loaded and attached to window');
+    } else {
+      console.warn('Markdown libraries not found');
+    }
+  });
 	</script>
 </body>
 </html>
