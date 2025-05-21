@@ -374,73 +374,59 @@ document.addEventListener('alpine:init', () => {
     },
     
     parseMarkdown(text) {
-      if (!text || typeof marked === 'undefined') return text || '';
-      
-      try {
-        // Configure marked options
-        marked.setOptions({
-          breaks: true,
-          gfm: true
-        });
-        
-        const renderer = new marked.Renderer();
-        
-        // Override image rendering with extensive debugging
-        renderer.image = function(href, title, text) {
-          console.log('Image renderer called with:', {
-            href: href,
-            hrefType: typeof href,
-            title: title,
-            titleType: typeof title,
-            text: text,
-            textType: typeof text
-          });
-          
-          // Handle the case where href might be an object or token
-          let actualHref = href;
-          if (typeof href === 'object' && href !== null) {
-            // If href is an object, try to extract the actual URL
-            actualHref = href.href || href.src || href.url || href.raw || String(href);
-            console.log('Extracted href from object:', actualHref);
-          }
-          
-          // Safely convert all inputs to strings
-          const safeHref = String(actualHref || '');
-          const safeAlt = String(text || '');
-          const safeTitle = String(title || '');
-          
-          console.log('Final safe values:', { safeHref, safeAlt, safeTitle });
-          
-          // Simple validation - if no valid URL, return basic img tag
-          if (!safeHref || safeHref === 'undefined' || safeHref === '[object Object]') {
-            console.warn('Invalid href detected, skipping image');
-            return `<p><em>Invalid image URL</em></p>`;
-          }
-          
-          // Escape HTML attributes
-          const escapedHref = safeHref.replace(/"/g, '&quot;');
-          const escapedAlt = safeAlt.replace(/"/g, '&quot;');
-          const escapedTitle = safeTitle.replace(/"/g, '&quot;');
-          
-          return `<a href="${escapedHref}" target="_blank" rel="noopener noreferrer" class="inline-block markdown-image-link">
-                    <img src="${escapedHref}" alt="${escapedAlt}" title="${escapedTitle}" 
-                         class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity markdown-image" 
-                         style="max-height: 400px; object-fit: contain; display: block; margin: 1rem 0;" />
-                  </a>`;
-        };
-        
-        return marked.parse(text, { renderer: renderer });
-      } catch (error) {
-        console.error('Markdown parsing error:', error);
-        // Fallback: try parsing without custom renderer
-        try {
-          return marked.parse(text);
-        } catch (fallbackError) {
-          console.error('Fallback parsing also failed:', fallbackError);
-          return text;
-        }
-      }
-    },
+	  if (!text || typeof window.markdownit === 'undefined') return text || '';
+	  
+	  try {
+		// Initialize markdown-it with options
+		const md = window.markdownit({
+		  html: true,        // Enable HTML tags in source
+		  breaks: true,      // Convert '\n' in paragraphs into <br>
+		  linkify: true,     // Autoconvert URL-like text to links
+		  typographer: true  // Enable some language-neutral replacement + quotes beautification
+		});
+		
+		// Add the video plugin if available
+		if (typeof window.markdownitVideo !== 'undefined') {
+		  md.use(window.markdownitVideo, {
+			youtube: { width: 640, height: 390 },
+			vimeo: { width: 640, height: 360 },
+			vine: { width: 600, height: 600, embed: 'simple' },
+			prezi: { width: 550, height: 400 }
+		  });
+		} else {
+		  console.warn('markdown-it-video plugin not found');
+		}
+		
+		// Custom image renderer for better handling
+		md.renderer.rules.image = function(tokens, idx, options, env, self) {
+		  const token = tokens[idx];
+		  const srcIndex = token.attrIndex('src');
+		  const altIndex = token.attrIndex('alt');
+		  const titleIndex = token.attrIndex('title');
+		  
+		  if (srcIndex < 0) return ''; // No source, no image
+		  
+		  const src = token.attrs[srcIndex][1];
+		  const alt = altIndex >= 0 ? token.attrs[altIndex][1] : '';
+		  const title = titleIndex >= 0 ? token.attrs[titleIndex][1] : '';
+		  
+		  console.log('Image rendering:', { src, alt, title });
+		  
+		  // Create a wrapper for the image with improved styling
+		  return `<a href="${src}" target="_blank" rel="noopener noreferrer" class="inline-block markdown-image-link">
+					<img src="${src}" alt="${alt}" title="${title}" 
+						 class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity markdown-image" 
+						 style="max-height: 400px; object-fit: contain; display: block; margin: 1rem 0;" />
+				  </a>`;
+		};
+		
+		// Render the markdown content
+		return md.render(text);
+	  } catch (error) {
+		console.error('Markdown parsing error:', error);
+		return text || '';
+	  }
+	},
     
     close() {
       this.removeIframe();
