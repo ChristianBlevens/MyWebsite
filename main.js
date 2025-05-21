@@ -391,7 +391,7 @@ document.addEventListener('alpine:init', () => {
 		  const match = url.match(regExp);
 		  return (match && match[2].length === 11) ? match[2] : null;
 		}
-
+		
 		// Vimeo URL parser - extracts video ID from Vimeo URLs
 		function getVimeoId(url) {
 		  const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/;
@@ -399,11 +399,19 @@ document.addEventListener('alpine:init', () => {
 		  return (match && match[5]) ? match[5] : null;
 		}
 		
+		// Imgur URL parser - extracts video ID from direct Imgur video links
+		function getImgurId(url) {
+		  const regExp = /^.*i\.imgur\.com\/([a-zA-Z0-9]+)\.(mp4|webm)$/;
+		  const match = url.match(regExp);
+		  return match ? match[1] : null;
+		}
+		
 		// Similar to !image[alt](src) syntax
 		const videoRegex = /!video\[(.*?)\]\((.*?)\)(?:{(.*?)})?/g;
 		text = text.replace(videoRegex, (match, alt, url, attributes) => {
 		  const youtubeId = getYoutubeId(url);
 		  const vimeoId = getVimeoId(url);
+		  const imgurId = getImgurId(url);
 		  
 		  if (youtubeId) {
 			return `<div class="embed-responsive embed-responsive-16by9">
@@ -415,6 +423,12 @@ document.addEventListener('alpine:init', () => {
 			return `<div class="embed-responsive embed-responsive-16by9">
 					  <iframe class="embed-responsive-item" width="640" height="360" 
 							  src="https://player.vimeo.com/video/${vimeoId}" 
+							  frameborder="0" allowfullscreen></iframe>
+					</div>`;
+		  } else if (imgurId) {
+			return `<div class="embed-responsive embed-responsive-16by9">
+					  <iframe class="embed-responsive-item" width="640" height="360" 
+							  src="${url}" 
 							  frameborder="0" allowfullscreen></iframe>
 					</div>`;
 		  }
