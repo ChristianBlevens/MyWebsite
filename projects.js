@@ -49,7 +49,7 @@
 		"Basic tech demo",
 		"Simple file structure"
       ],
-      "",
+      "test.md",
       ["Webdev", "API Usage", "Map Tile API", "Javascript"],
       [
 		"https://i.imgur.com/ldkbu25.png"
