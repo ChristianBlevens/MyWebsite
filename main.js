@@ -385,12 +385,17 @@ document.addEventListener('alpine:init', () => {
         
         const renderer = new marked.Renderer();
         
-        // Override image rendering to make them clickable and properly escape attributes
+        // Override image rendering to make them clickable and safely handle all input types
         renderer.image = function(href, title, text) {
+          // Safely convert all inputs to strings and handle null/undefined
+          const safeHref = String(href || '');
+          const safeAlt = String(text || '');
+          const safeTitle = String(title || '');
+          
           // Escape HTML attributes to prevent issues
-          const escapedHref = href.replace(/"/g, '&quot;');
-          const escapedAlt = (text || '').replace(/"/g, '&quot;');
-          const escapedTitle = (title || '').replace(/"/g, '&quot;');
+          const escapedHref = safeHref.replace(/"/g, '&quot;');
+          const escapedAlt = safeAlt.replace(/"/g, '&quot;');
+          const escapedTitle = safeTitle.replace(/"/g, '&quot;');
           
           return `<a href="${escapedHref}" target="_blank" rel="noopener noreferrer" class="inline-block markdown-image-link">
                     <img src="${escapedHref}" alt="${escapedAlt}" title="${escapedTitle}" 
