@@ -427,9 +427,11 @@ document.addEventListener('alpine:init', () => {
 					</div>`;
 		  } else if (imgurId) {
 			return `<div class="embed-responsive embed-responsive-16by9">
-					  <iframe class="embed-responsive-item" width="640" height="360" 
-							  src="${url}" 
-							  frameborder="0" allowfullscreen></iframe>
+					  <video class="embed-responsive-item" width="640" height="360" 
+							 controls loop muted preload="metadata">
+						<source src="${url}" type="video/mp4">
+						Your browser does not support the video tag.
+					  </video>
 					</div>`;
 		  }
 		  
