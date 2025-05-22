@@ -5,24 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Christian Blevens - Game Programmer specializing in game mechanics, systems design, and technical problem-solving">
     <title>Christian Blevens | Game Programmer</title>
-	<link rel="icon" type="image/svg" href="./favicon.svg"/>
+    <link rel="icon" type="image/svg" href="./favicon.svg"/>
 
-    <!-- Stylesheets -->
+    <!-- External Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     
-    <!-- Markdown parser -->
+    <!-- External Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
-    
-    <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 	
-	<!-- Email.js -->
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body class="text-gray-100 antialiased bg-gray-900 font-sans" x-data="portfolioApp">
-    <!-- Header with reduced size and padding -->
+    <!-- Header -->
     <header id="header" class="py-5 text-center relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-purple-900 opacity-20"></div>
         <div class="container-padded relative z-10">
@@ -31,10 +28,10 @@
         </div>
     </header>
     
-    <!-- Sticky navigation -->
+    <!-- Navigation -->
     <nav class="sticky top-0 py-4 bg-gray-900 bg-opacity-90 backdrop-filter backdrop-blur-sm z-30 shadow-md">
         <div class="container-padded">
-            <!-- Mobile menu button -->
+            <!-- Mobile Menu Button -->
             <div class="flex md:hidden justify-between items-center">
                 <button @click="mobileMenuOpen = !mobileMenuOpen" 
                         class="text-gray-100 focus:outline-none">
@@ -42,28 +39,18 @@
                 </button>
             </div>
             
-            <!-- Desktop menu - Centered -->
+            <!-- Desktop Navigation -->
             <div class="hidden md:flex justify-center">
                 <ul class="flex justify-center flex-wrap">
-					<li class="mx-4">
-						<a href="#header" class="nav-link px-4 py-2 rounded-md">Top</a>
-					</li>
-                    <li class="mx-4">
-                        <a href="#profile-pic" class="nav-link px-4 py-2 rounded-md">About</a>
-                    </li>
-					<li class="mx-4">
-                        <a href="#projects" class="nav-link px-4 py-2 rounded-md">Projects</a>
-                    </li>
-                    <li class="mx-4">
-                        <a href="#contact" class="nav-link px-4 py-2 rounded-md">Contact</a>
-                    </li>
-                    <li class="mx-4">
-                        <a href="#" @click.prevent="$dispatch('open-resume')" class="nav-link px-4 py-2 rounded-md">Resume</a>
-                    </li>
+                    <li class="mx-4"><a href="#header" class="nav-link px-4 py-2 rounded-md">Top</a></li>
+                    <li class="mx-4"><a href="#profile-pic" class="nav-link px-4 py-2 rounded-md">About</a></li>
+                    <li class="mx-4"><a href="#projects" class="nav-link px-4 py-2 rounded-md">Projects</a></li>
+                    <li class="mx-4"><a href="#contact" class="nav-link px-4 py-2 rounded-md">Contact</a></li>
+                    <li class="mx-4"><a href="#" @click.prevent="$dispatch('open-resume')" class="nav-link px-4 py-2 rounded-md">Resume</a></li>
                 </ul>
             </div>
             
-            <!-- Mobile dropdown menu -->
+            <!-- Mobile Navigation Menu -->
             <div x-data="{ closeMenu() { mobileMenuOpen = false; } }" 
                  class="md:hidden absolute top-full left-0 right-0 bg-gray-800 shadow-lg"
                  x-show="mobileMenuOpen"
@@ -75,205 +62,204 @@
                  x-transition:leave-end="opacity-0 transform -translate-y-4"
                  x-cloak>
                 <ul class="py-2">
-					<li class="block">
-						<a href="#header" @click="closeMenu()" class="block px-6 py-3 hover:bg-gray-700">Top</a>
-					</li>
-                    <li class="block">
-                        <a href="#profile-pic" @click="closeMenu()" class="block px-6 py-3 hover:bg-gray-700">About</a>
-                    </li>
-					<li class="block">
-                        <a href="#projects" @click="closeMenu()" class="block px-6 py-3 hover:bg-gray-700">Projects</a>
-                    </li>
-                    <li class="block">
-                        <a href="#contact" @click="closeMenu()" class="block px-6 py-3 hover:bg-gray-700">Contact</a>
-                    </li>
-                    <li class="block">
-                        <a href="#" @click.prevent="$dispatch('open-resume'); closeMenu()" class="block px-6 py-3 hover:bg-gray-700">Resume</a>
-                    </li>
+                    <li><a href="#header" @click="closeMenu()" class="block px-6 py-3 hover:bg-gray-700">Top</a></li>
+                    <li><a href="#profile-pic" @click="closeMenu()" class="block px-6 py-3 hover:bg-gray-700">About</a></li>
+                    <li><a href="#projects" @click="closeMenu()" class="block px-6 py-3 hover:bg-gray-700">Projects</a></li>
+                    <li><a href="#contact" @click="closeMenu()" class="block px-6 py-3 hover:bg-gray-700">Contact</a></li>
+                    <li><a href="#" @click.prevent="$dispatch('open-resume'); closeMenu()" class="block px-6 py-3 hover:bg-gray-700">Resume</a></li>
                 </ul>
             </div>
         </div>
     </nav>
     
     <main>
-        <!-- About section with background video and scroll-based fade effects -->
+        <!-- About Section with Video Background -->
         <section id="about" class="relative" x-data="scrollFadeSection">
-			<!-- Background video that loops -->
-			<div class="video-container relative w-full overflow-hidden">
-				<video autoplay muted loop playsinline class="object-cover w-full h-full"
-					  :style="`opacity: ${videoOpacity}`">
-					<source src="https://i.imgur.com/IAGSnvD.mp4" type="video/mp4">
-				</video>
-				
-				<!-- Content that fades in on scroll -->
-				<div class="absolute inset-x-0 bottom-0 w-full pb-8 z-10 max-h-full overflow-y-auto"
-					 style="opacity: 0;"
-					 :style="`opacity: ${contentOpacity}`">
-					<div class="container-padded flex flex-col items-center text-center">
-						<div id="profile-pic" class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-4 md:mb-8">
-							<img src="https://i.imgur.com/z7NBCHn.jpeg" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
-						</div>
-						<h2 class="text-4xl font-bold mb-2 md:mb-4">Game Programmer & Developer</h2>
-						<p class="text-xl max-w-3xl mb-4 md:mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
-						<a href="#contact" class="btn-primary px-8 py-3 rounded-md font-medium inline-block">Get In Touch</a>
-					</div>
-				</div>
-			</div>
-		</section>
+            <div class="video-container relative w-full overflow-hidden">
+                <video autoplay muted loop playsinline class="object-cover w-full h-full"
+                      :style="`opacity: ${videoOpacity}`">
+                    <source src="https://i.imgur.com/IAGSnvD.mp4" type="video/mp4">
+                </video>
+                
+                <div class="absolute inset-x-0 bottom-0 w-full pb-8 z-10 max-h-full overflow-y-auto"
+                     style="opacity: 0;"
+                     :style="`opacity: ${contentOpacity}`">
+                    <div class="container-padded flex flex-col items-center text-center">
+                        <div id="profile-pic" class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-4 md:mb-8">
+                            <img src="https://i.imgur.com/z7NBCHn.jpeg" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
+                        </div>
+                        <h2 class="text-4xl font-bold mb-2 md:mb-4">Game Programmer & Developer</h2>
+                        <p class="text-xl max-w-3xl mb-4 md:mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
+                        <a href="#contact" class="btn-primary px-8 py-3 rounded-md font-medium inline-block">Get In Touch</a>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-        <!-- Projects section with filtering capability -->
+        <!-- Projects Section -->
         <section id="projects" class="py-20 bg-gray-800 bg-opacity-50">
-			<div class="container-padded">
-				<h2 class="text-4xl font-bold text-center mb-8">Projects</h2>
-				
-				<!-- Project filtering options -->
-				<div x-data="projectFilters">
-					<div x-ref="filterContainer" class="flex flex-wrap justify-center mb-10 gap-2">
-						<!-- Visible filter buttons -->
-						<template x-for="option in visibleFilters" :key="option.id">
-							<button @click="setFilter(option.id)" 
-									:class="{'bg-blue-600': activeFilter === option.id, 'bg-gray-700': activeFilter !== option.id}"
-									class="filter-button px-4 py-2 rounded-md text-sm font-medium">
-								<span x-text="option.label"></span>
-							</button>
-						</template>
-						
-						<!-- More dropdown (only appears when needed) -->
-						<div x-show="overflowFilters.length > 0" class="relative">
-							<button @click="moreDropdownOpen = !moreDropdownOpen" 
-									class="filter-button px-4 py-2 rounded-md text-sm font-medium bg-gray-700 flex items-center">
-								More <i class="fas fa-chevron-down ml-2 text-xs"></i>
-							</button>
-							
-							<!-- Dropdown menu -->
-							<div x-show="moreDropdownOpen" 
-								 @click.away="moreDropdownOpen = false"
-								 x-transition:enter="transition ease-out duration-200"
-								 x-transition:enter-start="opacity-0 transform scale-95"
-								 x-transition:enter-end="opacity-100 transform scale-100"
-								 x-transition:leave="transition ease-in duration-150"
-								 x-transition:leave-start="opacity-100 transform scale-100"
-								 x-transition:leave-end="opacity-0 transform scale-95"
-								 class="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 py-1">
-								
-								<!-- Overflow filter buttons -->
-								<template x-for="option in overflowFilters" :key="option.id">
-									<button @click="setFilter(option.id)" 
-											:class="{'bg-blue-600': activeFilter === option.id, 'bg-gray-800': activeFilter !== option.id}"
-											class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
-										<span x-text="option.label"></span>
-									</button>
-								</template>
-							</div>
-						</div>
-					</div>
-					
-					<!-- Project Grid -->
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-						<template x-for="project in window.projects" :key="project.id">
-							<div x-show="activeFilter === 'all' || project.skills.includes(activeFilter)"
-							  x-transition:enter="transition ease-out duration-300"
-							  x-transition:enter-start="opacity-0 transform scale-95"
-							  x-transition:enter-end="opacity-100 transform scale-100"
-							  class="project-card rounded-lg overflow-hidden cursor-pointer"
-							  :data-project-id="project.id"
-							  @click="$dispatch('open-project', { project })">
-								<div class="h-48 bg-center bg-cover relative" :style="`background-image: url('${project.image}')`">
-									<div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
-								</div>
-								<div class="p-6">
-									<h3 class="text-xl font-bold mb-2" x-text="project.title"></h3>
-									<p class="mb-4 text-gray-300" x-text="project.summary"></p>
-									<div class="space-y-2">
-										<template x-for="feature in project.features.slice(0, 2)" :key="feature">
-											<div class="text-sm text-gray-400" x-text="`• ${feature}`"></div>
-										</template>
-									</div>
-									<div class="mt-4 flex flex-wrap gap-2 min-h-[2.75rem]" 
-										 x-data="dynamicSkillTags(project.skills)"
-										 x-init="init()">
-										
-										<!-- Show all skills that can fit -->
-										<template x-for="(skill, index) in visibleSkills" :key="index">
-											<span class="skill-tag bg-gray-800 text-xs py-1 px-2 rounded-full" x-text="skill"></span>
-										</template>
-										
-										<!-- Show remaining count if needed -->
-										<template x-if="remainingCount > 0">
-											<span class="skill-tag bg-blue-600 text-xs py-1 px-2 rounded-full" x-text="`+${remainingCount}`"></span>
-										</template>
-									</div>
-								</div>
-							</div>
-						</template>
-					</div>
-				</div>
-			</div>
-		</section>
+            <div class="container-padded">
+                <h2 class="text-4xl font-bold text-center mb-8">Projects</h2>
+                
+                <div x-data="projectFilters">
+                    <!-- Project Filter Controls -->
+                    <div x-ref="filterContainer" class="flex flex-wrap justify-center mb-10 gap-2">
+                        <!-- Visible Filters -->
+                        <template x-for="option in visibleFilters" :key="option.id">
+                            <button @click="setFilter(option.id)" 
+                                    :class="{'bg-blue-600': activeFilter === option.id, 'bg-gray-700': activeFilter !== option.id}"
+                                    class="filter-button px-4 py-2 rounded-md text-sm font-medium">
+                                <span x-text="option.label"></span>
+                            </button>
+                        </template>
+                        
+                        <!-- More Dropdown -->
+                        <div x-show="overflowFilters.length > 0" class="relative">
+                            <button @click="moreDropdownOpen = !moreDropdownOpen" 
+                                    class="filter-button px-4 py-2 rounded-md text-sm font-medium bg-gray-700 flex items-center">
+                                More <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+                            
+                            <div x-show="moreDropdownOpen" 
+                                 @click.away="moreDropdownOpen = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 transform scale-95"
+                                 x-transition:enter-end="opacity-100 transform scale-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 transform scale-100"
+                                 x-transition:leave-end="opacity-0 transform scale-95"
+                                 class="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 py-1">
+                                
+                                <template x-for="option in overflowFilters" :key="option.id">
+                                    <button @click="setFilter(option.id)" 
+                                            :class="{'bg-blue-600': activeFilter === option.id, 'bg-gray-800': activeFilter !== option.id}"
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                                        <span x-text="option.label"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                        <template x-for="project in window.projects" :key="project.id">
+                            <div x-show="activeFilter === 'all' || project.skills.includes(activeFilter)"
+                              x-transition:enter="transition ease-out duration-300"
+                              x-transition:enter-start="opacity-0 transform scale-95"
+                              x-transition:enter-end="opacity-100 transform scale-100"
+                              class="project-card rounded-lg overflow-hidden cursor-pointer"
+                              :data-project-id="project.id"
+                              @click="$dispatch('open-project', { project })">
+                                
+                                <!-- Project Image -->
+                                <div class="h-48 bg-center bg-cover relative" :style="`background-image: url('${project.image}')`">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
+                                </div>
+                                
+                                <!-- Project Content -->
+                                <div class="p-6">
+                                    <h3 class="text-xl font-bold mb-2" x-text="project.title"></h3>
+                                    <p class="mb-4 text-gray-300" x-text="project.summary"></p>
+                                    
+                                    <!-- Project Features -->
+                                    <div class="space-y-2">
+                                        <template x-for="feature in project.features.slice(0, 2)" :key="feature">
+                                            <div class="text-sm text-gray-400" x-text="`• ${feature}`"></div>
+                                        </template>
+                                    </div>
+                                    
+                                    <!-- Dynamic Skill Tags -->
+                                    <div class="mt-4 flex flex-wrap gap-2 min-h-[2.75rem]" 
+                                         x-data="dynamicSkillTags(project.skills)"
+                                         x-init="init()">
+                                        
+                                        <template x-for="(skill, index) in visibleSkills" :key="index">
+                                            <span class="skill-tag bg-gray-800 text-xs py-1 px-2 rounded-full" x-text="skill"></span>
+                                        </template>
+                                        
+                                        <template x-if="remainingCount > 0">
+                                            <span class="skill-tag bg-blue-600 text-xs py-1 px-2 rounded-full" x-text="`+${remainingCount}`"></span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-        <!-- Contact section with improved form -->
+        <!-- Contact Section -->
         <section id="contact" class="py-20">
-			<div class="container-padded text-center">
-				<h2 class="text-4xl font-bold mb-8">Get In Touch</h2>
-				<p class="text-xl max-w-3xl mx-auto mb-8">Interested in working together or have questions about my projects? Feel free to reach out!</p>
-				<form id="contactForm" class="max-w-lg mx-auto flex flex-col space-y-4" 
-					  x-data="contactForm" 
-					  @submit.prevent="handleSubmit"
-					  @keydown="handleKeydown">
-					<div class="form-control">
-						<input type="text" 
-							   x-model="formData.name" 
-							   placeholder="Your Name" 
-							   class="form-input w-full px-4 py-3 rounded-md bg-gray-700 text-white border-2 border-gray-600" 
-							   required>
-					</div>
-					<div class="form-control">
-						<input type="email" 
-							   x-model="formData.email" 
-							   placeholder="Your Email" 
-							   class="form-input w-full px-4 py-3 rounded-md bg-gray-700 text-white border-2 border-gray-600" 
-							   required>
-					</div>
-					<div class="form-control">
-						<textarea x-model="formData.message" 
-								  placeholder="Your Message" 
-								  rows="5" 
-								  class="form-input w-full px-4 py-3 rounded-md bg-gray-700 text-white border-2 border-gray-600 resize-y" 
-								  required></textarea>
-					</div>
-					<button type="submit" 
-							class="btn-primary px-8 py-3 rounded-md font-medium"
-							:disabled="submitting">
-						<span x-show="!submitting">Send Message</span>
-						<span x-show="submitting" x-cloak>
-							<i class="fas fa-circle-notch fa-spin mr-2"></i>Sending...
-						</span>
-					</button>
-					
-					<!-- Success message -->
-					<div x-show="formSubmitted" 
-						 x-transition:enter="transition ease-out duration-300"
-						 x-transition:enter-start="opacity-0 transform -translate-y-4"
-						 x-transition:enter-end="opacity-100 transform translate-y-0"
-						 class="form-success rounded-md mt-4" 
-						 x-cloak>
-						Your message has been sent successfully!
-					</div>
-					
-					<!-- Error message -->
-					<div x-show="errorMessage" 
-						 x-transition:enter="transition ease-out duration-300"
-						 x-transition:enter-start="opacity-0 transform -translate-y-4"
-						 x-transition:enter-end="opacity-100 transform translate-y-0"
-						 class="form-error rounded-md mt-4" 
-						 x-cloak>
-						<span x-text="errorMessage"></span>
-					</div>
-				</form>
-			</div>
-		</section>
+            <div class="container-padded text-center">
+                <h2 class="text-4xl font-bold mb-8">Get In Touch</h2>
+                <p class="text-xl max-w-3xl mx-auto mb-8">Interested in working together or have questions about my projects? Feel free to reach out!</p>
+                
+                <!-- Contact Form -->
+                <form id="contactForm" class="max-w-lg mx-auto flex flex-col space-y-4" 
+                      x-data="contactForm" 
+                      @submit.prevent="handleSubmit"
+                      @keydown="handleKeydown">
+                    
+                    <div class="form-control">
+                        <input type="text" 
+                               x-model="formData.name" 
+                               placeholder="Your Name" 
+                               class="form-input w-full px-4 py-3 rounded-md bg-gray-700 text-white border-2 border-gray-600" 
+                               required>
+                    </div>
+                    
+                    <div class="form-control">
+                        <input type="email" 
+                               x-model="formData.email" 
+                               placeholder="Your Email" 
+                               class="form-input w-full px-4 py-3 rounded-md bg-gray-700 text-white border-2 border-gray-600" 
+                               required>
+                    </div>
+                    
+                    <div class="form-control">
+                        <textarea x-model="formData.message" 
+                                  placeholder="Your Message" 
+                                  rows="5" 
+                                  class="form-input w-full px-4 py-3 rounded-md bg-gray-700 text-white border-2 border-gray-600 resize-y" 
+                                  required></textarea>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="btn-primary px-8 py-3 rounded-md font-medium"
+                            :disabled="submitting">
+                        <span x-show="!submitting">Send Message</span>
+                        <span x-show="submitting" x-cloak>
+                            <i class="fas fa-circle-notch fa-spin mr-2"></i>Sending...
+                        </span>
+                    </button>
+                    
+                    <!-- Success Message -->
+                    <div x-show="formSubmitted" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform -translate-y-4"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="form-success rounded-md mt-4" 
+                         x-cloak>
+                        Your message has been sent successfully!
+                    </div>
+                    
+                    <!-- Error Message -->
+                    <div x-show="errorMessage" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform -translate-y-4"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="form-error rounded-md mt-4" 
+                         x-cloak>
+                        <span x-text="errorMessage"></span>
+                    </div>
+                </form>
+            </div>
+        </section>
     </main>
     
+    <!-- Footer -->
     <footer class="bg-gray-900 py-10 text-center mt-16 border-t border-gray-800">
         <div class="container-padded">
             <div class="flex justify-center mb-6 space-x-4">
@@ -291,132 +277,132 @@
         </div>
     </footer>
     
-	<!-- Project Details Modal -->
-	<div id="projectDetails" 
-		 x-data="projectModal"
-		 x-show="isOpen" 
-		 x-transition:enter="transition ease-out duration-300"
-		 x-transition:enter-start="opacity-0"
-		 x-transition:enter-end="opacity-100"
-		 x-transition:leave="transition ease-in duration-200"
-		 x-transition:leave-start="opacity-100"
-		 x-transition:leave-end="opacity-0"
-		 class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 md:p-12"
-		 @click.self="close"
-		 x-cloak>
-		<!-- Modal container -->
-		<div class="bg-gray-800 rounded-lg overflow-auto max-h-[calc(100vh-100px)] w-full max-w-5xl mx-auto"
-			 style="max-width: 1024px; width: calc(100% - 40px);"
-			 @click.stop
-			 x-transition:enter="transition ease-out duration-300"
-			 x-transition:enter-start="opacity-0 transform scale-95"
-			 x-transition:enter-end="opacity-100 transform scale-100">
-			<!-- Close button positioned absolutely -->
-			<button class="modal-close" @click="close">&times;</button>
-			
-			<template x-if="project">
-				<div class="flex flex-col">
-					<!-- Sticky Project Title Header -->
-					<div class="project-header sticky top-0 z-20 flex items-center bg-gray-800 border-b border-gray-700 backdrop-filter backdrop-blur h-auto min-h-[60px] px-8 py-4">
-						<h2 class="text-3xl font-bold break-words max-w-[calc(100%-40px)]" x-text="project.title"></h2>
-					</div>
-					
-					<!-- Scrollable content container -->
-					<div class="p-5 md:p-8">
-						<!-- Demo Section - Only show if has demo -->
-						<div class="mb-8 rounded-md overflow-hidden bg-gray-900 border border-gray-700" x-show="hasDemo()">
-							<div class="mx-auto w-full">
-								<!-- Demo container with relative positioning -->
-								<div class="relative">
-									<!-- Size control buttons -->
-									<div class="size-controls" x-show="iframeLoaded && project.demoType !== 'external'">
-										<button @click="increaseHeight" class="size-control-btn rounded" title="Increase height">
-											<i class="fas fa-plus"></i>
-										</button>
-										<button @click="decreaseHeight" class="size-control-btn rounded" title="Decrease height">
-											<i class="fas fa-minus"></i>
-										</button>
-									</div>
-									
-									<!-- Iframe container with loading overlay -->
-									<div class="iframe-container rounded-md" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
-										<!-- Loading overlay -->
-										<div x-show="hasDemo() && !iframeLoaded" class="iframe-loading-overlay">
-											<div class="mb-4 text-center">
-												<i class="fas fa-code text-5xl mb-3"></i>
-												<p class="text-lg">Loading project demo...</p>
-											</div>
-											<div class="loading-spinner mb-4"></div>
-										</div>
-										<!-- Iframe created in JS -->
-									</div>
-								</div>
-							</div>
-						</div>
-						
-						<!-- GitHub button -->
-						<div class="mb-6 flex justify-center">
-							<a :href="getGithubUrl()" 
-							   target="_blank" 
-							   rel="noopener noreferrer" 
-							   class="github-button px-5 py-2.5 rounded-md text-base font-medium"
-							   :class="{ 'github-button-active': hasGithub(), 'github-button-disabled': !hasGithub() }"
-							   :aria-disabled="!hasGithub()">
-								<i class="fab fa-github mr-2"></i>
-								GitHub Repository
-							</a>
-						</div>
-						
-						<!-- Description and Details -->
-						<div class="mb-8">
-							<h3 class="text-2xl font-bold mb-4">Project Details</h3>
-							
-							<!-- Loading markdown indicator -->
-							<template x-if="loadingMarkdown">
-								<div class="mb-6 text-center">
-									<div class="loading-spinner mb-2"></div>
-									<p class="text-gray-400">Loading description...</p>
-								</div>
-							</template>
-							
-							<!-- Markdown content -->
-							<template x-if="!loadingMarkdown">
-								<div class="mb-6 prose prose-invert max-w-none" 
-									 x-html="parseMarkdown(markdownContent)"></div>
-							</template>
-							
-							<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<div>
-									<h4 class="text-xl font-bold mb-4">Skills & Technologies</h4>
-									<div class="flex flex-wrap gap-2 mb-6">
-										<template x-for="skill in project.skills" :key="skill">
-											<span class="skill-tag bg-gray-800 text-xs py-1 px-2 rounded-full" x-text="skill"></span>
-										</template>
-									</div>
-								</div>
-							</div>
-						</div>
-						
-						<!-- Gallery -->
-						<div x-show="project.gallery && project.gallery.length > 0">
-							<h3 class="text-2xl font-bold mb-4">Project Gallery</h3>
-							<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-								<template x-for="(image, index) in project.gallery" :key="index">
-									<div class="cursor-pointer gallery-image" @click="$dispatch('open-gallery', { image, title: project.title, index })">
-										<img :src="image" 
-											 :alt="'Project image ' + (index + 1)" 
-											 class="w-full h-48 object-cover rounded-md hover:opacity-90 transition-opacity">
-									</div>
-								</template>
-							</div>
-						</div>
-					</div>
-				</div>
-			</template>
-		</div>
-	</div>
+    <!-- Modals -->
+    <!-- Project Details Modal -->
+    <div id="projectDetails" 
+         x-data="projectModal"
+         x-show="isOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 md:p-12"
+         @click.self="close"
+         x-cloak>
+        
+        <div class="bg-gray-800 rounded-lg overflow-auto max-h-[calc(100vh-100px)] w-full max-w-5xl mx-auto"
+             style="max-width: 1024px; width: calc(100% - 40px);"
+             @click.stop
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100">
+            
+            <button class="modal-close" @click="close">&times;</button>
+            
+            <template x-if="project">
+                <div class="flex flex-col">
+                    <!-- Project Header -->
+                    <div class="project-header sticky top-0 z-20 flex items-center bg-gray-800 border-b border-gray-700 backdrop-filter backdrop-blur h-auto min-h-[60px] px-8 py-4">
+                        <h2 class="text-3xl font-bold break-words max-w-[calc(100%-40px)]" x-text="project.title"></h2>
+                    </div>
+                    
+                    <!-- Modal Content -->
+                    <div class="p-5 md:p-8">
+                        <!-- Demo Section -->
+                        <div class="mb-8 rounded-md overflow-hidden bg-gray-900 border border-gray-700" x-show="hasDemo()">
+                            <div class="mx-auto w-full">
+                                <div class="relative">
+                                    <!-- Size Controls -->
+                                    <div class="size-controls" x-show="iframeLoaded && project.demoType !== 'external'">
+                                        <button @click="increaseHeight" class="size-control-btn rounded" title="Increase height">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button @click="decreaseHeight" class="size-control-btn rounded" title="Decrease height">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Demo Container -->
+                                    <div class="iframe-container rounded-md" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
+                                        <!-- Loading Overlay -->
+                                        <div x-show="hasDemo() && !iframeLoaded" class="iframe-loading-overlay">
+                                            <div class="mb-4 text-center">
+                                                <i class="fas fa-code text-5xl mb-3"></i>
+                                                <p class="text-lg">Loading project demo...</p>
+                                            </div>
+                                            <div class="loading-spinner mb-4"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- GitHub Button -->
+                        <div class="mb-6 flex justify-center">
+                            <a :href="getGithubUrl()" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="github-button px-5 py-2.5 rounded-md text-base font-medium"
+                               :class="{ 'github-button-active': hasGithub(), 'github-button-disabled': !hasGithub() }"
+                               :aria-disabled="!hasGithub()">
+                                <i class="fab fa-github mr-2"></i>
+                                GitHub Repository
+                            </a>
+                        </div>
+                        
+                        <!-- Project Details -->
+                        <div class="mb-8">
+                            <h3 class="text-2xl font-bold mb-4">Project Details</h3>
+                            
+                            <!-- Loading Indicator -->
+                            <template x-if="loadingMarkdown">
+                                <div class="mb-6 text-center">
+                                    <div class="loading-spinner mb-2"></div>
+                                    <p class="text-gray-400">Loading description...</p>
+                                </div>
+                            </template>
+                            
+                            <!-- Markdown Content -->
+                            <template x-if="!loadingMarkdown">
+                                <div class="mb-6 prose prose-invert max-w-none" 
+                                     x-html="parseMarkdown(markdownContent)"></div>
+                            </template>
+                            
+                            <!-- Skills & Technologies -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="text-xl font-bold mb-4">Skills & Technologies</h4>
+                                    <div class="flex flex-wrap gap-2 mb-6">
+                                        <template x-for="skill in project.skills" :key="skill">
+                                            <span class="skill-tag bg-gray-800 text-xs py-1 px-2 rounded-full" x-text="skill"></span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project Gallery -->
+                        <div x-show="project.gallery && project.gallery.length > 0">
+                            <h3 class="text-2xl font-bold mb-4">Project Gallery</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <template x-for="(image, index) in project.gallery" :key="index">
+                                    <div class="cursor-pointer gallery-image" @click="$dispatch('open-gallery', { image, title: project.title, index })">
+                                        <img :src="image" 
+                                             :alt="'Project image ' + (index + 1)" 
+                                             class="w-full h-48 object-cover rounded-md hover:opacity-90 transition-opacity">
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
 
-    <!-- Gallery image modal -->
+    <!-- Gallery Modal -->
     <div x-data="galleryModal"
          x-show="isOpen" 
          x-transition:enter="transition ease-out duration-300"
@@ -447,35 +433,35 @@
          class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 md:p-12"
          @click.self="close"
          x-cloak>
-        <!-- Modal container -->
+        
         <div class="bg-white rounded-lg overflow-hidden max-w-5xl max-h-[calc(100vh-100px)] flex flex-col"
              @click.stop
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 transform scale-95"
              x-transition:enter-end="opacity-100 transform scale-100">
             
-            <!-- Resume header -->
-			<div class="sticky top-0 bg-gray-100 py-4 px-6 border-b border-gray-200 flex justify-between items-center z-30">
-				<h2 class="text-xl font-bold text-gray-800">My Resume</h2>
-				<div class="flex items-center">
-					<button @click="downloadResume()" class="text-gray-600 hover:text-gray-800 focus:outline-none mr-4" title="Download Resume">
-						<i class="fas fa-download text-xl"></i>
-					</button>
-					<button @click="close" class="text-gray-600 hover:text-gray-800 focus:outline-none" title="Close">
-						<i class="fas fa-times text-xl"></i>
-					</button>
-				</div>
-			</div>
+            <!-- Resume Header -->
+            <div class="sticky top-0 bg-gray-100 py-4 px-6 border-b border-gray-200 flex justify-between items-center z-30">
+                <h2 class="text-xl font-bold text-gray-800">My Resume</h2>
+                <div class="flex items-center">
+                    <button @click="downloadResume()" class="text-gray-600 hover:text-gray-800 focus:outline-none mr-4" title="Download Resume">
+                        <i class="fas fa-download text-xl"></i>
+                    </button>
+                    <button @click="close" class="text-gray-600 hover:text-gray-800 focus:outline-none" title="Close">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
             
-            <!-- Resume content area with overflow -->
+            <!-- Resume Content -->
             <div class="flex-grow overflow-auto relative">
-                <!-- Loading overlay -->
+                <!-- Loading Overlay -->
                 <div x-show="!resumeLoaded" class="absolute inset-0 flex flex-col items-center justify-center py-12 bg-white z-20">
                     <div class="loading-spinner mb-4"></div>
                     <p class="text-gray-700">Loading resume...</p>
                 </div>
                 
-                <!-- Google Doc iframe -->
+                <!-- Resume Iframe -->
                 <iframe x-ref="resumeFrame"
                         @load="resumeLoaded = true"
                         class="w-full h-full border-0"
@@ -486,19 +472,19 @@
         </div>
     </div>
     
-    <!-- Load JavaScript -->
+    <!-- JavaScript -->
     <script src="projects.js"></script>
     <script src="main.js"></script>
-	
-	<!-- Configuration -->
-	<script>
-	window.config = {
-      emailjs: {
-        publicKey: "8KsxmH3Rj7JplezyY",
-        serviceId: "service_ml0hcx1", 
-        templateId: "template_kpvuafn"
-      }
-    };
-	</script>
+    
+    <!-- Configuration -->
+    <script>
+        window.config = {
+            emailjs: {
+                publicKey: "8KsxmH3Rj7JplezyY",
+                serviceId: "service_ml0hcx1", 
+                templateId: "template_kpvuafn"
+            }
+        };
+    </script>
 </body>
 </html>

@@ -1,28 +1,37 @@
-/* Base styles and utilities */
+/* ========================================
+   CSS CUSTOM PROPERTIES (VARIABLES)
+   ======================================== */
 :root {
+  /* Background Colors */
   --color-bg-primary: #1f2937;
   --color-bg-secondary: #1a202c;
   --color-bg-tertiary: #374151;
   --color-bg-light: #4b5563;
   --color-bg-lighter: #6b7280;
   
+  /* Text Colors */
   --color-text-primary: #ffffff;
   --color-text-secondary: #9ca3af;
   --color-text-tertiary: #6b7280;
   --color-text-lighter: #e5e7eb;
   
+  /* Accent Colors */
   --color-accent-blue: #3b82f6;
   --color-accent-blue-dark: #2563eb;
   --color-accent-purple: #8b5cf6;
   --color-accent-success: #10b981;
   --color-accent-error: #ef4444;
   
+  /* Shared Properties */
   --transition-standard: all 0.3s ease;
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
+/* ========================================
+   BASE STYLES
+   ======================================== */
 html {
   scroll-behavior: smooth;
 }
@@ -32,7 +41,9 @@ html {
   display: none !important;
 }
 
-/* Container adjustments */
+/* ========================================
+   LAYOUT COMPONENTS
+   ======================================== */
 .container-padded {
   max-width: 1200px;
   margin: 0 auto;
@@ -40,7 +51,9 @@ html {
   padding-right: 1rem;
 }
 
-/* Custom scrollbar styling */
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -58,7 +71,9 @@ html {
   background-color: var(--color-bg-lighter);
 }
 
-/* Common UI components */
+/* ========================================
+   NAVIGATION COMPONENTS
+   ======================================== */
 .nav-link {
   transition: var(--transition-standard);
 }
@@ -67,6 +82,9 @@ html {
   background-color: var(--color-bg-tertiary);
 }
 
+/* ========================================
+   BUTTON COMPONENTS
+   ======================================== */
 .btn-primary {
   background-image: linear-gradient(to right, var(--color-accent-blue), var(--color-accent-purple));
   color: var(--color-text-primary);
@@ -84,6 +102,36 @@ html {
   transition: colors 0.2s;
 }
 
+/* GitHub Button Styles */
+.github-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-standard);
+}
+
+.github-button-active {
+  background-color: var(--color-accent-blue);
+  color: white;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+}
+
+.github-button-active:hover {
+  background-color: var(--color-accent-blue-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.github-button-disabled {
+  background-color: var(--color-bg-light);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ========================================
+   PROJECT COMPONENTS
+   ======================================== */
 .project-card {
   background-color: var(--color-bg-tertiary);
   transform: translateY(0);
@@ -100,44 +148,9 @@ html {
   background-color: var(--color-bg-secondary);
 }
 
-.social-icon {
-  color: var(--color-text-tertiary);
-  transition: color 0.3s;
-}
-
-.social-icon:hover {
-  color: var(--color-text-primary);
-}
-
-.form-input {
-  background-color: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border: 2px solid var(--color-bg-light);
-  transition: border-color 0.2s;
-}
-
-.form-input:focus {
-  border-color: var(--color-accent-blue);
-  outline: none;
-}
-
-/* Loading spinner */
-.loading-spinner {
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top: 3px solid var(--color-accent-blue);
-  width: 32px;
-  height: 32px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* About section video background */
+/* ========================================
+   ABOUT SECTION - VIDEO BACKGROUND
+   ======================================== */
 #about {
   position: relative;
   overflow: hidden;
@@ -152,7 +165,7 @@ html {
   padding: 0;
   margin: 0;
   background-color: var(--color-bg-secondary);
-  min-height: 500px; /* Set minimum height to prevent too much shrinking */
+  min-height: 500px;
 }
 
 #about video {
@@ -166,7 +179,6 @@ html {
   transition: opacity 0.5s ease;
 }
 
-/* Make sure the content doesn't overflow the container */
 #about .absolute {
   max-height: 100%;
   overflow-y: auto;
@@ -175,33 +187,42 @@ html {
   justify-content: flex-end;
 }
 
-/* Add responsive sizing for profile pic */
+/* Profile Picture Sizing */
 #profile-pic {
   margin-bottom: 8px;
 }
 
-/* Responsive profile sizing */
 #profile-pic img {
   width: 180px;
   height: 180px;
 }
 
-/* Medium-small viewport */
-@media (max-height: 700px) {
-  #profile-pic img { width: 120px; height: 120px; }
-  #about h2 { font-size: 1.75rem; margin-bottom: 0.5rem; }
-  #about p { font-size: 1rem; margin-bottom: 1rem; }
+/* ========================================
+   MODAL COMPONENTS
+   ======================================== */
+/* Modal Close Button */
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 30;
 }
 
-/* Very small viewport */
-@media (max-height: 500px) {
-  #profile-pic img { width: 80px; height: 80px; }
-  #about h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-  #about p { font-size: 0.875rem; margin-bottom: 0.5rem; }
+/* Project Modal Container */
+#projectDetails > div {
+  width: auto;
+  height: auto;
+  margin: auto;
+  max-width: calc(100vw - 100px);
+  max-height: calc(100vh - 100px);
 }
 
-/* Modal components */
-/* Iframe container */
+/* Iframe Container */
 .iframe-container {
   position: relative;
   width: 100%;
@@ -211,7 +232,7 @@ html {
   transition: height 0.3s ease;
 }
 
-/* Loading overlay */
+/* Loading Overlay */
 .iframe-loading-overlay {
   position: absolute;
   top: 0;
@@ -227,7 +248,7 @@ html {
   transition: opacity 0.5s ease;
 }
 
-/* Size control buttons */
+/* Size Control Buttons */
 .size-controls {
   position: absolute;
   top: 8px;
@@ -254,152 +275,7 @@ html {
   background-color: rgba(75, 85, 99, 0.9);
 }
 
-/* Close button */
-.modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  font-size: 1.5rem;
-  background: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-  z-index: 30;
-}
-
-/* Project modal styling */
-#projectDetails > div {
-  width: auto;
-  height: auto;
-  margin: auto;
-  max-width: calc(100vw - 100px);
-  max-height: calc(100vh - 100px);
-}
-
-/* Apply markdown styles to prose class */
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-  font-weight: bold;
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  line-height: 1.3;
-}
-
-.prose h1 { font-size: 2em; }
-.prose h2 { font-size: 1.5em; }
-.prose h3 { font-size: 1.25em; }
-.prose h4 { font-size: 1.1em; }
-
-.prose p {
-  margin-bottom: 1em;
-  line-height: 1.6;
-}
-
-.prose img {
-  margin: 1.5em 0;
-  max-width: 100%;
-  height: auto;
-}
-
-.prose code {
-  background-color: rgba(55, 65, 81, 0.5);
-  padding: 0.2em 0.4em;
-  border-radius: 0.25rem;
-  font-family: monospace;
-}
-
-.prose pre {
-  background-color: rgba(55, 65, 81, 0.5);
-  padding: 1em;
-  border-radius: 0.375rem;
-  overflow-x: auto;
-}
-
-/* Form components */
-.form-control {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-/* Form states */
-.form-success {
-  background-color: rgba(16, 185, 129, 0.2);
-  border: 1px solid var(--color-accent-success);
-  color: var(--color-accent-success);
-  padding: 0.75rem 1rem;
-  margin-top: 1rem;
-}
-
-.form-error {
-  background-color: rgba(239, 68, 68, 0.2);
-  border: 1px solid var(--color-accent-error);
-  color: var(--color-accent-error);
-  padding: 0.75rem 1rem;
-  margin-top: 1rem;
-}
-
-/* Gallery components */
-.gallery-image {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-}
-
-.gallery-image:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Resume modal styles */
-#resumeModal .bg-white {
-  width: 90%;
-  max-width: 900px;
-  height: 85vh;
-  margin: 0;
-}
-
-#resumeModal iframe {
-  background-color: #ffffff;
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-}
-
-/* Ensure content is cut at header line */
-#resumeModal .bg-white > div:first-child {
-  margin: 0;
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: var(--shadow-sm);
-}
-
-/* Remove padding to have full-width iframe */
-#resumeModal .flex-grow {
-  padding: 0;
-}
-
-/* Custom scrollbar for the resume iframe */
-#resumeModal iframe::-webkit-scrollbar {
-  width: 8px;
-}
-
-#resumeModal iframe::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
-}
-
-#resumeModal iframe::-webkit-scrollbar-thumb {
-  background-color: #c1c1c1;
-  border-radius: 0.25rem;
-}
-
-#resumeModal iframe::-webkit-scrollbar-thumb:hover {
-  background-color: #a1a1a1;
-}
-
-/* Fix loading spinner in resume modal */
-#resumeModal .loading-spinner {
-  border-top-color: var(--color-accent-blue);
-}
-
-/* External project demo styles */
+/* External Demo Styles */
 .external-demo-container {
   position: relative;
   width: 100%;
@@ -441,34 +317,211 @@ html {
   transform: translateX(-50%) translateY(0);
 }
 
-/* GitHub button styles */
-.github-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition-standard);
+/* Resume Modal Styles */
+#resumeModal .bg-white {
+  width: 90%;
+  max-width: 900px;
+  height: 85vh;
+  margin: 0;
 }
 
-.github-button-active {
-  background-color: var(--color-accent-blue);
-  color: white;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+#resumeModal iframe {
+  background-color: #ffffff;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
 }
 
-.github-button-active:hover {
-  background-color: var(--color-accent-blue-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+#resumeModal .bg-white > div:first-child {
+  margin: 0;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-sm);
 }
 
-.github-button-disabled {
-  background-color: var(--color-bg-light);
-  color: var(--color-text-secondary);
-  cursor: not-allowed;
-  box-shadow: none;
+#resumeModal .flex-grow {
+  padding: 0;
 }
 
-/* Responsive adjustments */
+/* Resume Modal Scrollbar */
+#resumeModal iframe::-webkit-scrollbar {
+  width: 8px;
+}
+
+#resumeModal iframe::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+#resumeModal iframe::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 0.25rem;
+}
+
+#resumeModal iframe::-webkit-scrollbar-thumb:hover {
+  background-color: #a1a1a1;
+}
+
+#resumeModal .loading-spinner {
+  border-top-color: var(--color-accent-blue);
+}
+
+/* ========================================
+   FORM COMPONENTS
+   ======================================== */
+.form-control {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.form-input {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-bg-light);
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--color-accent-blue);
+  outline: none;
+}
+
+/* Form State Messages */
+.form-success {
+  background-color: rgba(16, 185, 129, 0.2);
+  border: 1px solid var(--color-accent-success);
+  color: var(--color-accent-success);
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+.form-error {
+  background-color: rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--color-accent-error);
+  color: var(--color-accent-error);
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+/* ========================================
+   UTILITY COMPONENTS
+   ======================================== */
+/* Loading Spinner */
+.loading-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid var(--color-accent-blue);
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Social Icons */
+.social-icon {
+  color: var(--color-text-tertiary);
+  transition: color 0.3s;
+}
+
+.social-icon:hover {
+  color: var(--color-text-primary);
+}
+
+/* Gallery Components */
+.gallery-image {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.gallery-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   PROSE/MARKDOWN STYLING
+   ======================================== */
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  font-weight: bold;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+.prose h1 { font-size: 2em; }
+.prose h2 { font-size: 1.5em; }
+.prose h3 { font-size: 1.25em; }
+.prose h4 { font-size: 1.1em; }
+
+.prose p {
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+.prose img {
+  margin: 1.5em 0;
+  max-width: 100%;
+  height: auto;
+}
+
+.prose code {
+  background-color: rgba(55, 65, 81, 0.5);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-family: monospace;
+}
+
+.prose pre {
+  background-color: rgba(55, 65, 81, 0.5);
+  padding: 1em;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+/* Medium-Small Viewport Adjustments */
+@media (max-height: 700px) {
+  #profile-pic img { 
+    width: 120px; 
+    height: 120px; 
+  }
+  
+  #about h2 { 
+    font-size: 1.75rem; 
+    margin-bottom: 0.5rem; 
+  }
+  
+  #about p { 
+    font-size: 1rem; 
+    margin-bottom: 1rem; 
+  }
+}
+
+/* Very Small Viewport Adjustments */
+@media (max-height: 500px) {
+  #profile-pic img { 
+    width: 80px; 
+    height: 80px; 
+  }
+  
+  #about h2 { 
+    font-size: 1.5rem; 
+    margin-bottom: 0.25rem; 
+  }
+  
+  #about p { 
+    font-size: 0.875rem; 
+    margin-bottom: 0.5rem; 
+  }
+}
+
+/* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
   #projectDetails {
     padding: 16px;
@@ -488,7 +541,6 @@ html {
     height: 80vh;
   }
   
-  /* Additional responsive adjustments for external demos */
   .external-demo-container {
     padding: 0.75rem;
   }

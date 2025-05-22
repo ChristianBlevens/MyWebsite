@@ -1,5 +1,14 @@
 document.addEventListener('alpine:init', () => {
-  // Utility function for debouncing events
+  
+  // ========================================
+  // UTILITY FUNCTIONS
+  // ========================================
+  
+  /**
+   * Debounce function to limit rapid event firing
+   * @param {Function} func - Function to debounce
+   * @param {number} wait - Wait time in milliseconds
+   */
   function debounce(func, wait = 20) {
     let timeout;
     return function() {
@@ -10,84 +19,40 @@ document.addEventListener('alpine:init', () => {
     };
   }
 
-  // Create a global store for shared data
+  // ========================================
+  // GLOBAL STORE
+  // ========================================
+  
   Alpine.store('portfolio', {
     selectedProject: null
   });
   
-  // Scroll fade component for About section
-  Alpine.data('scrollFadeSection', () => ({
-    videoOpacity: 0.3,
-    contentOpacity: 1,
-    navHeight: 0,
-    profilePic: null,
-    aboutSection: null,
-    videoContainer: null,
-    
-    init() {
-      // Cache DOM elements
-      this.navHeight = document.querySelector('nav').offsetHeight || 0;
-      this.profilePic = document.getElementById('profile-pic');
-      this.aboutSection = document.getElementById('about');
-      this.videoContainer = this.aboutSection?.querySelector('.video-container');
-      
-      // Set initial state based on current scroll position
-      this.updateOpacity();
-      
-      // Add debounced scroll event listener
-      const debouncedUpdateOpacity = debounce(() => this.updateOpacity());
-      window.addEventListener('scroll', () => this.updateOpacity());//debouncedUpdateOpacity);
-      
-      // Force update after a small delay to ensure DOM is ready
-      setTimeout(() => this.updateOpacity(), 100);
-      
-      // Also update on window resize as profile picture position might change
-      window.addEventListener('resize', debouncedUpdateOpacity);
-    },
-    
-    updateOpacity() {
-      if (!this.profilePic || !this.aboutSection || !this.videoContainer) return;
-      
-      // Get profile picture position relative to the viewport
-      const profileRect = this.profilePic.getBoundingClientRect();
-      
-      // Calculate distance from the top of the viewport to profile picture (accounting for nav)
-      const distanceFromTop = profileRect.top - this.navHeight;
-      
-      // Set the trigger threshold to 400px from the top
-      const triggerThreshold = 400;
-      
-      // Calculate progress: 0 when at threshold, 1 when at top
-      const fadeProgress = distanceFromTop >= triggerThreshold ? 0 : (1 - (distanceFromTop / triggerThreshold)) * 1.25;
-      
-      // Ensure progress is between 0 and 1
-      const clampedProgress = Math.max(0, Math.min(1, fadeProgress));
-      
-      // Update opacity values
-      this.videoOpacity = Math.max(0.3, 1 - clampedProgress);
-      this.contentOpacity = Math.min(1, clampedProgress * 1.5); // Fade in content faster
-    }
-  }));
+  // ========================================
+  // MAIN APPLICATION COMPONENT
+  // ========================================
   
-  // Main application
   Alpine.data('portfolioApp', () => ({
+    // Component State
     mobileMenuOpen: false,
     projects: window.projects || [],
     navElement: null,
     
     init() {
-      // Cache DOM elements
-      this.navElement = document.querySelector('nav');
-      
-      // Setup smooth scrolling for navigation
+      this.cacheElements();
       this.setupSmoothScrolling();
-      
-      // Add global event listener for project opening
-      window.addEventListener('alpine:initialized', () => {
-        console.log('Alpine initialized, components ready');
-      });
+      this.setupGlobalListeners();
     },
     
+    /**
+     * Cache frequently accessed DOM elements
+     */
+    cacheElements() {
+      this.navElement = document.querySelector('nav');
+    },
+    
+    /**
+     * Setup smooth scrolling for anchor navigation
+     */
     setupSmoothScrolling() {
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
@@ -96,7 +61,6 @@ document.addEventListener('alpine:init', () => {
           const targetElement = document.querySelector(targetId);
           
           if (targetElement) {
-            // Use cached nav element height
             const navHeight = this.navElement.offsetHeight;
             const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight;
             
@@ -109,18 +73,105 @@ document.addEventListener('alpine:init', () => {
       });
     },
     
+    /**
+     * Setup global event listeners
+     */
+    setupGlobalListeners() {
+      window.addEventListener('alpine:initialized', () => {
+        console.log('Alpine initialized, components ready');
+      });
+    },
+    
+    /**
+     * Open project modal with given project data
+     * @param {Object} project - Project data object
+     */
     openProject(project) {
       console.log('Opening project:', project.title);
-      // Store the selected project globally
       Alpine.store('portfolio').selectedProject = project;
-      // Dispatch global event with project data
       this.$dispatch('open-project', { project });
     }
   }));
   
-  // New component for responsive filter buttons
+  // ========================================
+  // SCROLL-BASED COMPONENTS
+  // ========================================
+  
+  Alpine.data('scrollFadeSection', () => ({
+    // Opacity States
+    videoOpacity: 0.3,
+    contentOpacity: 1,
+    
+    // Cached Elements
+    navHeight: 0,
+    profilePic: null,
+    aboutSection: null,
+    videoContainer: null,
+    
+    init() {
+      this.cacheElements();
+      this.setupScrollHandling();
+      this.performInitialUpdate();
+    },
+    
+    /**
+     * Cache DOM elements for performance
+     */
+    cacheElements() {
+      this.navHeight = document.querySelector('nav').offsetHeight || 0;
+      this.profilePic = document.getElementById('profile-pic');
+      this.aboutSection = document.getElementById('about');
+      this.videoContainer = this.aboutSection?.querySelector('.video-container');
+    },
+    
+    /**
+     * Setup scroll event handling with debouncing
+     */
+    setupScrollHandling() {
+      const debouncedUpdateOpacity = debounce(() => this.updateOpacity());
+      
+      window.addEventListener('scroll', () => this.updateOpacity());
+      window.addEventListener('resize', debouncedUpdateOpacity);
+    },
+    
+    /**
+     * Perform initial opacity calculation
+     */
+    performInitialUpdate() {
+      this.updateOpacity();
+      setTimeout(() => this.updateOpacity(), 100);
+    },
+    
+    /**
+     * Calculate and update opacity values based on scroll position
+     */
+    updateOpacity() {
+      if (!this.profilePic || !this.aboutSection || !this.videoContainer) return;
+      
+      const profileRect = this.profilePic.getBoundingClientRect();
+      const distanceFromTop = profileRect.top - this.navHeight;
+      const triggerThreshold = 400;
+      
+      // Calculate fade progress (0 to 1)
+      const fadeProgress = distanceFromTop >= triggerThreshold ? 0 : (1 - (distanceFromTop / triggerThreshold)) * 1.25;
+      const clampedProgress = Math.max(0, Math.min(1, fadeProgress));
+      
+      // Update opacity values
+      this.videoOpacity = Math.max(0.3, 1 - clampedProgress);
+      this.contentOpacity = Math.min(1, clampedProgress * 1.5);
+    }
+  }));
+  
+  // ========================================
+  // PROJECT FILTERING COMPONENTS
+  // ========================================
+  
   Alpine.data('projectFilters', () => ({
+    // Filter State
     activeFilter: 'all',
+    moreDropdownOpen: false,
+    
+    // Filter Configuration
     filterOptions: [
       { id: 'all', label: 'All Projects' },
       { id: 'Webdev', label: 'Webdev' },
@@ -129,84 +180,351 @@ document.addEventListener('alpine:init', () => {
       { id: 'Data Visualization', label: 'Data Visualization' },
       { id: 'OOP', label: 'OOP' },
       { id: 'Pathfinding', label: 'Pathfinding' }
-      // Add more filter options as needed
     ],
+    
+    // Dynamic Filter Arrays
     visibleFilters: [],
     overflowFilters: [],
-    moreDropdownOpen: false,
     
     init() {
-      // Initial calculation of visible filters
+      this.setupResponsiveFilters();
+    },
+    
+    /**
+     * Setup responsive filter button handling
+     */
+    setupResponsiveFilters() {
       this.calculateVisibleFilters();
       
-      // Recalculate on window resize
       const debouncedRecalculate = debounce(() => this.calculateVisibleFilters(), 200);
       window.addEventListener('resize', debouncedRecalculate);
-      
-      // Make sure we calculate after everything is fully loaded
       window.addEventListener('load', () => this.calculateVisibleFilters());
     },
     
+    /**
+     * Calculate which filter buttons can be displayed vs overflow
+     */
     calculateVisibleFilters() {
-      // Get container width
       const containerWidth = this.$refs.filterContainer.clientWidth;
       
-      // Create a test element to measure button widths
-      const testBtn = document.createElement('button');
-      testBtn.className = 'filter-button px-4 py-2 rounded-md text-sm font-medium invisible';
-      testBtn.style.position = 'absolute';
-      document.body.appendChild(testBtn);
+      // Create test element for width measurements
+      const testBtn = this.createTestButton();
+      const moreButtonWidth = this.getMeasuredWidth(testBtn, 'More <i class="fas fa-chevron-down ml-2 text-xs"></i>') + 16;
       
-      // Estimate "More" dropdown button width
-      testBtn.innerHTML = 'More <i class="fas fa-chevron-down ml-2 text-xs"></i>';
-      const moreButtonWidth = testBtn.offsetWidth + 16; // Add margin
-      
-      // Start fresh
+      // Reset arrays
       this.visibleFilters = [];
       this.overflowFilters = [];
       
-      // Track used width
       let usedWidth = 0;
-      let needsMoreButton = false;
       
-      // For each filter option
+      // Process each filter option
       for (let i = 0; i < this.filterOptions.length; i++) {
         const option = this.filterOptions[i];
-        
-        // Measure this option's button width
-        testBtn.textContent = option.label;
-        const buttonWidth = testBtn.offsetWidth + 16; // Add margin
-        
-        // See if we need a "More" button based on remaining options
+        const buttonWidth = this.getMeasuredWidth(testBtn, option.label) + 16;
         const remainingOptions = this.filterOptions.length - i - 1;
-        needsMoreButton = remainingOptions > 0;
-        
-        // Available width (considering "More" button if needed)
+        const needsMoreButton = remainingOptions > 0;
         const availableWidth = containerWidth - (needsMoreButton ? moreButtonWidth : 0);
         
-        // If this button fits
         if (usedWidth + buttonWidth <= availableWidth) {
           this.visibleFilters.push(option);
           usedWidth += buttonWidth;
         } else {
-          // This and all remaining options go to overflow
           this.overflowFilters = this.filterOptions.slice(i);
           break;
         }
       }
       
-      // Clean up
+      this.cleanupTestButton(testBtn);
+    },
+    
+    /**
+     * Create test button element for width measurements
+     * @returns {HTMLElement} Test button element
+     */
+    createTestButton() {
+      const testBtn = document.createElement('button');
+      testBtn.className = 'filter-button px-4 py-2 rounded-md text-sm font-medium invisible';
+      testBtn.style.position = 'absolute';
+      document.body.appendChild(testBtn);
+      return testBtn;
+    },
+    
+    /**
+     * Get measured width of text in test button
+     * @param {HTMLElement} testBtn - Test button element
+     * @param {string} text - Text to measure
+     * @returns {number} Measured width in pixels
+     */
+    getMeasuredWidth(testBtn, text) {
+      testBtn.innerHTML = text;
+      return testBtn.offsetWidth;
+    },
+    
+    /**
+     * Clean up test button element
+     * @param {HTMLElement} testBtn - Test button to remove
+     */
+    cleanupTestButton(testBtn) {
       document.body.removeChild(testBtn);
     },
     
+    /**
+     * Set active filter and close dropdown
+     * @param {string} filterId - Filter ID to activate
+     */
     setFilter(filterId) {
       this.activeFilter = filterId;
       this.moreDropdownOpen = false;
     }
   }));
   
-  // Contact form component
+  Alpine.data('dynamicSkillTags', (skills) => ({
+    // Configuration
+    allSkills: skills || [],
+    maxRows: 2,
+    
+    // State
+    containerWidth: 0,
+    visibleSkills: [],
+    remainingCount: 0,
+    
+    init() {
+      this.$nextTick(() => {
+        this.measureAndUpdate();
+        this.setupResizeHandling();
+      });
+    },
+    
+    /**
+     * Setup resize event handling
+     */
+    setupResizeHandling() {
+      const debouncedResize = debounce(() => this.measureAndUpdate(), 100);
+      window.addEventListener('resize', debouncedResize);
+    },
+    
+    /**
+     * Measure container and update visible skills
+     */
+    measureAndUpdate() {
+      this.containerWidth = this.$el.clientWidth;
+      this.calculateVisibleSkills();
+    },
+    
+    /**
+     * Calculate which skills to display with multi-row support
+     */
+    calculateVisibleSkills() {
+      if (!this.allSkills || this.allSkills.length === 0) {
+        this.resetSkillDisplay();
+        return;
+      }
+      
+      const testEl = this.createTestElement();
+      const gap = 8;
+      const rows = [];
+      let currentRow = [];
+      let currentRowWidth = 0;
+      let currentRowIndex = 0;
+      
+      // Validate minimum space requirement
+      if (!this.validateMinimumSpace(testEl)) {
+        this.handleInsufficientSpace(testEl);
+        return;
+      }
+      
+      // Process each skill for multi-row layout
+      for (let i = 0; i < this.allSkills.length; i++) {
+        const skill = this.allSkills[i];
+        const skillWidth = this.measureSkillWidth(testEl, skill);
+        
+        if (this.skillFitsInCurrentRow(currentRowWidth, skillWidth)) {
+          this.addSkillToCurrentRow(currentRow, skill, skillWidth, gap);
+          currentRowWidth += skillWidth + gap;
+        } else if (this.canStartNewRow(currentRowIndex)) {
+          this.startNewRow(rows, currentRow, skill, skillWidth, gap);
+          currentRow = [skill];
+          currentRowWidth = skillWidth + gap;
+          currentRowIndex++;
+        } else {
+          this.handleRowOverflow(testEl, currentRow, i);
+          break;
+        }
+      }
+      
+      this.finalizeSkillLayout(rows, currentRow, testEl);
+    },
+    
+    /**
+     * Reset skill display to empty state
+     */
+    resetSkillDisplay() {
+      this.visibleSkills = [];
+      this.remainingCount = 0;
+    },
+    
+    /**
+     * Create test element for measurements
+     * @returns {HTMLElement} Test element
+     */
+    createTestElement() {
+      const testEl = document.createElement('span');
+      testEl.className = 'skill-tag';
+      testEl.style.position = 'absolute';
+      testEl.style.visibility = 'hidden';
+      testEl.style.whiteSpace = 'nowrap';
+      document.body.appendChild(testEl);
+      return testEl;
+    },
+    
+    /**
+     * Validate minimum space requirements
+     * @param {HTMLElement} testEl - Test element
+     * @returns {boolean} Whether minimum space is available
+     */
+    validateMinimumSpace(testEl) {
+      if (this.allSkills.length === 0) return true;
+      
+      testEl.textContent = this.allSkills[0];
+      const firstSkillWidth = testEl.offsetWidth;
+      return firstSkillWidth <= this.containerWidth;
+    },
+    
+    /**
+     * Handle insufficient space scenario
+     * @param {HTMLElement} testEl - Test element
+     */
+    handleInsufficientSpace(testEl) {
+      this.visibleSkills = [];
+      this.remainingCount = this.allSkills.length;
+      document.body.removeChild(testEl);
+    },
+    
+    /**
+     * Measure width of a skill tag
+     * @param {HTMLElement} testEl - Test element
+     * @param {string} skill - Skill text
+     * @returns {number} Width in pixels
+     */
+    measureSkillWidth(testEl, skill) {
+      testEl.textContent = skill;
+      return testEl.offsetWidth;
+    },
+    
+    /**
+     * Check if skill fits in current row
+     * @param {number} currentRowWidth - Current row width
+     * @param {number} skillWidth - Skill width
+     * @returns {boolean} Whether skill fits
+     */
+    skillFitsInCurrentRow(currentRowWidth, skillWidth) {
+      return currentRowWidth + skillWidth <= this.containerWidth;
+    },
+    
+    /**
+     * Add skill to current row (utility method for clarity)
+     * @param {Array} currentRow - Current row array
+     * @param {string} skill - Skill to add
+     * @param {number} skillWidth - Skill width
+     * @param {number} gap - Gap size
+     */
+    addSkillToCurrentRow(currentRow, skill, skillWidth, gap) {
+      currentRow.push(skill);
+    },
+    
+    /**
+     * Check if we can start a new row
+     * @param {number} currentRowIndex - Current row index
+     * @returns {boolean} Whether new row is allowed
+     */
+    canStartNewRow(currentRowIndex) {
+      return currentRowIndex < this.maxRows - 1;
+    },
+    
+    /**
+     * Start a new row
+     * @param {Array} rows - Rows array
+     * @param {Array} currentRow - Current row to save
+     * @param {string} skill - First skill for new row
+     * @param {number} skillWidth - Skill width
+     * @param {number} gap - Gap size
+     */
+    startNewRow(rows, currentRow, skill, skillWidth, gap) {
+      rows.push([...currentRow]);
+    },
+    
+    /**
+     * Handle overflow when max rows reached
+     * @param {HTMLElement} testEl - Test element
+     * @param {Array} currentRow - Current row
+     * @param {number} startIndex - Starting index for remaining skills
+     */
+    handleRowOverflow(testEl, currentRow, startIndex) {
+      const remainingCount = this.allSkills.length - startIndex;
+      testEl.textContent = `+${remainingCount}`;
+      const currentPlusTagWidth = testEl.offsetWidth;
+      
+      if (this.plusTagFitsInRow(currentRow, currentPlusTagWidth)) {
+        this.remainingCount = remainingCount;
+      } else {
+        this.adjustForPlusTag(currentRow, remainingCount);
+      }
+    },
+    
+    /**
+     * Check if plus tag fits in current row
+     * @param {Array} currentRow - Current row
+     * @param {number} plusTagWidth - Plus tag width
+     * @returns {boolean} Whether plus tag fits
+     */
+    plusTagFitsInRow(currentRow, plusTagWidth) {
+      // Simplified check - in real implementation, would measure current row width
+      return true; // Placeholder for actual width calculation
+    },
+    
+    /**
+     * Adjust row to accommodate plus tag
+     * @param {Array} currentRow - Current row to adjust
+     * @param {number} remainingCount - Count of remaining skills
+     */
+    adjustForPlusTag(currentRow, remainingCount) {
+      if (currentRow.length > 0) {
+        currentRow.pop();
+        this.remainingCount = remainingCount + 1;
+      } else {
+        this.remainingCount = remainingCount;
+      }
+    },
+    
+    /**
+     * Finalize skill layout and cleanup
+     * @param {Array} rows - All rows
+     * @param {Array} currentRow - Current row
+     * @param {HTMLElement} testEl - Test element to cleanup
+     */
+    finalizeSkillLayout(rows, currentRow, testEl) {
+      if (currentRow.length > 0 && rows.length < this.maxRows) {
+        rows.push([...currentRow]);
+      }
+      
+      document.body.removeChild(testEl);
+      
+      this.visibleSkills = rows.flat();
+      
+      if (this.visibleSkills.length === this.allSkills.length) {
+        this.remainingCount = 0;
+      } else if (this.remainingCount === 0) {
+        this.remainingCount = this.allSkills.length - this.visibleSkills.length;
+      }
+    }
+  }));
+  
+  // ========================================
+  // FORM COMPONENTS
+  // ========================================
+  
   Alpine.data('contactForm', () => ({
+    // Form State
     formData: {
       name: '',
       email: '',
@@ -217,67 +535,96 @@ document.addEventListener('alpine:init', () => {
     errorMessage: null,
     
     init() {
-      // Initialize EmailJS with your public key
-      // We use the init function to make sure EmailJS is loaded only once
+      this.initializeEmailJS();
+    },
+    
+    /**
+     * Initialize EmailJS service
+     */
+    initializeEmailJS() {
       if (window.emailjs && !window.emailjsInitialized) {
         emailjs.init(window.config.emailjs.publicKey);
         window.emailjsInitialized = true;
       }
     },
     
+    /**
+     * Handle form submission
+     */
     async handleSubmit() {
       this.submitting = true;
       this.errorMessage = null;
       
       try {
-        // Simple validation
-        if (!this.formData.name || !this.formData.email || !this.formData.message) {
-          throw new Error("Please fill out all fields");
-        }
-        
-        // Email format validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(this.formData.email)) {
-          throw new Error("Please enter a valid email address");
-        }
-        
-        // Send the email using EmailJS
-        const templateParams = {
-          from_name: this.formData.name,
-          reply_to: this.formData.email,
-          message: this.formData.message,
-          to_email: 'christianblevensroot@gmail.com'
-        };
-        
-        await emailjs.send(
-          window.config.emailjs.serviceId,
-          window.config.emailjs.templateId,
-          templateParams
-        );
-        
+        this.validateForm();
+        await this.sendEmail();
         this.resetForm();
       } catch (error) {
-        console.error("Form submission error:", error);
-        this.errorMessage = error.message || 'There was an error submitting the form. Please try again.';
+        this.handleSubmissionError(error);
       } finally {
         this.submitting = false;
       }
     },
     
+    /**
+     * Validate form data
+     * @throws {Error} Validation error
+     */
+    validateForm() {
+      if (!this.formData.name || !this.formData.email || !this.formData.message) {
+        throw new Error("Please fill out all fields");
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.formData.email)) {
+        throw new Error("Please enter a valid email address");
+      }
+    },
+    
+    /**
+     * Send email via EmailJS
+     */
+    async sendEmail() {
+      const templateParams = {
+        from_name: this.formData.name,
+        reply_to: this.formData.email,
+        message: this.formData.message,
+        to_email: 'christianblevensroot@gmail.com'
+      };
+      
+      await emailjs.send(
+        window.config.emailjs.serviceId,
+        window.config.emailjs.templateId,
+        templateParams
+      );
+    },
+    
+    /**
+     * Handle submission errors
+     * @param {Error} error - Error object
+     */
+    handleSubmissionError(error) {
+      console.error("Form submission error:", error);
+      this.errorMessage = error.message || 'There was an error submitting the form. Please try again.';
+    },
+    
+    /**
+     * Reset form after successful submission
+     */
     resetForm() {
-      // Reset form after successful submission
       this.formData = { name: '', email: '', message: '' };
       this.formSubmitted = true;
       
-      // Hide success message after 5 seconds
       setTimeout(() => {
         this.formSubmitted = false;
       }, 5000);
     },
     
-    // Add a keydown handler to support pressing Enter to submit
+    /**
+     * Handle keyboard shortcuts
+     * @param {Event} event - Keyboard event
+     */
     handleKeydown(event) {
-      // Only trigger if the Enter key is pressed and not in a textarea (where Enter should create a new line)
       if (event.key === 'Enter' && event.target.tagName.toLowerCase() !== 'textarea') {
         event.preventDefault();
         this.handleSubmit();
@@ -285,8 +632,12 @@ document.addEventListener('alpine:init', () => {
     }
   }));
   
-  // Project modal component
+  // ========================================
+  // MODAL COMPONENTS
+  // ========================================
+  
   Alpine.data('projectModal', () => ({
+    // Modal State
     isOpen: false,
     project: null,
     iframeLoaded: false,
@@ -296,43 +647,44 @@ document.addEventListener('alpine:init', () => {
     loadingMarkdown: false,
     
     init() {
-      // Listen for events on window instead of $root
-        window.addEventListener('open-project', (event) => {
-            console.log('Project modal received open event', event.detail);
-            if (event.detail && event.detail.project) {
-                this.openProjectModal(event.detail.project);
-            }
-        });
-        
-        // Keep the store watcher as a backup
-        this.$watch('$store.portfolio.selectedProject', (project) => {
-            if (project && !this.isOpen) {
-                console.log('Opening project from store:', project.title);
-                this.openProjectModal(project);
-            }
-        });
+      this.setupEventListeners();
+      this.setupStoreWatcher();
     },
     
+    /**
+     * Setup event listeners for modal opening
+     */
+    setupEventListeners() {
+      window.addEventListener('open-project', (event) => {
+        console.log('Project modal received open event', event.detail);
+        if (event.detail && event.detail.project) {
+          this.openProjectModal(event.detail.project);
+        }
+      });
+    },
+    
+    /**
+     * Setup store watcher as backup
+     */
+    setupStoreWatcher() {
+      this.$watch('$store.portfolio.selectedProject', (project) => {
+        if (project && !this.isOpen) {
+          console.log('Opening project from store:', project.title);
+          this.openProjectModal(project);
+        }
+      });
+    },
+    
+    /**
+     * Open project modal with given project
+     * @param {Object} project - Project data
+     */
     async openProjectModal(project) {
       console.log('Modal opening project:', project.title);
-      this.project = project;
-      this.isOpen = true;
-      this.iframeLoaded = false;
-      this.uniqueId = Date.now();
-      document.body.style.overflow = 'hidden';
       
-      // Reset iframe height to default
-      this.iframeHeight = 600;
+      this.initializeModalState(project);
+      this.resetModalPosition();
       
-      // Reset modal scroll position
-      setTimeout(() => {
-        const modalContainer = document.querySelector('#projectDetails > div');
-        if (modalContainer) {
-          modalContainer.scrollTop = 0;
-        }
-      }, 50);
-      
-      // Load markdown description
       await this.loadProjectDescription(project);
       
       if (this.project && this.project.demoType) {
@@ -342,143 +694,355 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
+    /**
+     * Initialize modal state
+     * @param {Object} project - Project data
+     */
+    initializeModalState(project) {
+      this.project = project;
+      this.isOpen = true;
+      this.iframeLoaded = false;
+      this.uniqueId = Date.now();
+      this.iframeHeight = 600;
+      document.body.style.overflow = 'hidden';
+    },
+    
+    /**
+     * Reset modal scroll position
+     */
+    resetModalPosition() {
+      setTimeout(() => {
+        const modalContainer = document.querySelector('#projectDetails > div');
+        if (modalContainer) {
+          modalContainer.scrollTop = 0;
+        }
+      }, 50);
+    },
+    
+    /**
+     * Load project description (markdown or direct text)
+     * @param {Object} project - Project data
+     */
     async loadProjectDescription(project) {
-      // Ensure description is a string
       const description = typeof project.description === 'string' ? project.description : '';
-      
       console.log('Loading description for project:', project.title, 'Description:', description, 'Type:', typeof project.description);
       
-      // Check if description is a markdown filename
       if (description && description.endsWith('.md')) {
-        this.loadingMarkdown = true;
-        try {
-          const fetchUrl = `markdown/${description}`;
-          console.log('Fetching markdown from:', fetchUrl);
-          const response = await fetch(fetchUrl);
-          if (response.ok) {
-            this.markdownContent = await response.text();
-          } else {
-            console.error('Failed to fetch markdown:', response.status, response.statusText);
-            this.markdownContent = 'Description not available.';
-          }
-        } catch (error) {
-          console.error('Error loading markdown:', error);
-          this.markdownContent = 'Error loading description.';
-        }
-        this.loadingMarkdown = false;
+        await this.loadMarkdownFile(description);
       } else {
-        // Use the description directly (for backwards compatibility)
         this.markdownContent = description || '';
         this.loadingMarkdown = false;
       }
     },
     
-    parseMarkdown(text) {
-	  if (!text || typeof window.markdownit === 'undefined') return text || '';
-	  
-	  try {
-		// Initialize markdown-it with options
-		const md = window.markdownit({
-		  html: true,        // Enable HTML tags in source
-		  breaks: true,      // Convert '\n' in paragraphs into <br>
-		  linkify: true,     // Autoconvert URL-like text to links
-		  typographer: true  // Enable some language-neutral replacement + quotes beautification
-		});
-		
-		// YouTube URL parser - extracts video ID from various YouTube URL formats
-		function getYoutubeId(url) {
-		  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-		  const match = url.match(regExp);
-		  return (match && match[2].length === 11) ? match[2] : null;
-		}
-		
-		// Vimeo URL parser - extracts video ID from Vimeo URLs
-		function getVimeoId(url) {
-		  const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/;
-		  const match = url.match(regExp);
-		  return (match && match[5]) ? match[5] : null;
-		}
-		
-		// Imgur URL parser - extracts video ID from direct Imgur video links
-		function getImgurId(url) {
-		  const regExp = /^.*i\.imgur\.com\/([a-zA-Z0-9]+)\.(mp4|webm)$/;
-		  const match = url.match(regExp);
-		  return match ? match[1] : null;
-		}
-		
-		// Similar to !image[alt](src) syntax
-		const videoRegex = /!video\[(.*?)\]\((.*?)\)(?:{(.*?)})?/g;
-		text = text.replace(videoRegex, (match, alt, url, attributes) => {
-		  const youtubeId = getYoutubeId(url);
-		  const vimeoId = getVimeoId(url);
-		  const imgurId = getImgurId(url);
-		  
-		  if (youtubeId) {
-			return `<div class="embed-responsive embed-responsive-16by9">
-					  <iframe class="embed-responsive-item" width="640" height="390" 
-							  src="https://www.youtube.com/embed/${youtubeId}" 
-							  frameborder="0" allowfullscreen></iframe>
-					</div>`;
-		  } else if (vimeoId) {
-			return `<div class="embed-responsive embed-responsive-16by9">
-					  <iframe class="embed-responsive-item" width="640" height="360" 
-							  src="https://player.vimeo.com/video/${vimeoId}" 
-							  frameborder="0" allowfullscreen></iframe>
-					</div>`;
-		  } else if (imgurId) {
-			return `<div class="embed-responsive embed-responsive-16by9">
-					  <video class="embed-responsive-item" width="640" height="360" 
-							 controls loop muted preload="metadata">
-						<source src="${url}" type="video/mp4">
-						Your browser does not support the video tag.
-					  </video>
-					</div>`;
-		  }
-		  
-		  // If not recognized as a video, return the original text
-		  return match;
-		});
-		
-		// Custom image renderer for better handling
-		md.renderer.rules.image = function(tokens, idx, options, env, self) {
-		  const token = tokens[idx];
-		  const srcIndex = token.attrIndex('src');
-		  const altIndex = token.attrIndex('alt');
-		  const titleIndex = token.attrIndex('title');
-		  
-		  if (srcIndex < 0) return ''; // No source, no image
-		  
-		  const src = token.attrs[srcIndex][1];
-		  const alt = altIndex >= 0 ? token.attrs[altIndex][1] : '';
-		  const title = titleIndex >= 0 ? token.attrs[titleIndex][1] : '';
-		  
-		  console.log('Image rendering:', { src, alt, title });
-		  
-		  // Create a wrapper for the image with improved styling
-		  return `<a href="${src}" target="_blank" rel="noopener noreferrer" class="inline-block markdown-image-link">
-					<img src="${src}" alt="${alt}" title="${title}" 
-						 class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity markdown-image" 
-						 style="max-height: 400px; object-fit: contain; display: block; margin: 1rem 0;" />
-				  </a>`;
-		};
-		
-		// Render the markdown content
-		return md.render(text);
-	  } catch (error) {
-		console.error('Markdown parsing error:', error);
-		return text || '';
-	  }
-	},
+    /**
+     * Load markdown file from server
+     * @param {string} filename - Markdown filename
+     */
+    async loadMarkdownFile(filename) {
+      this.loadingMarkdown = true;
+      try {
+        const fetchUrl = `markdown/${filename}`;
+        console.log('Fetching markdown from:', fetchUrl);
+        const response = await fetch(fetchUrl);
+        
+        if (response.ok) {
+          this.markdownContent = await response.text();
+        } else {
+          console.error('Failed to fetch markdown:', response.status, response.statusText);
+          this.markdownContent = 'Description not available.';
+        }
+      } catch (error) {
+        console.error('Error loading markdown:', error);
+        this.markdownContent = 'Error loading description.';
+      }
+      this.loadingMarkdown = false;
+    },
     
+    /**
+     * Parse markdown text to HTML
+     * @param {string} text - Markdown text
+     * @returns {string} HTML string
+     */
+    parseMarkdown(text) {
+      if (!text || typeof window.markdownit === 'undefined') return text || '';
+      
+      try {
+        const md = this.initializeMarkdownParser();
+        const processedText = this.preprocessMarkdown(text);
+        return md.render(processedText);
+      } catch (error) {
+        console.error('Markdown parsing error:', error);
+        return text || '';
+      }
+    },
+    
+    /**
+     * Initialize markdown parser with configuration
+     * @returns {Object} Configured markdown parser
+     */
+    initializeMarkdownParser() {
+      const md = window.markdownit({
+        html: true,
+        breaks: true,
+        linkify: true,
+        typographer: true
+      });
+      
+      // Custom image renderer
+      md.renderer.rules.image = this.createImageRenderer();
+      
+      return md;
+    },
+    
+    /**
+     * Create custom image renderer for markdown
+     * @returns {Function} Image renderer function
+     */
+    createImageRenderer() {
+      return function(tokens, idx, options, env, self) {
+        const token = tokens[idx];
+        const srcIndex = token.attrIndex('src');
+        const altIndex = token.attrIndex('alt');
+        const titleIndex = token.attrIndex('title');
+        
+        if (srcIndex < 0) return '';
+        
+        const src = token.attrs[srcIndex][1];
+        const alt = altIndex >= 0 ? token.attrs[altIndex][1] : '';
+        const title = titleIndex >= 0 ? token.attrs[titleIndex][1] : '';
+        
+        console.log('Image rendering:', { src, alt, title });
+        
+        return `<a href="${src}" target="_blank" rel="noopener noreferrer" class="inline-block markdown-image-link">
+                  <img src="${src}" alt="${alt}" title="${title}" 
+                       class="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity markdown-image" 
+                       style="max-height: 400px; object-fit: contain; display: block; margin: 1rem 0;" />
+                </a>`;
+      };
+    },
+    
+    /**
+     * Preprocess markdown text for custom video syntax
+     * @param {string} text - Raw markdown text
+     * @returns {string} Processed markdown text
+     */
+    preprocessMarkdown(text) {
+      const videoRegex = /!video\[(.*?)\]\((.*?)\)(?:{(.*?)})?/g;
+      
+      return text.replace(videoRegex, (match, alt, url, attributes) => {
+        const youtubeId = this.getYoutubeId(url);
+        const vimeoId = this.getVimeoId(url);
+        const imgurId = this.getImgurId(url);
+        
+        if (youtubeId) {
+          return this.createYouTubeEmbed(youtubeId);
+        } else if (vimeoId) {
+          return this.createVimeoEmbed(vimeoId);
+        } else if (imgurId) {
+          return this.createImgurVideoEmbed(url);
+        }
+        
+        return match;
+      });
+    },
+    
+    /**
+     * Extract YouTube video ID from URL
+     * @param {string} url - YouTube URL
+     * @returns {string|null} Video ID or null
+     */
+    getYoutubeId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    },
+    
+    /**
+     * Extract Vimeo video ID from URL
+     * @param {string} url - Vimeo URL
+     * @returns {string|null} Video ID or null
+     */
+    getVimeoId(url) {
+      const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/;
+      const match = url.match(regExp);
+      return (match && match[5]) ? match[5] : null;
+    },
+    
+    /**
+     * Extract Imgur video ID from URL
+     * @param {string} url - Imgur URL
+     * @returns {string|null} Video ID or null
+     */
+    getImgurId(url) {
+      const regExp = /^.*i\.imgur\.com\/([a-zA-Z0-9]+)\.(mp4|webm)$/;
+      const match = url.match(regExp);
+      return match ? match[1] : null;
+    },
+    
+    /**
+     * Create YouTube embed HTML
+     * @param {string} videoId - YouTube video ID
+     * @returns {string} Embed HTML
+     */
+    createYouTubeEmbed(videoId) {
+      return `<div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" width="640" height="390" 
+                        src="https://www.youtube.com/embed/${videoId}" 
+                        frameborder="0" allowfullscreen></iframe>
+              </div>`;
+    },
+    
+    /**
+     * Create Vimeo embed HTML
+     * @param {string} videoId - Vimeo video ID
+     * @returns {string} Embed HTML
+     */
+    createVimeoEmbed(videoId) {
+      return `<div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" width="640" height="360" 
+                        src="https://player.vimeo.com/video/${videoId}" 
+                        frameborder="0" allowfullscreen></iframe>
+              </div>`;
+    },
+    
+    /**
+     * Create Imgur video embed HTML
+     * @param {string} url - Imgur video URL
+     * @returns {string} Embed HTML
+     */
+    createImgurVideoEmbed(url) {
+      return `<div class="embed-responsive embed-responsive-16by9">
+                <video class="embed-responsive-item" width="640" height="360" 
+                       controls loop muted preload="metadata">
+                  <source src="${url}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>`;
+    },
+    
+    /**
+     * Close modal and cleanup
+     */
     close() {
       this.removeIframe();
       this.isOpen = false;
       document.body.style.overflow = 'auto';
-      // Clear selected project from store
       Alpine.store('portfolio').selectedProject = null;
     },
     
-    // Create a base iframe with common properties
+    /**
+     * Create iframe for project demo
+     */
+    createIframe() {
+      this.removeIframe();
+      
+      const container = this.$refs.iframeContainer;
+      if (!container) return;
+      
+      const demoTypeConfigs = this.getDemoTypeConfigs();
+      const createElementFn = demoTypeConfigs[this.project.demoType];
+      
+      if (!createElementFn) return;
+      
+      const element = createElementFn();
+      container.appendChild(element);
+      
+      this.setupIframeHandlers(element);
+    },
+    
+    /**
+     * Setup iframe event handlers
+     * @param {HTMLElement} element - Iframe or demo element
+     */
+    setupIframeHandlers(element) {
+      if (this.project.demoType !== "external") {
+        element.addEventListener('load', () => this.iframeLoaded = true);
+        element.addEventListener('error', () => this.iframeLoaded = true);
+      } else {
+        this.iframeLoaded = true;
+      }
+      
+      // Failsafe timeout
+      setTimeout(() => this.iframeLoaded = true, 8000);
+    },
+    
+    /**
+     * Remove existing iframe
+     */
+    removeIframe() {
+      const container = this.$refs.iframeContainer;
+      if (container) {
+        while (container.firstChild) {
+          container.firstChild.remove();
+        }
+      }
+    },
+    
+    /**
+     * Get demo type configuration functions
+     * @returns {Object} Configuration object with demo type handlers
+     */
+    getDemoTypeConfigs() {
+      return {
+        "external": () => this.createExternalDemo(),
+        "itch": () => this.createItchIframe(),
+        "local": () => this.createLocalIframe()
+      };
+    },
+    
+    /**
+     * Create external demo container
+     * @returns {HTMLElement} External demo container
+     */
+    createExternalDemo() {
+      const container = document.createElement('div');
+      container.className = 'external-demo-container';
+      
+      const img = document.createElement('img');
+      img.src = this.project.image;
+      img.className = 'external-demo-image';
+      img.alt = `${this.project.title} preview`;
+      
+      const linkButton = document.createElement('a');
+      linkButton.href = this.project.demoPath;
+      linkButton.target = '_blank';
+      linkButton.rel = 'noopener noreferrer';
+      linkButton.className = 'external-demo-button';
+      linkButton.textContent = 'Visit Site';
+      
+      container.appendChild(img);
+      container.appendChild(linkButton);
+      return container;
+    },
+    
+    /**
+     * Create Itch.io iframe
+     * @returns {HTMLIFrameElement} Configured iframe
+     */
+    createItchIframe() {
+      const iframe = this.createBaseIframe();
+      iframe.frameBorder = '0';
+      iframe.allowFullscreen = true;
+      iframe.style.backgroundColor = 'transparent';
+      return iframe;
+    },
+    
+    /**
+     * Create local project iframe
+     * @returns {HTMLIFrameElement} Configured iframe
+     */
+    createLocalIframe() {
+      const iframe = this.createBaseIframe();
+      iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
+      iframe.style.backgroundColor = 'white';
+      return iframe;
+    },
+    
+    /**
+     * Create base iframe with common properties
+     * @returns {HTMLIFrameElement} Base iframe element
+     */
     createBaseIframe() {
       const iframe = document.createElement('iframe');
       iframe.src = this.getIframeSrc();
@@ -491,80 +1055,10 @@ document.addEventListener('alpine:init', () => {
       return iframe;
     },
     
-    // Demo type configuration objects
-    getDemoTypeConfig() {
-	  return {
-		"external": () => {
-		  const externalContainer = document.createElement('div');
-		  externalContainer.className = 'external-demo-container';
-		  
-		  const img = document.createElement('img');
-		  img.src = this.project.image;
-		  img.className = 'external-demo-image';
-		  img.alt = `${this.project.title} preview`;
-		  
-		  const linkButton = document.createElement('a');
-		  linkButton.href = this.project.demoPath;
-		  linkButton.target = '_blank';
-		  linkButton.rel = 'noopener noreferrer';
-		  linkButton.className = 'external-demo-button';
-		  linkButton.textContent = 'Visit Site';
-		  
-		  externalContainer.appendChild(img);
-		  externalContainer.appendChild(linkButton);
-		  return externalContainer;
-		},
-		"itch": () => {
-		  const iframe = this.createBaseIframe();
-		  iframe.frameBorder = '0';
-		  iframe.allowFullscreen = true;
-		  iframe.style.backgroundColor = 'transparent';
-		  return iframe;
-		},
-		"local": () => {
-		  const iframe = this.createBaseIframe();
-		  iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
-		  iframe.style.backgroundColor = 'white';
-		  return iframe;
-		}
-	  };
-	},
-    
-    createIframe() {
-      this.removeIframe();
-      
-      const container = this.$refs.iframeContainer;
-      if (!container) return;
-      
-      const demoTypeConfigs = this.getDemoTypeConfig();
-      const createElementFn = demoTypeConfigs[this.project.demoType];
-      
-      if (!createElementFn) return;
-      
-      const element = createElementFn();
-      container.appendChild(element);
-      
-      // Common handling
-      if (this.project.demoType !== "external") {
-        element.addEventListener('load', () => this.iframeLoaded = true);
-        element.addEventListener('error', () => this.iframeLoaded = true);
-      } else {
-        this.iframeLoaded = true;
-      }
-      
-      // Failsafe for iframe loading
-      setTimeout(() => this.iframeLoaded = true, 8000);
-    },
-    
-    removeIframe() {
-      const container = this.$refs.iframeContainer;
-      if (container) {
-        while (container.firstChild) {
-          container.firstChild.remove();
-        }
-      }
-    },
-    
+    /**
+     * Get iframe source URL
+     * @returns {string} Iframe source URL
+     */
     getIframeSrc() {
       if (!this.project) return '';
       
@@ -577,16 +1071,23 @@ document.addEventListener('alpine:init', () => {
       return 'about:blank';
     },
     
+    /**
+     * Increase iframe height
+     */
     increaseHeight() {
       this.iframeHeight += 100;
     },
     
+    /**
+     * Decrease iframe height (with minimum constraint)
+     */
     decreaseHeight() {
       if (this.iframeHeight > 300) {
         this.iframeHeight -= 100;
       }
     },
     
+    // Utility Methods
     hasDemo() {
       return this.project && this.project.demoType;
     },
@@ -600,15 +1101,21 @@ document.addEventListener('alpine:init', () => {
     }
   }));
   
-  // Gallery modal component
   Alpine.data('galleryModal', () => ({
+    // Modal State
     isOpen: false,
     image: '',
     title: '',
     index: 0,
     
     init() {
-      // Listen for open-gallery events
+      this.setupEventListeners();
+    },
+    
+    /**
+     * Setup event listeners for gallery modal
+     */
+    setupEventListeners() {
       window.addEventListener('open-gallery', (event) => {
         if (event.detail) {
           this.open(event.detail.image, event.detail.title, event.detail.index);
@@ -616,6 +1123,12 @@ document.addEventListener('alpine:init', () => {
       });
     },
     
+    /**
+     * Open gallery modal
+     * @param {string} image - Image URL
+     * @param {string} title - Image title
+     * @param {number} index - Image index
+     */
     open(image, title, index) {
       this.image = image;
       this.title = title;
@@ -624,209 +1137,108 @@ document.addEventListener('alpine:init', () => {
       document.body.style.overflow = 'hidden';
     },
     
+    /**
+     * Close gallery modal
+     */
     close() {
       this.isOpen = false;
       document.body.style.overflow = 'auto';
     }
   }));
   
-  // Resume modal component
   Alpine.data('resumeModal', () => ({
+    // Modal State
     isOpen: false,
     resumeLoaded: false,
-    resumeUrl: 'https://docs.google.com/document/d/1purg7IyVGjn9Mu3oNINaXV6l9QY-MBYi_blIqYnCzNM',
     isInitialized: false,
     
+    // Configuration
+    resumeUrl: 'https://docs.google.com/document/d/1purg7IyVGjn9Mu3oNINaXV6l9QY-MBYi_blIqYnCzNM',
+    
     init() {
-      // Listen for global open-resume event
+      this.setupEventListeners();
+    },
+    
+    /**
+     * Setup event listeners for resume modal
+     */
+    setupEventListeners() {
       window.addEventListener('open-resume', () => {
         this.open();
       });
     },
     
+    /**
+     * Open resume modal
+     */
     open() {
       this.isOpen = true;
       this.resumeLoaded = false;
       document.body.style.overflow = 'hidden';
       
-      // Initialize only when first opened
+      this.performInitialSetup();
+      this.loadResumeIframe();
+    },
+    
+    /**
+     * Perform initial setup when first opened
+     */
+    performInitialSetup() {
       if (!this.isInitialized) {
         this.isInitialized = true;
         // Additional initialization can go here
       }
-      
-      // Reset iframe load state
+    },
+    
+    /**
+     * Load resume iframe with preview URL
+     */
+    loadResumeIframe() {
       if (this.$refs.resumeFrame) {
         this.$refs.resumeFrame.src = this.resumeUrl + "/preview";
       }
     },
     
+    /**
+     * Close resume modal
+     */
     close() {
       this.isOpen = false;
       document.body.style.overflow = 'auto';
     },
-	
-	downloadResume() {
-		// Google Drive export formats: 
-		// pdf, docx, txt, rtf, odt, epub, html, zip
-		const exportFormat = 'pdf';
-		const downloadUrl = `${this.resumeUrl}/export?format=${exportFormat}`;
-		
-		// Create a temporary anchor element to trigger the download
-		const tempLink = document.createElement('a');
-		tempLink.href = downloadUrl;
-		tempLink.setAttribute('download', 'Christian_Blevens_Resume.pdf');
-		tempLink.setAttribute('target', '_blank');
-		
-		// Append to body, click to trigger download, then remove
-		document.body.appendChild(tempLink);
-		tempLink.click();
-		document.body.removeChild(tempLink);
-	  }
+    
+    /**
+     * Download resume as PDF
+     */
+    downloadResume() {
+      const exportFormat = 'pdf';
+      const downloadUrl = `${this.resumeUrl}/export?format=${exportFormat}`;
+      
+      const tempLink = this.createDownloadLink(downloadUrl);
+      this.triggerDownload(tempLink);
+    },
+    
+    /**
+     * Create temporary download link
+     * @param {string} downloadUrl - Download URL
+     * @returns {HTMLAnchorElement} Temporary link element
+     */
+    createDownloadLink(downloadUrl) {
+      const tempLink = document.createElement('a');
+      tempLink.href = downloadUrl;
+      tempLink.setAttribute('download', 'Christian_Blevens_Resume.pdf');
+      tempLink.setAttribute('target', '_blank');
+      return tempLink;
+    },
+    
+    /**
+     * Trigger download and cleanup
+     * @param {HTMLAnchorElement} tempLink - Temporary link element
+     */
+    triggerDownload(tempLink) {
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+    }
   }));
-  
-  Alpine.data('dynamicSkillTags', (skills) => ({
-	  // Store the original skills array
-	  allSkills: skills || [],
-	  
-	  // State variables
-	  containerWidth: 0,
-	  visibleSkills: [],
-	  remainingCount: 0,
-	  maxRows: 2, // Allow up to 2 rows of skills (can be adjusted)
-	  
-	  // Initialize measurements and calculations
-	  init() {
-		// Initial calculation after Alpine hydrates the DOM
-		this.$nextTick(() => {
-		  this.measureAndUpdate();
-		  
-		  // Create a debounced resize handler
-		  const debouncedResize = debounce(() => this.measureAndUpdate(), 100);
-		  window.addEventListener('resize', debouncedResize);
-		});
-	  },
-	  
-	  // Measure container and calculate visible skills
-	  measureAndUpdate() {
-		// Get current container width
-		this.containerWidth = this.$el.clientWidth;
-		
-		// Calculate how many skills can fit
-		this.calculateVisibleSkills();
-	  },
-	  
-	  // Calculate which skills to show with multi-row support
-	  calculateVisibleSkills() {
-		// Guard against empty skills array
-		if (!this.allSkills || this.allSkills.length === 0) {
-		  this.visibleSkills = [];
-		  this.remainingCount = 0;
-		  return;
-		}
-		
-		// Create a hidden test element to measure skill widths
-		const testEl = document.createElement('span');
-		testEl.className = 'skill-tag';
-		testEl.style.position = 'absolute';
-		testEl.style.visibility = 'hidden';
-		testEl.style.whiteSpace = 'nowrap';
-		document.body.appendChild(testEl);
-		
-		const gap = 8; // 8px gap between tags (as specified in the div's 'gap-2' class)
-		const rows = [];
-		let currentRow = [];
-		let currentRowWidth = 0;
-		let currentRowIndex = 0;
-		
-		// Measure the "+N" tag width (we'll need this later)
-		const maxPlusNumber = this.allSkills.length;
-		testEl.textContent = `+${maxPlusNumber}`;
-		const plusTagWidth = testEl.offsetWidth;
-		
-		// First, ensure we can at least fit one skill
-		if (this.allSkills.length > 0) {
-		  // Measure first skill
-		  testEl.textContent = this.allSkills[0];
-		  const firstSkillWidth = testEl.offsetWidth;
-		  
-		  // If we can't even fit one skill, just show the count
-		  if (firstSkillWidth > this.containerWidth) {
-			this.visibleSkills = [];
-			this.remainingCount = this.allSkills.length;
-			document.body.removeChild(testEl);
-			return;
-		  }
-		}
-		
-		// Process each skill to see if it fits in the multi-row layout
-		for (let i = 0; i < this.allSkills.length; i++) {
-		  const skill = this.allSkills[i];
-		  
-		  // Measure this skill's width
-		  testEl.textContent = skill;
-		  const skillWidth = testEl.offsetWidth;
-		  
-		  // Check if this skill fits in the current row
-		  if (currentRowWidth + skillWidth <= this.containerWidth) {
-			// This skill fits in the current row
-			currentRow.push(skill);
-			currentRowWidth += skillWidth + gap;
-		  } else {
-			// This skill doesn't fit in current row - start a new row if allowed
-			if (currentRowIndex < this.maxRows - 1) {
-			  // We can start a new row
-			  rows.push([...currentRow]);
-			  currentRow = [skill];
-			  currentRowWidth = skillWidth + gap;
-			  currentRowIndex++;
-			} else {
-			  // We've reached max rows, need to consider the "+N" tag
-			  
-			  // Check if we can fit the "+N" remainder tag in the current row
-			  const remainingCount = this.allSkills.length - i;
-			  testEl.textContent = `+${remainingCount}`;
-			  const currentPlusTagWidth = testEl.offsetWidth;
-			  
-			  if (currentRowWidth + currentPlusTagWidth <= this.containerWidth) {
-				// The "+N" tag fits in the current row
-				this.remainingCount = remainingCount;
-			  } else {
-				// Need to replace the last skill with the "+N" tag
-				if (currentRow.length > 0) {
-				  // Remove the last skill to make room for the "+N" tag
-				  currentRow.pop();
-				  this.remainingCount = remainingCount + 1;
-				} else {
-				  // Edge case: empty row but still need to show remainder
-				  this.remainingCount = remainingCount;
-				}
-			  }
-			  
-			  // We've reached our limit
-			  break;
-			}
-		  }
-		}
-		
-		// Add the last row if it has content and we haven't hit the break
-		if (currentRow.length > 0 && rows.length < this.maxRows) {
-		  rows.push([...currentRow]);
-		}
-		
-		// Clean up test element
-		document.body.removeChild(testEl);
-		
-		// Flatten the rows into a single array of visible skills
-		this.visibleSkills = rows.flat();
-		
-		// If we've shown all skills, no remainder
-		if (this.visibleSkills.length === this.allSkills.length) {
-		  this.remainingCount = 0;
-		} else if (this.remainingCount === 0) {
-		  // If we haven't explicitly set a remainder but haven't shown all skills
-		  this.remainingCount = this.allSkills.length - this.visibleSkills.length;
-		}
-	  }
-	}));
 });
