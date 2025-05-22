@@ -4,11 +4,7 @@ document.addEventListener('alpine:init', () => {
   // UTILITY FUNCTIONS
   // ========================================
   
-  /**
-   * Debounce function to limit rapid event firing
-   * @param {Function} func - Function to debounce
-   * @param {number} wait - Wait time in milliseconds
-   */
+  // Debounce function to limit rapid event firing
   function debounce(func, wait = 20) {
     let timeout;
     return function() {
@@ -43,16 +39,12 @@ document.addEventListener('alpine:init', () => {
       this.setupGlobalListeners();
     },
     
-    /**
-     * Cache frequently accessed DOM elements
-     */
+    // Cache frequently accessed DOM elements
     cacheElements() {
       this.navElement = document.querySelector('nav');
     },
     
-    /**
-     * Setup smooth scrolling for anchor navigation
-     */
+    // Setup smooth scrolling for anchor navigation
     setupSmoothScrolling() {
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
@@ -73,19 +65,14 @@ document.addEventListener('alpine:init', () => {
       });
     },
     
-    /**
-     * Setup global event listeners
-     */
+    // Setup global event listeners
     setupGlobalListeners() {
       window.addEventListener('alpine:initialized', () => {
         console.log('Alpine initialized, components ready');
       });
     },
     
-    /**
-     * Open project modal with given project data
-     * @param {Object} project - Project data object
-     */
+    // Open project modal with given project data
     openProject(project) {
       console.log('Opening project:', project.title);
       Alpine.store('portfolio').selectedProject = project;
@@ -114,9 +101,7 @@ document.addEventListener('alpine:init', () => {
       this.performInitialUpdate();
     },
     
-    /**
-     * Cache DOM elements for performance
-     */
+    // Cache DOM elements for performance
     cacheElements() {
       this.navHeight = document.querySelector('nav').offsetHeight || 0;
       this.profilePic = document.getElementById('profile-pic');
@@ -124,9 +109,7 @@ document.addEventListener('alpine:init', () => {
       this.videoContainer = this.aboutSection?.querySelector('.video-container');
     },
     
-    /**
-     * Setup scroll event handling with debouncing
-     */
+    // Setup scroll event handling with debouncing
     setupScrollHandling() {
       const debouncedUpdateOpacity = debounce(() => this.updateOpacity());
       
@@ -134,17 +117,13 @@ document.addEventListener('alpine:init', () => {
       window.addEventListener('resize', debouncedUpdateOpacity);
     },
     
-    /**
-     * Perform initial opacity calculation
-     */
+    // Perform initial opacity calculation
     performInitialUpdate() {
       this.updateOpacity();
       setTimeout(() => this.updateOpacity(), 100);
     },
     
-    /**
-     * Calculate and update opacity values based on scroll position
-     */
+    // Calculate and update opacity values based on scroll position
     updateOpacity() {
       if (!this.profilePic || !this.aboutSection || !this.videoContainer) return;
       
@@ -190,9 +169,7 @@ document.addEventListener('alpine:init', () => {
       this.setupResponsiveFilters();
     },
     
-    /**
-     * Setup responsive filter button handling
-     */
+    // Setup responsive filter button handling
     setupResponsiveFilters() {
       this.calculateVisibleFilters();
       
@@ -201,9 +178,7 @@ document.addEventListener('alpine:init', () => {
       window.addEventListener('load', () => this.calculateVisibleFilters());
     },
     
-    /**
-     * Calculate which filter buttons can be displayed vs overflow
-     */
+    // Calculate which filter buttons can be displayed vs overflow
     calculateVisibleFilters() {
       const containerWidth = this.$refs.filterContainer.clientWidth;
       
@@ -237,10 +212,7 @@ document.addEventListener('alpine:init', () => {
       this.cleanupTestButton(testBtn);
     },
     
-    /**
-     * Create test button element for width measurements
-     * @returns {HTMLElement} Test button element
-     */
+    // Create test button element for width measurements
     createTestButton() {
       const testBtn = document.createElement('button');
       testBtn.className = 'filter-button px-4 py-2 rounded-md text-sm font-medium invisible';
@@ -249,29 +221,18 @@ document.addEventListener('alpine:init', () => {
       return testBtn;
     },
     
-    /**
-     * Get measured width of text in test button
-     * @param {HTMLElement} testBtn - Test button element
-     * @param {string} text - Text to measure
-     * @returns {number} Measured width in pixels
-     */
+    // Get measured width of text in test button
     getMeasuredWidth(testBtn, text) {
       testBtn.innerHTML = text;
       return testBtn.offsetWidth;
     },
     
-    /**
-     * Clean up test button element
-     * @param {HTMLElement} testBtn - Test button to remove
-     */
+    // Clean up test button element
     cleanupTestButton(testBtn) {
       document.body.removeChild(testBtn);
     },
     
-    /**
-     * Set active filter and close dropdown
-     * @param {string} filterId - Filter ID to activate
-     */
+    // Set active filter and close dropdown
     setFilter(filterId) {
       this.activeFilter = filterId;
       this.moreDropdownOpen = false;
@@ -295,25 +256,19 @@ document.addEventListener('alpine:init', () => {
       });
     },
     
-    /**
-     * Setup resize event handling
-     */
+    // Setup resize event handling
     setupResizeHandling() {
       const debouncedResize = debounce(() => this.measureAndUpdate(), 100);
       window.addEventListener('resize', debouncedResize);
     },
     
-    /**
-     * Measure container and update visible skills
-     */
+    // Measure container and update visible skills
     measureAndUpdate() {
       this.containerWidth = this.$el.clientWidth;
       this.calculateVisibleSkills();
     },
     
-    /**
-     * Calculate which skills to display with multi-row support
-     */
+    // Calculate which skills to display with multi-row support
     calculateVisibleSkills() {
       if (!this.allSkills || this.allSkills.length === 0) {
         this.resetSkillDisplay();
@@ -355,18 +310,13 @@ document.addEventListener('alpine:init', () => {
       this.finalizeSkillLayout(rows, currentRow, testEl);
     },
     
-    /**
-     * Reset skill display to empty state
-     */
+    // Reset skill display to empty state
     resetSkillDisplay() {
       this.visibleSkills = [];
       this.remainingCount = 0;
     },
     
-    /**
-     * Create test element for measurements
-     * @returns {HTMLElement} Test element
-     */
+    // Create test element for measurements
     createTestElement() {
       const testEl = document.createElement('span');
       testEl.className = 'skill-tag';
@@ -377,11 +327,7 @@ document.addEventListener('alpine:init', () => {
       return testEl;
     },
     
-    /**
-     * Validate minimum space requirements
-     * @param {HTMLElement} testEl - Test element
-     * @returns {boolean} Whether minimum space is available
-     */
+    // Validate minimum space requirements
     validateMinimumSpace(testEl) {
       if (this.allSkills.length === 0) return true;
       
@@ -390,75 +336,40 @@ document.addEventListener('alpine:init', () => {
       return firstSkillWidth <= this.containerWidth;
     },
     
-    /**
-     * Handle insufficient space scenario
-     * @param {HTMLElement} testEl - Test element
-     */
+    // Handle insufficient space scenario
     handleInsufficientSpace(testEl) {
       this.visibleSkills = [];
       this.remainingCount = this.allSkills.length;
       document.body.removeChild(testEl);
     },
     
-    /**
-     * Measure width of a skill tag
-     * @param {HTMLElement} testEl - Test element
-     * @param {string} skill - Skill text
-     * @returns {number} Width in pixels
-     */
+    // Measure width of a skill tag
     measureSkillWidth(testEl, skill) {
       testEl.textContent = skill;
       return testEl.offsetWidth;
     },
     
-    /**
-     * Check if skill fits in current row
-     * @param {number} currentRowWidth - Current row width
-     * @param {number} skillWidth - Skill width
-     * @returns {boolean} Whether skill fits
-     */
+    // Check if skill fits in current row
     skillFitsInCurrentRow(currentRowWidth, skillWidth) {
       return currentRowWidth + skillWidth <= this.containerWidth;
     },
     
-    /**
-     * Add skill to current row (utility method for clarity)
-     * @param {Array} currentRow - Current row array
-     * @param {string} skill - Skill to add
-     * @param {number} skillWidth - Skill width
-     * @param {number} gap - Gap size
-     */
+    // Add skill to current row (utility method for clarity)
     addSkillToCurrentRow(currentRow, skill, skillWidth, gap) {
       currentRow.push(skill);
     },
     
-    /**
-     * Check if we can start a new row
-     * @param {number} currentRowIndex - Current row index
-     * @returns {boolean} Whether new row is allowed
-     */
+    // Check if we can start a new row
     canStartNewRow(currentRowIndex) {
       return currentRowIndex < this.maxRows - 1;
     },
     
-    /**
-     * Start a new row
-     * @param {Array} rows - Rows array
-     * @param {Array} currentRow - Current row to save
-     * @param {string} skill - First skill for new row
-     * @param {number} skillWidth - Skill width
-     * @param {number} gap - Gap size
-     */
+    // Start a new row
     startNewRow(rows, currentRow, skill, skillWidth, gap) {
       rows.push([...currentRow]);
     },
     
-    /**
-     * Handle overflow when max rows reached
-     * @param {HTMLElement} testEl - Test element
-     * @param {Array} currentRow - Current row
-     * @param {number} startIndex - Starting index for remaining skills
-     */
+    // Handle overflow when max rows reached
     handleRowOverflow(testEl, currentRow, startIndex) {
       const remainingCount = this.allSkills.length - startIndex;
       testEl.textContent = `+${remainingCount}`;
@@ -471,22 +382,13 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Check if plus tag fits in current row
-     * @param {Array} currentRow - Current row
-     * @param {number} plusTagWidth - Plus tag width
-     * @returns {boolean} Whether plus tag fits
-     */
+    // Check if plus tag fits in current row
     plusTagFitsInRow(currentRow, plusTagWidth) {
       // Simplified check - in real implementation, would measure current row width
       return true; // Placeholder for actual width calculation
     },
     
-    /**
-     * Adjust row to accommodate plus tag
-     * @param {Array} currentRow - Current row to adjust
-     * @param {number} remainingCount - Count of remaining skills
-     */
+    // Adjust row to accommodate plus tag
     adjustForPlusTag(currentRow, remainingCount) {
       if (currentRow.length > 0) {
         currentRow.pop();
@@ -496,12 +398,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Finalize skill layout and cleanup
-     * @param {Array} rows - All rows
-     * @param {Array} currentRow - Current row
-     * @param {HTMLElement} testEl - Test element to cleanup
-     */
+    // Finalize skill layout and cleanup
     finalizeSkillLayout(rows, currentRow, testEl) {
       if (currentRow.length > 0 && rows.length < this.maxRows) {
         rows.push([...currentRow]);
@@ -538,9 +435,7 @@ document.addEventListener('alpine:init', () => {
       this.initializeEmailJS();
     },
     
-    /**
-     * Initialize EmailJS service
-     */
+    // Initialize EmailJS service
     initializeEmailJS() {
       if (window.emailjs && !window.emailjsInitialized) {
         emailjs.init(window.config.emailjs.publicKey);
@@ -548,9 +443,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Handle form submission
-     */
+    // Handle form submission
     async handleSubmit() {
       this.submitting = true;
       this.errorMessage = null;
@@ -566,10 +459,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Validate form data
-     * @throws {Error} Validation error
-     */
+    // Validate form data
     validateForm() {
       if (!this.formData.name || !this.formData.email || !this.formData.message) {
         throw new Error("Please fill out all fields");
@@ -581,9 +471,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Send email via EmailJS
-     */
+    // Send email via EmailJS
     async sendEmail() {
       const templateParams = {
         from_name: this.formData.name,
@@ -599,18 +487,13 @@ document.addEventListener('alpine:init', () => {
       );
     },
     
-    /**
-     * Handle submission errors
-     * @param {Error} error - Error object
-     */
+    // Handle submission errors
     handleSubmissionError(error) {
       console.error("Form submission error:", error);
       this.errorMessage = error.message || 'There was an error submitting the form. Please try again.';
     },
     
-    /**
-     * Reset form after successful submission
-     */
+    // Reset form after successful submission
     resetForm() {
       this.formData = { name: '', email: '', message: '' };
       this.formSubmitted = true;
@@ -620,10 +503,7 @@ document.addEventListener('alpine:init', () => {
       }, 5000);
     },
     
-    /**
-     * Handle keyboard shortcuts
-     * @param {Event} event - Keyboard event
-     */
+    // Handle keyboard shortcuts
     handleKeydown(event) {
       if (event.key === 'Enter' && event.target.tagName.toLowerCase() !== 'textarea') {
         event.preventDefault();
@@ -651,9 +531,7 @@ document.addEventListener('alpine:init', () => {
       this.setupStoreWatcher();
     },
     
-    /**
-     * Setup event listeners for modal opening
-     */
+    // Setup event listeners for modal opening
     setupEventListeners() {
       window.addEventListener('open-project', (event) => {
         console.log('Project modal received open event', event.detail);
@@ -663,9 +541,7 @@ document.addEventListener('alpine:init', () => {
       });
     },
     
-    /**
-     * Setup store watcher as backup
-     */
+    // Setup store watcher as backup
     setupStoreWatcher() {
       this.$watch('$store.portfolio.selectedProject', (project) => {
         if (project && !this.isOpen) {
@@ -675,10 +551,7 @@ document.addEventListener('alpine:init', () => {
       });
     },
     
-    /**
-     * Open project modal with given project
-     * @param {Object} project - Project data
-     */
+    // Open project modal with given project
     async openProjectModal(project) {
       console.log('Modal opening project:', project.title);
       
@@ -694,10 +567,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Initialize modal state
-     * @param {Object} project - Project data
-     */
+    // Initialize modal state
     initializeModalState(project) {
       this.project = project;
       this.isOpen = true;
@@ -707,9 +577,7 @@ document.addEventListener('alpine:init', () => {
       document.body.style.overflow = 'hidden';
     },
     
-    /**
-     * Reset modal scroll position
-     */
+    // Reset modal scroll position
     resetModalPosition() {
       setTimeout(() => {
         const modalContainer = document.querySelector('#projectDetails > div');
@@ -719,10 +587,7 @@ document.addEventListener('alpine:init', () => {
       }, 50);
     },
     
-    /**
-     * Load project description (markdown or direct text)
-     * @param {Object} project - Project data
-     */
+    // Load project description (markdown or direct text)
     async loadProjectDescription(project) {
       const description = typeof project.description === 'string' ? project.description : '';
       console.log('Loading description for project:', project.title, 'Description:', description, 'Type:', typeof project.description);
@@ -735,10 +600,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Load markdown file from server
-     * @param {string} filename - Markdown filename
-     */
+    // Load markdown file from server
     async loadMarkdownFile(filename) {
       this.loadingMarkdown = true;
       try {
@@ -759,11 +621,7 @@ document.addEventListener('alpine:init', () => {
       this.loadingMarkdown = false;
     },
     
-    /**
-     * Parse markdown text to HTML
-     * @param {string} text - Markdown text
-     * @returns {string} HTML string
-     */
+    // Parse markdown text to HTML
     parseMarkdown(text) {
       if (!text || typeof window.markdownit === 'undefined') return text || '';
       
@@ -777,10 +635,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Initialize markdown parser with configuration
-     * @returns {Object} Configured markdown parser
-     */
+    // Initialize markdown parser with configuration
     initializeMarkdownParser() {
       const md = window.markdownit({
         html: true,
@@ -795,10 +650,7 @@ document.addEventListener('alpine:init', () => {
       return md;
     },
     
-    /**
-     * Create custom image renderer for markdown
-     * @returns {Function} Image renderer function
-     */
+    // Create custom image renderer for markdown
     createImageRenderer() {
       return function(tokens, idx, options, env, self) {
         const token = tokens[idx];
@@ -822,11 +674,7 @@ document.addEventListener('alpine:init', () => {
       };
     },
     
-    /**
-     * Preprocess markdown text for custom video syntax
-     * @param {string} text - Raw markdown text
-     * @returns {string} Processed markdown text
-     */
+    // Preprocess markdown text for custom video syntax
     preprocessMarkdown(text) {
       const videoRegex = /!video\[(.*?)\]\((.*?)\)(?:{(.*?)})?/g;
       
@@ -847,44 +695,28 @@ document.addEventListener('alpine:init', () => {
       });
     },
     
-    /**
-     * Extract YouTube video ID from URL
-     * @param {string} url - YouTube URL
-     * @returns {string|null} Video ID or null
-     */
+    // Extract YouTube video ID from URL
     getYoutubeId(url) {
       const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
       const match = url.match(regExp);
       return (match && match[2].length === 11) ? match[2] : null;
     },
     
-    /**
-     * Extract Vimeo video ID from URL
-     * @param {string} url - Vimeo URL
-     * @returns {string|null} Video ID or null
-     */
+    // Extract Vimeo video ID from URL
     getVimeoId(url) {
       const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/;
       const match = url.match(regExp);
       return (match && match[5]) ? match[5] : null;
     },
     
-    /**
-     * Extract Imgur video ID from URL
-     * @param {string} url - Imgur URL
-     * @returns {string|null} Video ID or null
-     */
+    // Extract Imgur video ID from URL
     getImgurId(url) {
       const regExp = /^.*i\.imgur\.com\/([a-zA-Z0-9]+)\.(mp4|webm)$/;
       const match = url.match(regExp);
       return match ? match[1] : null;
     },
     
-    /**
-     * Create YouTube embed HTML
-     * @param {string} videoId - YouTube video ID
-     * @returns {string} Embed HTML
-     */
+    // Create YouTube embed HTML
     createYouTubeEmbed(videoId) {
       return `<div class="embed-responsive embed-responsive-16by9">
                 <iframe class="embed-responsive-item" width="640" height="390" 
@@ -893,11 +725,7 @@ document.addEventListener('alpine:init', () => {
               </div>`;
     },
     
-    /**
-     * Create Vimeo embed HTML
-     * @param {string} videoId - Vimeo video ID
-     * @returns {string} Embed HTML
-     */
+    // Create Vimeo embed HTML
     createVimeoEmbed(videoId) {
       return `<div class="embed-responsive embed-responsive-16by9">
                 <iframe class="embed-responsive-item" width="640" height="360" 
@@ -906,11 +734,7 @@ document.addEventListener('alpine:init', () => {
               </div>`;
     },
     
-    /**
-     * Create Imgur video embed HTML
-     * @param {string} url - Imgur video URL
-     * @returns {string} Embed HTML
-     */
+    // Create Imgur video embed HTML
     createImgurVideoEmbed(url) {
       return `<div class="embed-responsive embed-responsive-16by9">
                 <video class="embed-responsive-item" width="640" height="360" 
@@ -921,9 +745,7 @@ document.addEventListener('alpine:init', () => {
               </div>`;
     },
     
-    /**
-     * Close modal and cleanup
-     */
+    // Close modal and cleanup
     close() {
       this.removeIframe();
       this.isOpen = false;
@@ -931,9 +753,7 @@ document.addEventListener('alpine:init', () => {
       Alpine.store('portfolio').selectedProject = null;
     },
     
-    /**
-     * Create iframe for project demo
-     */
+    // Create iframe for project demo
     createIframe() {
       this.removeIframe();
       
@@ -951,10 +771,7 @@ document.addEventListener('alpine:init', () => {
       this.setupIframeHandlers(element);
     },
     
-    /**
-     * Setup iframe event handlers
-     * @param {HTMLElement} element - Iframe or demo element
-     */
+    // Setup iframe event handlers
     setupIframeHandlers(element) {
       if (this.project.demoType !== "external") {
         element.addEventListener('load', () => this.iframeLoaded = true);
@@ -967,9 +784,7 @@ document.addEventListener('alpine:init', () => {
       setTimeout(() => this.iframeLoaded = true, 8000);
     },
     
-    /**
-     * Remove existing iframe
-     */
+    // Remove existing iframe
     removeIframe() {
       const container = this.$refs.iframeContainer;
       if (container) {
@@ -979,10 +794,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Get demo type configuration functions
-     * @returns {Object} Configuration object with demo type handlers
-     */
+    // Get demo type configuration functions
     getDemoTypeConfigs() {
       return {
         "external": () => this.createExternalDemo(),
@@ -991,10 +803,7 @@ document.addEventListener('alpine:init', () => {
       };
     },
     
-    /**
-     * Create external demo container
-     * @returns {HTMLElement} External demo container
-     */
+    // Create external demo container
     createExternalDemo() {
       const container = document.createElement('div');
       container.className = 'external-demo-container';
@@ -1016,10 +825,7 @@ document.addEventListener('alpine:init', () => {
       return container;
     },
     
-    /**
-     * Create Itch.io iframe
-     * @returns {HTMLIFrameElement} Configured iframe
-     */
+    // Create Itch.io iframe
     createItchIframe() {
       const iframe = this.createBaseIframe();
       iframe.frameBorder = '0';
@@ -1028,10 +834,7 @@ document.addEventListener('alpine:init', () => {
       return iframe;
     },
     
-    /**
-     * Create local project iframe
-     * @returns {HTMLIFrameElement} Configured iframe
-     */
+    // Create local project iframe
     createLocalIframe() {
       const iframe = this.createBaseIframe();
       iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
@@ -1039,10 +842,7 @@ document.addEventListener('alpine:init', () => {
       return iframe;
     },
     
-    /**
-     * Create base iframe with common properties
-     * @returns {HTMLIFrameElement} Base iframe element
-     */
+    // Create base iframe with common properties
     createBaseIframe() {
       const iframe = document.createElement('iframe');
       iframe.src = this.getIframeSrc();
@@ -1055,10 +855,7 @@ document.addEventListener('alpine:init', () => {
       return iframe;
     },
     
-    /**
-     * Get iframe source URL
-     * @returns {string} Iframe source URL
-     */
+    // Get iframe source URL
     getIframeSrc() {
       if (!this.project) return '';
       
@@ -1071,16 +868,12 @@ document.addEventListener('alpine:init', () => {
       return 'about:blank';
     },
     
-    /**
-     * Increase iframe height
-     */
+    // Increase iframe height
     increaseHeight() {
       this.iframeHeight += 100;
     },
     
-    /**
-     * Decrease iframe height (with minimum constraint)
-     */
+    // Decrease iframe height (with minimum constraint)
     decreaseHeight() {
       if (this.iframeHeight > 300) {
         this.iframeHeight -= 100;
@@ -1112,9 +905,7 @@ document.addEventListener('alpine:init', () => {
       this.setupEventListeners();
     },
     
-    /**
-     * Setup event listeners for gallery modal
-     */
+    // Setup event listeners for gallery modal
     setupEventListeners() {
       window.addEventListener('open-gallery', (event) => {
         if (event.detail) {
@@ -1123,12 +914,7 @@ document.addEventListener('alpine:init', () => {
       });
     },
     
-    /**
-     * Open gallery modal
-     * @param {string} image - Image URL
-     * @param {string} title - Image title
-     * @param {number} index - Image index
-     */
+    // Open gallery modal
     open(image, title, index) {
       this.image = image;
       this.title = title;
@@ -1137,9 +923,7 @@ document.addEventListener('alpine:init', () => {
       document.body.style.overflow = 'hidden';
     },
     
-    /**
-     * Close gallery modal
-     */
+    // Close gallery modal
     close() {
       this.isOpen = false;
       document.body.style.overflow = 'auto';
@@ -1159,18 +943,14 @@ document.addEventListener('alpine:init', () => {
       this.setupEventListeners();
     },
     
-    /**
-     * Setup event listeners for resume modal
-     */
+    // Setup event listeners for resume modal
     setupEventListeners() {
       window.addEventListener('open-resume', () => {
         this.open();
       });
     },
     
-    /**
-     * Open resume modal
-     */
+    // Open resume modal
     open() {
       this.isOpen = true;
       this.resumeLoaded = false;
@@ -1180,9 +960,7 @@ document.addEventListener('alpine:init', () => {
       this.loadResumeIframe();
     },
     
-    /**
-     * Perform initial setup when first opened
-     */
+    // Perform initial setup when first opened
     performInitialSetup() {
       if (!this.isInitialized) {
         this.isInitialized = true;
@@ -1190,26 +968,20 @@ document.addEventListener('alpine:init', () => {
       }
     },
     
-    /**
-     * Load resume iframe with preview URL
-     */
+    // Load resume iframe with preview URL
     loadResumeIframe() {
       if (this.$refs.resumeFrame) {
         this.$refs.resumeFrame.src = this.resumeUrl + "/preview";
       }
     },
     
-    /**
-     * Close resume modal
-     */
+    // Close resume modal
     close() {
       this.isOpen = false;
       document.body.style.overflow = 'auto';
     },
     
-    /**
-     * Download resume as PDF
-     */
+    // Download resume as PDF
     downloadResume() {
       const exportFormat = 'pdf';
       const downloadUrl = `${this.resumeUrl}/export?format=${exportFormat}`;
@@ -1218,11 +990,7 @@ document.addEventListener('alpine:init', () => {
       this.triggerDownload(tempLink);
     },
     
-    /**
-     * Create temporary download link
-     * @param {string} downloadUrl - Download URL
-     * @returns {HTMLAnchorElement} Temporary link element
-     */
+    // Create temporary download link
     createDownloadLink(downloadUrl) {
       const tempLink = document.createElement('a');
       tempLink.href = downloadUrl;
@@ -1231,10 +999,7 @@ document.addEventListener('alpine:init', () => {
       return tempLink;
     },
     
-    /**
-     * Trigger download and cleanup
-     * @param {HTMLAnchorElement} tempLink - Temporary link element
-     */
+    // Trigger download and cleanup
     triggerDownload(tempLink) {
       document.body.appendChild(tempLink);
       tempLink.click();
