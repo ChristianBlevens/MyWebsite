@@ -34,8 +34,8 @@
         "https://i.imgur.com/m0Wfsrh.png"
       ],
       "online",
-      "https://christianblevens.github.io/FullWebAddSplineToPictureThenAI/",
-      "https://github.com/ChristianBlevens/FullWebAddSplineToPictureThenAI"
+      "https://christianblevens.github.io/AddSplineToPictureThenAIWebApp/",
+      "https://github.com/ChristianBlevens/AddSplineToPictureThenAIWebApp"
     ),
 	
 	createProject(
@@ -70,8 +70,8 @@
         "https://i.imgur.com/ldkbu25.png"
       ],
       "online",
-      "https://christianblevens.github.io/RoofAreaCalculator/",
-      "https://github.com/ChristianBlevens/RoofAreaCalculator"
+      "https://christianblevens.github.io/RoofAreaCalculatorWebApp/",
+      "https://github.com/ChristianBlevens/RoofAreaCalculatorWebApp"
     ),
     
     createProject(
