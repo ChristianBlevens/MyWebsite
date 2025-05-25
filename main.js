@@ -798,8 +798,7 @@ document.addEventListener('alpine:init', () => {
     getDemoTypeConfigs() {
       return {
         "external": () => this.createExternalDemo(),
-        "itch": () => this.createItchIframe(),
-        "local": () => this.createLocalIframe()
+        "online": () => this.createOnlineIframe(),
       };
     },
     
@@ -825,23 +824,15 @@ document.addEventListener('alpine:init', () => {
       return container;
     },
     
-    // Create Itch.io iframe
-    createItchIframe() {
+    // Create online iframe
+    createOnlineIframe() {
       const iframe = this.createBaseIframe();
       iframe.frameBorder = '0';
       iframe.allowFullscreen = true;
       iframe.style.backgroundColor = 'transparent';
       return iframe;
     },
-    
-    // Create local project iframe
-    createLocalIframe() {
-      const iframe = this.createBaseIframe();
-      iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
-      iframe.style.backgroundColor = 'white';
-      return iframe;
-    },
-    
+
     // Create base iframe with common properties
     createBaseIframe() {
       const iframe = document.createElement('iframe');
@@ -857,16 +848,14 @@ document.addEventListener('alpine:init', () => {
     
     // Get iframe source URL
     getIframeSrc() {
-      if (!this.project) return '';
-      
-      if (this.project.demoType === 'itch') {
-        return `${this.project.demoPath}?v=${this.uniqueId}`;
-      } else if (this.project.demoType === 'local') {
-        return `projects/${this.project.id}/index.html?v=${this.uniqueId}`;
-      }
-      
-      return 'about:blank';
-    },
+		if (!this.project) return '';
+		
+		if (this.project.demoType === 'online') {
+			return `${this.project.demoPath}?v=${this.uniqueId}`;
+		}
+		
+		return 'about:blank';
+	},
     
     // Increase iframe height
     increaseHeight() {
