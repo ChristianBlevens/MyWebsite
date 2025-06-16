@@ -37,6 +37,7 @@ document.addEventListener('alpine:init', () => {
       this.cacheElements();
       this.setupSmoothScrolling();
       this.setupGlobalListeners();
+      this.setupMainCommentIframeResize();
     },
     
     // Cache frequently accessed DOM elements
@@ -77,6 +78,50 @@ document.addEventListener('alpine:init', () => {
       console.log('Opening project:', project.title);
       Alpine.store('portfolio').selectedProject = project;
       this.$dispatch('open-project', { project });
+    },
+    
+    // Setup main comment iframe resize functionality
+    setupMainCommentIframeResize() {
+      const mainIframe = document.getElementById('mainCommentIframe');
+      if (!mainIframe) return;
+      
+      // Set up message listener for height updates
+      window.addEventListener('message', (event) => {
+        if (event.origin !== 'https://mycomments.duckdns.org') return;
+        
+        if (event.data && event.data.type === 'resize' && event.data.height) {
+          if (event.data.frameId === 'ChristianBlevens' || !event.data.frameId) {
+            mainIframe.style.height = `${event.data.height + 20}px`;
+          }
+        }
+      });
+      
+      // Function to request height from iframe
+      const requestHeight = () => {
+        try {
+          mainIframe.contentWindow.postMessage({ type: 'getHeight' }, '*');
+        } catch (e) {
+          console.log('Cannot access main comment iframe content');
+        }
+      };
+      
+      // Initial height request after load
+      mainIframe.addEventListener('load', () => {
+        requestHeight();
+        
+        // Request height periodically for dynamic content
+        const interval = setInterval(() => {
+          requestHeight();
+        }, 1000);
+        
+        // Stop after 10 seconds
+        setTimeout(() => clearInterval(interval), 10000);
+      });
+      
+      // Request height immediately if already loaded
+      if (mainIframe.contentDocument && mainIframe.contentDocument.readyState === 'complete') {
+        requestHeight();
+      }
     }
   }));
   
@@ -880,6 +925,52 @@ document.addEventListener('alpine:init', () => {
     
     getGithubUrl() {
       return this.project && this.project.githubUrl ? this.project.githubUrl : null;
+    },
+    
+    // Resize comment iframe to fit content
+    resizeCommentIframe() {
+      const iframe = this.$refs.commentIframe;
+      if (!iframe) return;
+      
+      // Function to resize iframe based on content
+      const resize = () => {
+        try {
+          // Send message to iframe to get height
+          iframe.contentWindow.postMessage({ type: 'getHeight' }, '*');
+        } catch (e) {
+          console.log('Cannot access iframe content, using default height');
+        }
+      };
+      
+      // Set up message listener for height updates
+      if (!this.messageListenerSetup) {
+        this.messageListenerSetup = true;
+        window.addEventListener('message', (event) => {
+          if (event.origin !== 'https://mycomments.duckdns.org') return;
+          
+          if (event.data && event.data.type === 'resize' && event.data.height) {
+            const iframe = this.$refs.commentIframe;
+            if (iframe) {
+              iframe.style.height = `${event.data.height + 20}px`;
+            }
+          }
+        });
+      }
+      
+      // Initial resize attempt
+      resize();
+      
+      // Try resizing periodically for dynamic content
+      const resizeInterval = setInterval(() => {
+        if (!this.isOpen) {
+          clearInterval(resizeInterval);
+          return;
+        }
+        resize();
+      }, 1000);
+      
+      // Clear interval after 10 seconds
+      setTimeout(() => clearInterval(resizeInterval), 10000);
     }
   }));
   
