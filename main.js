@@ -1066,28 +1066,36 @@ document.addEventListener('alpine:init', () => {
     
     // Manual iframe height controls
     increaseHeight() {
-      this.iframeHeight += 100;
-      // Stop automatic resizing when manual control is used
+      // Stop automatic resizing FIRST
       if (this.projectResizer) {
         this.projectResizer.stop();
         this.projectResizer = null;
       }
-      // Update iframe element height
-      this.updateIframeElementHeight();
+      
+      this.iframeHeight += 100;
+      
+      // Update iframe element height immediately
+      this.$nextTick(() => {
+        this.updateIframeElementHeight();
+      });
     },
     
     decreaseHeight() {
+      // Stop automatic resizing FIRST
+      if (this.projectResizer) {
+        this.projectResizer.stop();
+        this.projectResizer = null;
+      }
+      
       const minHeight = 300;
       if (this.iframeHeight > minHeight) {
         this.iframeHeight -= 100;
       }
-      // Stop automatic resizing when manual control is used
-      if (this.projectResizer) {
-        this.projectResizer.stop();
-        this.projectResizer = null;
-      }
-      // Update iframe element height
-      this.updateIframeElementHeight();
+      
+      // Update iframe element height immediately
+      this.$nextTick(() => {
+        this.updateIframeElementHeight();
+      });
     },
     
     // Update the actual iframe element height
@@ -1097,7 +1105,13 @@ document.addEventListener('alpine:init', () => {
       
       const iframe = container.querySelector('iframe');
       if (iframe) {
+        // Force the iframe to use the manual height
         iframe.style.height = this.iframeHeight + 'px';
+        iframe.style.minHeight = this.iframeHeight + 'px';
+        iframe.style.maxHeight = this.iframeHeight + 'px';
+        
+        // Remove any inline height that might have been set by automatic resizing
+        iframe.removeAttribute('height');
       }
     },
     
