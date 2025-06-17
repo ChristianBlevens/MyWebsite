@@ -28,7 +28,6 @@ document.addEventListener('alpine:init', () => {
     
     let resizeInterval = null;
     let messageHandler = null;
-    let lastHeight = 0;
     
     // Setup message listener for comment iframes
     const setupMessageListener = () => {
@@ -42,12 +41,7 @@ document.addEventListener('alpine:init', () => {
         if (event.data && event.data.type === 'resize' && event.data.height) {
           // Check frameId matches or no frameId specified
           if (!event.data.frameId || event.data.frameId === frameId) {
-            const newHeight = Math.min(maxHeight, Math.max(minHeight, event.data.height));
-            // Only update if height changed to prevent fluctuation
-            if (Math.abs(newHeight - lastHeight) > 5) {
-              iframe.style.height = `${newHeight}px`;
-              lastHeight = newHeight;
-            }
+            iframe.style.height = `${Math.min(maxHeight, Math.max(minHeight, event.data.height))}px`;
           }
         }
       };
@@ -69,12 +63,7 @@ document.addEventListener('alpine:init', () => {
         try {
           const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
           if (contentHeight) {
-            const newHeight = Math.min(maxHeight, Math.max(minHeight, contentHeight + 50));
-            // Only update if height changed significantly to prevent fluctuation
-            if (Math.abs(newHeight - lastHeight) > 10) {
-              iframe.style.height = `${newHeight}px`;
-              lastHeight = newHeight;
-            }
+            iframe.style.height = `${Math.min(maxHeight, Math.max(minHeight, contentHeight + 50))}px`;
           }
         } catch (e) {
           // Cross-origin project iframe - can't resize
@@ -93,9 +82,8 @@ document.addEventListener('alpine:init', () => {
       // Initial resize after delay
       setTimeout(resizeIframe, 500);
       
-      // For project iframes, use less frequent updates to prevent fluctuation
-      const interval = isCommentIframe ? 250 : 1000;
-      resizeInterval = setInterval(resizeIframe, interval);
+      // Request height every 250ms for all iframes
+      resizeInterval = setInterval(resizeIframe, 250);
     };
     
     // Handle iframe load event
@@ -701,6 +689,9 @@ document.addEventListener('alpine:init', () => {
       } else {
         this.iframeLoaded = true;
       }
+      
+      // Setup comment iframe resizing after modal opens
+      setTimeout(() => this.resizeCommentIframe(), 100);
     },
     
     // Initialize modal state
@@ -919,7 +910,8 @@ document.addEventListener('alpine:init', () => {
     // Setup iframe event handlers
     setupIframeHandlers(element) {
       if (this.project.demoType !== "external") {
-        element.addEventListener('load', () => {
+        // Setup resize handler
+        const setupResizer = () => {
           this.iframeLoaded = true;
           // Start resizing for project iframe
           this.projectResizer = setupIframeResize(
@@ -932,8 +924,15 @@ document.addEventListener('alpine:init', () => {
               maxHeight: 1000
             }
           );
-        });
+        };
+        
+        element.addEventListener('load', setupResizer);
         element.addEventListener('error', () => this.iframeLoaded = true);
+        
+        // If iframe is already loaded, setup immediately
+        if (element.contentDocument?.readyState === 'complete') {
+          setupResizer();
+        }
       } else {
         this.iframeLoaded = true;
       }
