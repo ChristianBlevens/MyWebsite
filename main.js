@@ -85,39 +85,68 @@ document.addEventListener('alpine:init', () => {
       const mainIframe = document.getElementById('mainCommentIframe');
       if (!mainIframe) return;
       
-      // Set up message listener for height updates
-      window.addEventListener('message', (event) => {
-        if (event.origin !== 'https://mycomments.duckdns.org') return;
-        
-        if (event.data && event.data.type === 'resize' && event.data.height) {
-          if (event.data.frameId === 'ChristianBlevens' || !event.data.frameId) {
-            mainIframe.style.height = `${event.data.height + 20}px`;
-          }
-        }
-      });
+      // Clear any existing interval
+      if (this.mainCommentInterval) {
+        clearInterval(this.mainCommentInterval);
+      }
       
-      // Function to request height from iframe
-      const requestHeight = () => {
+      // Try to detect height
+      const tryGetHeight = () => {
         try {
-          mainIframe.contentWindow.postMessage({ type: 'getHeight' }, '*');
+          // Try direct access first
+          const contentHeight = mainIframe.contentWindow?.document?.body?.scrollHeight;
+          if (contentHeight) {
+            mainIframe.style.height = `${Math.max(500, contentHeight + 50)}px`;
+            return true;
+          }
         } catch (e) {
-          console.log('Cannot access main comment iframe content');
+          // Cross-origin, continue with postMessage
         }
+        
+        // Send postMessage for cross-origin
+        try {
+          mainIframe.contentWindow?.postMessage({ 
+            type: 'getHeight',
+            action: 'requestHeight',
+            frameId: 'ChristianBlevens'
+          }, 'https://mycomments.duckdns.org');
+        } catch (e) {
+          console.log('Cannot communicate with main comment iframe');
+        }
+        
+        return false;
       };
+      
+      // Set up message listener for height updates
+      if (!this.mainCommentListenerSetup) {
+        this.mainCommentListenerSetup = true;
+        window.addEventListener('message', (event) => {
+          if (event.origin !== 'https://mycomments.duckdns.org') return;
+          
+          if (event.data && (event.data.type === 'resize' || event.data.height)) {
+            const height = event.data.height || event.data.scrollHeight;
+            if (height && (event.data.frameId === 'ChristianBlevens' || !event.data.frameId)) {
+              mainIframe.style.height = `${Math.max(500, height + 50)}px`;
+            }
+          }
+        });
+      }
       
       // Initial height request after load
       mainIframe.addEventListener('load', () => {
-        requestHeight();
+        // Initial resize attempts
+        setTimeout(tryGetHeight, 100);
+        setTimeout(tryGetHeight, 500);
+        setTimeout(tryGetHeight, 1000);
         
-        // Request height periodically for dynamic content
-        const interval = setInterval(() => {
-          requestHeight();
-        }, 250);
+        // Start continuous resizing
+        this.mainCommentInterval = setInterval(tryGetHeight, 250);
       });
       
       // Request height immediately if already loaded
       if (mainIframe.contentDocument && mainIframe.contentDocument.readyState === 'complete') {
-        requestHeight();
+        setTimeout(tryGetHeight, 100);
+        this.mainCommentInterval = setInterval(tryGetHeight, 250);
       }
     }
   }));
@@ -790,6 +819,10 @@ document.addEventListener('alpine:init', () => {
     // Close modal and cleanup
     close() {
       this.stopDynamicResize();
+      if (this.commentResizeInterval) {
+        clearInterval(this.commentResizeInterval);
+        this.commentResizeInterval = null;
+      }
       this.removeIframe();
       this.isOpen = false;
       document.body.style.overflow = 'auto';
@@ -924,7 +957,7 @@ document.addEventListener('alpine:init', () => {
           // Try to access iframe content directly
           const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
           if (contentHeight) {
-            this.iframeHeight = Math.max(300, contentHeight + 50);
+            this.iframeHeight = Math.min(1000, Math.max(300, contentHeight + 50));
           }
         } catch (e) {
           // Cross-origin iframe - use postMessage
@@ -941,7 +974,7 @@ document.addEventListener('alpine:init', () => {
         this.heightListenerSetup = true;
         window.addEventListener('message', (event) => {
           if (event.data && event.data.type === 'resize' && event.data.height) {
-            this.iframeHeight = Math.max(300, event.data.height + 50);
+            this.iframeHeight = Math.min(1000, Math.max(300, event.data.height + 50));
           }
         });
       }
@@ -978,42 +1011,70 @@ document.addEventListener('alpine:init', () => {
       const iframe = this.$refs.commentIframe;
       if (!iframe) return;
       
-      // Function to resize iframe based on content
-      const resize = () => {
+      // Clear any existing interval
+      if (this.commentResizeInterval) {
+        clearInterval(this.commentResizeInterval);
+      }
+      
+      // Try to detect height by injecting a script
+      const tryInjectScript = () => {
         try {
-          // Send message to iframe to get height
-          iframe.contentWindow.postMessage({ type: 'getHeight' }, '*');
+          // Try direct access first
+          const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
+          if (contentHeight) {
+            iframe.style.height = `${Math.max(400, contentHeight + 50)}px`;
+            return true;
+          }
         } catch (e) {
-          console.log('Cannot access iframe content, using default height');
+          // Cross-origin, continue with other methods
         }
+        
+        // Send postMessage for cross-origin
+        try {
+          iframe.contentWindow?.postMessage({ 
+            type: 'getHeight',
+            action: 'requestHeight'
+          }, 'https://mycomments.duckdns.org');
+        } catch (e) {
+          console.log('Cannot communicate with comment iframe');
+        }
+        
+        return false;
       };
       
       // Set up message listener for height updates
-      if (!this.messageListenerSetup) {
-        this.messageListenerSetup = true;
-        window.addEventListener('message', (event) => {
+      if (!this.commentMessageListenerSetup) {
+        this.commentMessageListenerSetup = true;
+        const messageHandler = (event) => {
           if (event.origin !== 'https://mycomments.duckdns.org') return;
           
-          if (event.data && event.data.type === 'resize' && event.data.height) {
-            const iframe = this.$refs.commentIframe;
-            if (iframe) {
-              iframe.style.height = `${event.data.height + 20}px`;
+          if (event.data && (event.data.type === 'resize' || event.data.height)) {
+            const height = event.data.height || event.data.scrollHeight;
+            if (height && this.$refs.commentIframe) {
+              this.$refs.commentIframe.style.height = `${Math.max(400, height + 50)}px`;
             }
           }
-        });
+        };
+        
+        window.addEventListener('message', messageHandler);
+        
+        // Store handler for cleanup
+        this.commentMessageHandler = messageHandler;
       }
       
-      // Initial resize attempt
-      resize();
-      
-      // Try resizing periodically for dynamic content
-      const resizeInterval = setInterval(() => {
+      // Start continuous resizing
+      this.commentResizeInterval = setInterval(() => {
         if (!this.isOpen) {
-          clearInterval(resizeInterval);
+          clearInterval(this.commentResizeInterval);
           return;
         }
-        resize();
+        tryInjectScript();
       }, 250);
+      
+      // Initial resize attempts
+      setTimeout(tryInjectScript, 100);
+      setTimeout(tryInjectScript, 500);
+      setTimeout(tryInjectScript, 1000);
     }
   }));
   
