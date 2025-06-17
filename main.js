@@ -59,17 +59,35 @@ document.addEventListener('alpine:init', () => {
           console.log('Cannot communicate with comment iframe');
         }
       } else {
-        // Project iframes: try direct access first
+        // Project iframes: try multiple height detection methods
         try {
-          const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
-          if (contentHeight) {
-            iframe.style.height = `${Math.min(maxHeight, Math.max(minHeight, contentHeight + 50))}px`;
+          // Try direct access first
+          const doc = iframe.contentWindow?.document;
+          if (doc) {
+            // Try multiple height detection methods
+            const heights = [
+              doc.body?.scrollHeight,
+              doc.body?.offsetHeight,
+              doc.documentElement?.scrollHeight,
+              doc.documentElement?.offsetHeight,
+              doc.body?.clientHeight,
+              doc.documentElement?.clientHeight
+            ].filter(h => h > 0);
+            
+            if (heights.length > 0) {
+              const detectedHeight = Math.max(...heights);
+              iframe.style.height = `${Math.min(maxHeight, Math.max(minHeight, detectedHeight))}px`;
+              return;
+            }
           }
         } catch (e) {
-          // Cross-origin project iframe - use fallback fixed height
-          console.log('Cross-origin iframe detected, using fixed height');
-          // Set a reasonable default height for cross-origin iframes
-          iframe.style.height = `${maxHeight}px`;
+          // Cross-origin, continue with fallback
+        }
+        
+        // Fallback: gradually increase height if content seems cut off
+        const currentHeight = parseInt(iframe.style.height) || minHeight;
+        if (currentHeight < maxHeight) {
+          iframe.style.height = `${currentHeight + 100}px`;
         }
       }
     };
