@@ -1072,6 +1072,8 @@ document.addEventListener('alpine:init', () => {
         this.projectResizer.stop();
         this.projectResizer = null;
       }
+      // Update iframe element height
+      this.updateIframeElementHeight();
     },
     
     decreaseHeight() {
@@ -1083,6 +1085,19 @@ document.addEventListener('alpine:init', () => {
       if (this.projectResizer) {
         this.projectResizer.stop();
         this.projectResizer = null;
+      }
+      // Update iframe element height
+      this.updateIframeElementHeight();
+    },
+    
+    // Update the actual iframe element height
+    updateIframeElementHeight() {
+      const container = this.$refs.iframeContainer;
+      if (!container) return;
+      
+      const iframe = container.querySelector('iframe');
+      if (iframe) {
+        iframe.style.height = this.iframeHeight + 'px';
       }
     },
     
