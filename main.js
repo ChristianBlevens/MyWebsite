@@ -112,10 +112,7 @@ document.addEventListener('alpine:init', () => {
         // Request height periodically for dynamic content
         const interval = setInterval(() => {
           requestHeight();
-        }, 1000);
-        
-        // Stop after 10 seconds
-        setTimeout(() => clearInterval(interval), 10000);
+        }, 250);
       });
       
       // Request height immediately if already loaded
@@ -792,6 +789,7 @@ document.addEventListener('alpine:init', () => {
     
     // Close modal and cleanup
     close() {
+      this.stopDynamicResize();
       this.removeIframe();
       this.isOpen = false;
       document.body.style.overflow = 'auto';
@@ -819,14 +817,23 @@ document.addEventListener('alpine:init', () => {
     // Setup iframe event handlers
     setupIframeHandlers(element) {
       if (this.project.demoType !== "external") {
-        element.addEventListener('load', () => this.iframeLoaded = true);
+        element.addEventListener('load', () => {
+          this.iframeLoaded = true;
+          // Start dynamic resizing after iframe loads
+          this.startDynamicResize();
+        });
         element.addEventListener('error', () => this.iframeLoaded = true);
       } else {
         this.iframeLoaded = true;
       }
       
       // Failsafe timeout
-      setTimeout(() => this.iframeLoaded = true, 8000);
+      setTimeout(() => {
+        this.iframeLoaded = true;
+        if (this.project.demoType !== "external") {
+          this.startDynamicResize();
+        }
+      }, 8000);
     },
     
     // Remove existing iframe
@@ -902,15 +909,54 @@ document.addEventListener('alpine:init', () => {
 		return 'about:blank';
 	},
     
-    // Increase iframe height
-    increaseHeight() {
-      this.iframeHeight += 100;
+    // Dynamic iframe resizing
+    startDynamicResize() {
+      if (this.resizeInterval) {
+        clearInterval(this.resizeInterval);
+      }
+      
+      const iframe = this.$refs.iframeContainer?.querySelector('iframe');
+      if (!iframe) return;
+      
+      // Function to get iframe content height
+      const getIframeHeight = () => {
+        try {
+          // Try to access iframe content directly
+          const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
+          if (contentHeight) {
+            this.iframeHeight = Math.max(300, contentHeight + 50);
+          }
+        } catch (e) {
+          // Cross-origin iframe - use postMessage
+          try {
+            iframe.contentWindow?.postMessage({ type: 'getHeight' }, '*');
+          } catch (err) {
+            console.log('Cannot communicate with iframe');
+          }
+        }
+      };
+      
+      // Set up message listener for cross-origin iframes
+      if (!this.heightListenerSetup) {
+        this.heightListenerSetup = true;
+        window.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'resize' && event.data.height) {
+            this.iframeHeight = Math.max(300, event.data.height + 50);
+          }
+        });
+      }
+      
+      // Start resizing every 250ms
+      this.resizeInterval = setInterval(getIframeHeight, 250);
+      
+      // Initial resize
+      setTimeout(getIframeHeight, 1000);
     },
     
-    // Decrease iframe height (with minimum constraint)
-    decreaseHeight() {
-      if (this.iframeHeight > 300) {
-        this.iframeHeight -= 100;
+    stopDynamicResize() {
+      if (this.resizeInterval) {
+        clearInterval(this.resizeInterval);
+        this.resizeInterval = null;
       }
     },
     
@@ -967,10 +1013,7 @@ document.addEventListener('alpine:init', () => {
           return;
         }
         resize();
-      }, 1000);
-      
-      // Clear interval after 10 seconds
-      setTimeout(() => clearInterval(resizeInterval), 10000);
+      }, 250);
     }
   }));
   
