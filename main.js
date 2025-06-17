@@ -931,7 +931,7 @@ document.addEventListener('alpine:init', () => {
           // Try to access iframe content directly
           const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
           if (contentHeight) {
-            this.iframeHeight = Math.min(1200, Math.max(300, contentHeight + 50));
+            this.iframeHeight = Math.min(1200, Math.max(300, contentHeight));
           }
         } catch (e) {
           // Cross-origin iframe - use postMessage
@@ -948,7 +948,7 @@ document.addEventListener('alpine:init', () => {
         this.heightListenerSetup = true;
         window.addEventListener('message', (event) => {
           if (event.data && event.data.type === 'resize' && event.data.height) {
-            this.iframeHeight = Math.min(1000, Math.max(300, event.data.height + 50));
+            this.iframeHeight = Math.min(1000, Math.max(300, event.data.height));
           }
         });
       }
@@ -993,7 +993,7 @@ document.addEventListener('alpine:init', () => {
           
           if (event.data && event.data.type === 'resize' && event.data.height) {
             if (this.$refs.commentIframe) {
-              this.$refs.commentIframe.style.height = `${Math.max(400, event.data.height + 20)}px`;
+              this.$refs.commentIframe.style.height = `${Math.max(400, event.data.height)}px`;
             }
           }
         };
