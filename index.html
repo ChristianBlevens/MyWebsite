@@ -342,6 +342,16 @@
                                             <div class="loading-spinner mb-4"></div>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Size Controls -->
+                                    <div class="size-controls" x-show="iframeLoaded && project.demoType !== 'external'">
+                                        <button @click="increaseHeight" class="size-control-btn rounded" title="Increase height">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button @click="decreaseHeight" class="size-control-btn rounded" title="Decrease height">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

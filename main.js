@@ -1064,6 +1064,28 @@ document.addEventListener('alpine:init', () => {
       return this.project && this.project.githubUrl ? this.project.githubUrl : null;
     },
     
+    // Manual iframe height controls
+    increaseHeight() {
+      this.iframeHeight += 100;
+      // Stop automatic resizing when manual control is used
+      if (this.projectResizer) {
+        this.projectResizer.stop();
+        this.projectResizer = null;
+      }
+    },
+    
+    decreaseHeight() {
+      const minHeight = 300;
+      if (this.iframeHeight > minHeight) {
+        this.iframeHeight -= 100;
+      }
+      // Stop automatic resizing when manual control is used
+      if (this.projectResizer) {
+        this.projectResizer.stop();
+        this.projectResizer = null;
+      }
+    },
+    
     // Resize comment iframe to fit content
     resizeCommentIframe() {
       const iframe = this.$refs.commentIframe;
