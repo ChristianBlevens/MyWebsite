@@ -90,14 +90,27 @@ document.addEventListener('alpine:init', () => {
         clearInterval(this.mainCommentInterval);
       }
       
-      // Try to detect height
+      // Try to detect height by multiple methods
       const tryGetHeight = () => {
         try {
           // Try direct access first
-          const contentHeight = mainIframe.contentWindow?.document?.body?.scrollHeight;
-          if (contentHeight) {
-            mainIframe.style.height = `${Math.max(500, contentHeight + 50)}px`;
-            return true;
+          const doc = mainIframe.contentWindow?.document;
+          if (doc) {
+            // Try multiple height detection methods
+            const heights = [
+              doc.body?.scrollHeight,
+              doc.body?.offsetHeight,
+              doc.documentElement?.scrollHeight,
+              doc.documentElement?.offsetHeight,
+              doc.body?.clientHeight,
+              doc.documentElement?.clientHeight
+            ].filter(h => h > 0);
+            
+            if (heights.length > 0) {
+              const maxHeight = Math.max(...heights);
+              mainIframe.style.height = `${Math.max(500, maxHeight + 100)}px`;
+              return true;
+            }
           }
         } catch (e) {
           // Cross-origin, continue with postMessage
@@ -108,10 +121,17 @@ document.addEventListener('alpine:init', () => {
           mainIframe.contentWindow?.postMessage({ 
             type: 'getHeight',
             action: 'requestHeight',
-            frameId: 'ChristianBlevens'
+            frameId: 'ChristianBlevens',
+            requestFullHeight: true
           }, 'https://mycomments.duckdns.org');
         } catch (e) {
           console.log('Cannot communicate with main comment iframe');
+        }
+        
+        // Fallback: gradually increase height if content seems cut off
+        const currentHeight = parseInt(mainIframe.style.height) || 500;
+        if (currentHeight < 2000) {
+          mainIframe.style.height = `${currentHeight + 100}px`;
         }
         
         return false;
@@ -126,7 +146,7 @@ document.addEventListener('alpine:init', () => {
           if (event.data && (event.data.type === 'resize' || event.data.height)) {
             const height = event.data.height || event.data.scrollHeight;
             if (height && (event.data.frameId === 'ChristianBlevens' || !event.data.frameId)) {
-              mainIframe.style.height = `${Math.max(500, height + 50)}px`;
+              mainIframe.style.height = `${Math.max(500, height + 100)}px`;
             }
           }
         });
@@ -957,7 +977,7 @@ document.addEventListener('alpine:init', () => {
           // Try to access iframe content directly
           const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
           if (contentHeight) {
-            this.iframeHeight = Math.min(1000, Math.max(300, contentHeight + 50));
+            this.iframeHeight = Math.min(1200, Math.max(300, contentHeight + 50));
           }
         } catch (e) {
           // Cross-origin iframe - use postMessage
@@ -1016,14 +1036,27 @@ document.addEventListener('alpine:init', () => {
         clearInterval(this.commentResizeInterval);
       }
       
-      // Try to detect height by injecting a script
+      // Try to detect height by multiple methods
       const tryInjectScript = () => {
         try {
           // Try direct access first
-          const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
-          if (contentHeight) {
-            iframe.style.height = `${Math.max(400, contentHeight + 50)}px`;
-            return true;
+          const doc = iframe.contentWindow?.document;
+          if (doc) {
+            // Try multiple height detection methods
+            const heights = [
+              doc.body?.scrollHeight,
+              doc.body?.offsetHeight,
+              doc.documentElement?.scrollHeight,
+              doc.documentElement?.offsetHeight,
+              doc.body?.clientHeight,
+              doc.documentElement?.clientHeight
+            ].filter(h => h > 0);
+            
+            if (heights.length > 0) {
+              const maxHeight = Math.max(...heights);
+              iframe.style.height = `${Math.max(400, maxHeight + 100)}px`;
+              return true;
+            }
           }
         } catch (e) {
           // Cross-origin, continue with other methods
@@ -1033,10 +1066,17 @@ document.addEventListener('alpine:init', () => {
         try {
           iframe.contentWindow?.postMessage({ 
             type: 'getHeight',
-            action: 'requestHeight'
+            action: 'requestHeight',
+            requestFullHeight: true
           }, 'https://mycomments.duckdns.org');
         } catch (e) {
           console.log('Cannot communicate with comment iframe');
+        }
+        
+        // Fallback: gradually increase height if content seems cut off
+        const currentHeight = parseInt(iframe.style.height) || 400;
+        if (currentHeight < 2000) {
+          iframe.style.height = `${currentHeight + 100}px`;
         }
         
         return false;
@@ -1051,7 +1091,7 @@ document.addEventListener('alpine:init', () => {
           if (event.data && (event.data.type === 'resize' || event.data.height)) {
             const height = event.data.height || event.data.scrollHeight;
             if (height && this.$refs.commentIframe) {
-              this.$refs.commentIframe.style.height = `${Math.max(400, height + 50)}px`;
+              this.$refs.commentIframe.style.height = `${Math.max(400, height + 100)}px`;
             }
           }
         };
