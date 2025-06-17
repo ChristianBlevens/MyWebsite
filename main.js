@@ -93,7 +93,7 @@ document.addEventListener('alpine:init', () => {
           
           if (event.data && event.data.type === 'resize' && event.data.height) {
             if (event.data.frameId === 'ChristianBlevens' || !event.data.frameId) {
-              mainIframe.style.height = `${Math.max(500, event.data.height + 20)}px`;
+              mainIframe.style.height = `${Math.max(500, event.data.height)}px`;
             }
           }
         });
