@@ -85,88 +85,42 @@ document.addEventListener('alpine:init', () => {
       const mainIframe = document.getElementById('mainCommentIframe');
       if (!mainIframe) return;
       
-      // Clear any existing interval
-      if (this.mainCommentInterval) {
-        clearInterval(this.mainCommentInterval);
-      }
-      
-      // Try to detect height by multiple methods
-      const tryGetHeight = () => {
-        try {
-          // Try direct access first
-          const doc = mainIframe.contentWindow?.document;
-          if (doc) {
-            // Try multiple height detection methods
-            const heights = [
-              doc.body?.scrollHeight,
-              doc.body?.offsetHeight,
-              doc.documentElement?.scrollHeight,
-              doc.documentElement?.offsetHeight,
-              doc.body?.clientHeight,
-              doc.documentElement?.clientHeight
-            ].filter(h => h > 0);
-            
-            if (heights.length > 0) {
-              const maxHeight = Math.max(...heights);
-              mainIframe.style.height = `${Math.max(500, maxHeight + 100)}px`;
-              return true;
-            }
-          }
-        } catch (e) {
-          // Cross-origin, continue with postMessage
-        }
-        
-        // Send postMessage for cross-origin
-        try {
-          mainIframe.contentWindow?.postMessage({ 
-            type: 'getHeight',
-            action: 'requestHeight',
-            frameId: 'ChristianBlevens',
-            requestFullHeight: true
-          }, 'https://mycomments.duckdns.org');
-        } catch (e) {
-          console.log('Cannot communicate with main comment iframe');
-        }
-        
-        // Fallback: gradually increase height if content seems cut off
-        const currentHeight = parseInt(mainIframe.style.height) || 500;
-        if (currentHeight < 2000) {
-          mainIframe.style.height = `${currentHeight + 100}px`;
-        }
-        
-        return false;
-      };
-      
-      // Set up message listener for height updates
+      // Set up message listener for height updates from iframe
       if (!this.mainCommentListenerSetup) {
         this.mainCommentListenerSetup = true;
         window.addEventListener('message', (event) => {
           if (event.origin !== 'https://mycomments.duckdns.org') return;
           
-          if (event.data && (event.data.type === 'resize' || event.data.height)) {
-            const height = event.data.height || event.data.scrollHeight;
-            if (height && (event.data.frameId === 'ChristianBlevens' || !event.data.frameId)) {
-              mainIframe.style.height = `${Math.max(500, height + 100)}px`;
+          if (event.data && event.data.type === 'resize' && event.data.height) {
+            if (event.data.frameId === 'ChristianBlevens' || !event.data.frameId) {
+              mainIframe.style.height = `${Math.max(500, event.data.height + 20)}px`;
             }
           }
         });
       }
       
+      // Request height from iframe periodically
+      const requestHeight = () => {
+        try {
+          mainIframe.contentWindow?.postMessage({ type: 'getHeight' }, 'https://mycomments.duckdns.org');
+        } catch (e) {
+          console.log('Cannot communicate with main comment iframe');
+        }
+      };
+      
       // Initial height request after load
       mainIframe.addEventListener('load', () => {
-        // Initial resize attempts
-        setTimeout(tryGetHeight, 100);
-        setTimeout(tryGetHeight, 500);
-        setTimeout(tryGetHeight, 1000);
+        // Initial request
+        setTimeout(requestHeight, 500);
         
-        // Start continuous resizing
-        this.mainCommentInterval = setInterval(tryGetHeight, 250);
+        // Request height every 250ms
+        this.mainCommentInterval = setInterval(requestHeight, 250);
       });
       
       // Request height immediately if already loaded
       if (mainIframe.contentDocument && mainIframe.contentDocument.readyState === 'complete') {
-        setTimeout(tryGetHeight, 100);
-        this.mainCommentInterval = setInterval(tryGetHeight, 250);
+        setTimeout(requestHeight, 500);
+        this.mainCommentInterval = setInterval(requestHeight, 250);
       }
     }
   }));
@@ -1031,90 +985,46 @@ document.addEventListener('alpine:init', () => {
       const iframe = this.$refs.commentIframe;
       if (!iframe) return;
       
-      // Clear any existing interval
-      if (this.commentResizeInterval) {
-        clearInterval(this.commentResizeInterval);
-      }
-      
-      // Try to detect height by multiple methods
-      const tryInjectScript = () => {
-        try {
-          // Try direct access first
-          const doc = iframe.contentWindow?.document;
-          if (doc) {
-            // Try multiple height detection methods
-            const heights = [
-              doc.body?.scrollHeight,
-              doc.body?.offsetHeight,
-              doc.documentElement?.scrollHeight,
-              doc.documentElement?.offsetHeight,
-              doc.body?.clientHeight,
-              doc.documentElement?.clientHeight
-            ].filter(h => h > 0);
-            
-            if (heights.length > 0) {
-              const maxHeight = Math.max(...heights);
-              iframe.style.height = `${Math.max(400, maxHeight + 100)}px`;
-              return true;
-            }
-          }
-        } catch (e) {
-          // Cross-origin, continue with other methods
-        }
-        
-        // Send postMessage for cross-origin
-        try {
-          iframe.contentWindow?.postMessage({ 
-            type: 'getHeight',
-            action: 'requestHeight',
-            requestFullHeight: true
-          }, 'https://mycomments.duckdns.org');
-        } catch (e) {
-          console.log('Cannot communicate with comment iframe');
-        }
-        
-        // Fallback: gradually increase height if content seems cut off
-        const currentHeight = parseInt(iframe.style.height) || 400;
-        if (currentHeight < 2000) {
-          iframe.style.height = `${currentHeight + 100}px`;
-        }
-        
-        return false;
-      };
-      
-      // Set up message listener for height updates
+      // Set up message listener for height updates from iframe
       if (!this.commentMessageListenerSetup) {
         this.commentMessageListenerSetup = true;
         const messageHandler = (event) => {
           if (event.origin !== 'https://mycomments.duckdns.org') return;
           
-          if (event.data && (event.data.type === 'resize' || event.data.height)) {
-            const height = event.data.height || event.data.scrollHeight;
-            if (height && this.$refs.commentIframe) {
-              this.$refs.commentIframe.style.height = `${Math.max(400, height + 100)}px`;
+          if (event.data && event.data.type === 'resize' && event.data.height) {
+            if (this.$refs.commentIframe) {
+              this.$refs.commentIframe.style.height = `${Math.max(400, event.data.height + 20)}px`;
             }
           }
         };
         
         window.addEventListener('message', messageHandler);
-        
-        // Store handler for cleanup
         this.commentMessageHandler = messageHandler;
       }
       
-      // Start continuous resizing
-      this.commentResizeInterval = setInterval(() => {
+      // Request height from iframe periodically
+      if (this.commentResizeInterval) {
+        clearInterval(this.commentResizeInterval);
+      }
+      
+      const requestHeight = () => {
         if (!this.isOpen) {
           clearInterval(this.commentResizeInterval);
           return;
         }
-        tryInjectScript();
-      }, 250);
+        
+        try {
+          iframe.contentWindow?.postMessage({ type: 'getHeight' }, 'https://mycomments.duckdns.org');
+        } catch (e) {
+          console.log('Cannot communicate with comment iframe');
+        }
+      };
       
-      // Initial resize attempts
-      setTimeout(tryInjectScript, 100);
-      setTimeout(tryInjectScript, 500);
-      setTimeout(tryInjectScript, 1000);
+      // Request height every 250ms
+      this.commentResizeInterval = setInterval(requestHeight, 250);
+      
+      // Initial request
+      setTimeout(requestHeight, 500);
     }
   }));
   
