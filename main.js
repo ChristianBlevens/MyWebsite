@@ -59,15 +59,17 @@ document.addEventListener('alpine:init', () => {
           console.log('Cannot communicate with comment iframe');
         }
       } else {
-        // Project iframes: try direct access only
+        // Project iframes: try direct access first
         try {
           const contentHeight = iframe.contentWindow?.document?.body?.scrollHeight;
           if (contentHeight) {
             iframe.style.height = `${Math.min(maxHeight, Math.max(minHeight, contentHeight + 50))}px`;
           }
         } catch (e) {
-          // Cross-origin project iframe - can't resize
-          console.log('Cannot access project iframe content (cross-origin)');
+          // Cross-origin project iframe - use fallback fixed height
+          console.log('Cross-origin iframe detected, using fixed height');
+          // Set a reasonable default height for cross-origin iframes
+          iframe.style.height = `${maxHeight}px`;
         }
       }
     };
@@ -82,8 +84,22 @@ document.addEventListener('alpine:init', () => {
       // Initial resize after delay
       setTimeout(resizeIframe, 500);
       
-      // Request height every 250ms for all iframes
-      resizeInterval = setInterval(resizeIframe, 250);
+      // For comment iframes, keep checking periodically
+      if (isCommentIframe) {
+        resizeInterval = setInterval(resizeIframe, 250);
+      } else {
+        // For project iframes, check less frequently and stop after a few attempts
+        let attempts = 0;
+        resizeInterval = setInterval(() => {
+          resizeIframe();
+          attempts++;
+          // Stop trying after 10 attempts (2.5 seconds) for project iframes
+          if (attempts >= 10) {
+            clearInterval(resizeInterval);
+            resizeInterval = null;
+          }
+        }, 250);
+      }
     };
     
     // Handle iframe load event
