@@ -170,12 +170,12 @@ document.addEventListener('alpine:init', () => {
       
       // Handle resize messages from comment iframes
       if (event.data && event.data.type === 'resize' && event.data.height) {
-        console.log('Received resize message:', event.data);
+        //console.log('Received resize message:', event.data);
         // Check frameId matches or no frameId specified
         if (!event.data.frameId || event.data.frameId === frameId) {
           // Allow unlimited height expansion for comments
           const newHeight = Math.max(minHeight, event.data.height);
-          console.log('Setting iframe height to:', newHeight);
+          //console.log('Setting iframe height to:', newHeight);
           iframe.style.height = `${newHeight}px`;
         }
       }
@@ -186,10 +186,10 @@ document.addEventListener('alpine:init', () => {
     // Send initial height request
     const requestHeight = () => {
       try {
-        console.log('Requesting height from iframe with frameId:', frameId);
+        //console.log('Requesting height from iframe with frameId:', frameId);
         iframe.contentWindow?.postMessage({ type: 'getHeight', frameId: frameId }, origin);
       } catch (e) {
-        console.log('Cannot communicate with comment iframe:', e);
+        //console.log('Cannot communicate with comment iframe:', e);
       }
     };
     
