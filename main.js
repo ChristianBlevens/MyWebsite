@@ -23,7 +23,7 @@ document.addEventListener('alpine:init', () => {
       origin = null,
       isCommentIframe = false,
       minHeight = 300,
-      maxHeight = 1200
+      maxHeight = null  // No max height for comment iframes
     } = options;
     
     let resizeInterval = null;
@@ -41,7 +41,9 @@ document.addEventListener('alpine:init', () => {
         if (event.data && event.data.type === 'resize' && event.data.height) {
           // Check frameId matches or no frameId specified
           if (!event.data.frameId || event.data.frameId === frameId) {
-            iframe.style.height = `${Math.min(maxHeight, Math.max(minHeight, event.data.height))}px`;
+            // For comment iframes, allow unlimited height expansion
+            const height = Math.max(minHeight, event.data.height);
+            iframe.style.height = `${height}px`;
           }
         }
       };
@@ -76,7 +78,9 @@ document.addEventListener('alpine:init', () => {
             
             if (heights.length > 0) {
               const detectedHeight = Math.max(...heights);
-              iframe.style.height = `${Math.min(maxHeight, Math.max(minHeight, detectedHeight))}px`;
+              // Apply maxHeight only if it's defined
+              const finalHeight = maxHeight ? Math.min(maxHeight, Math.max(minHeight, detectedHeight)) : Math.max(minHeight, detectedHeight);
+              iframe.style.height = `${finalHeight}px`;
               return;
             }
           }
@@ -86,7 +90,8 @@ document.addEventListener('alpine:init', () => {
         
         // Fallback: gradually increase height if content seems cut off
         const currentHeight = parseInt(iframe.style.height) || minHeight;
-        if (currentHeight < maxHeight) {
+        // Only apply maxHeight limit if it's defined
+        if (!maxHeight || currentHeight < maxHeight) {
           iframe.style.height = `${currentHeight + 100}px`;
         }
       }
@@ -955,7 +960,7 @@ document.addEventListener('alpine:init', () => {
               origin: null,
               isCommentIframe: false,
               minHeight: 300,
-              maxHeight: 1000
+              maxHeight: 1200
             }
           );
         };
