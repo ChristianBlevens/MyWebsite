@@ -153,7 +153,12 @@ document.addEventListener('alpine:init', () => {
   
   // Dedicated function for comment iframe resizing
   function setupCommentIframeResize(iframe, frameId, origin = 'https://mycomments.duckdns.org') {
-    if (!iframe) return null;
+    if (!iframe) {
+      console.log('setupCommentIframeResize: iframe is null');
+      return null;
+    }
+    
+    console.log('Setting up comment iframe resize for frameId:', frameId);
     
     let messageHandler = null;
     const minHeight = 400;
@@ -165,10 +170,13 @@ document.addEventListener('alpine:init', () => {
       
       // Handle resize messages from comment iframes
       if (event.data && event.data.type === 'resize' && event.data.height) {
+        console.log('Received resize message:', event.data);
         // Check frameId matches or no frameId specified
         if (!event.data.frameId || event.data.frameId === frameId) {
           // Allow unlimited height expansion for comments
-          iframe.style.height = `${Math.max(minHeight, event.data.height)}px`;
+          const newHeight = Math.max(minHeight, event.data.height);
+          console.log('Setting iframe height to:', newHeight);
+          iframe.style.height = `${newHeight}px`;
         }
       }
     };
@@ -178,9 +186,10 @@ document.addEventListener('alpine:init', () => {
     // Send initial height request
     const requestHeight = () => {
       try {
+        console.log('Requesting height from iframe with frameId:', frameId);
         iframe.contentWindow?.postMessage({ type: 'getHeight', frameId: frameId }, origin);
       } catch (e) {
-        console.log('Cannot communicate with comment iframe');
+        console.log('Cannot communicate with comment iframe:', e);
       }
     };
     
@@ -782,9 +791,6 @@ document.addEventListener('alpine:init', () => {
       } else {
         this.iframeLoaded = true;
       }
-      
-      // Setup comment iframe resizing after modal opens
-      setTimeout(() => this.resizeCommentIframe(), 100);
     },
     
     // Initialize modal state
@@ -1148,12 +1154,24 @@ document.addEventListener('alpine:init', () => {
     // Resize comment iframe to fit content
     resizeCommentIframe() {
       const iframe = this.$refs.commentIframe;
-      if (!iframe) return;
+      console.log('resizeCommentIframe called, iframe:', iframe);
+      if (!iframe) {
+        console.log('Comment iframe not found in refs');
+        return;
+      }
+      
+      // Clean up existing resizer if any
+      if (this.commentResizer) {
+        console.log('Cleaning up existing comment resizer');
+        this.commentResizer.stop();
+      }
       
       // Use the dedicated comment iframe resize handler
+      const frameId = this.project?.title || `project-${this.uniqueId}`;
+      console.log('Using frameId for comment iframe:', frameId);
       this.commentResizer = setupCommentIframeResize(
         iframe, 
-        `comment-${this.project?.id || this.uniqueId}`,
+        frameId,
         'https://mycomments.duckdns.org'
       );
     }
