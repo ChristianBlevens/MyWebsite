@@ -258,21 +258,16 @@
         </section>
         
         <!-- Main Comment Section -->
-        <section class="main-comment-section py-20">
+        <section class="py-20">
             <div class="container-padded">
                 <h2 class="text-4xl font-bold text-center mb-8">Comments</h2>
-                <div class="comment-section-container">
-                    <iframe 
-                        src="https://mycomments.duckdns.org/?pageId=ChristianBlevens"
-                        class="comment-iframe"
-                        id="mainCommentIframe"
-                        frameborder="0"
-                        scrolling="no"
-                        style="width: 100%; min-height: 500px;">
-                    </iframe>
-                </div>
+                <script src="embed.js" 
+                        data-instance="https://mycomments.duckdns.org" 
+                        data-page-id="ChristianBlevens">
+                </script>
             </div>
         </section>
+        
     </main>
     
     <!-- Footer -->
@@ -417,18 +412,9 @@
                         <!-- Comment Section -->
                         <div class="mt-8 pt-8 border-t border-gray-700">
                             <h3 class="text-2xl font-bold mb-4">Comments</h3>
-                            <div class="comment-section-container">
-                                <iframe 
-                                    :src="`https://mycomments.duckdns.org/?pageId=${encodeURIComponent(project.title)}`"
-                                    class="comment-iframe"
-                                    x-ref="commentIframe"
-                                    @load="resizeCommentIframe"
-                                    frameborder="0"
-                                    scrolling="no"
-                                    style="width: 100%; min-height: 400px;">
-                                </iframe>
-                            </div>
+                            <div x-ref="commentContainer"></div>
                         </div>
+                        
                     </div>
                 </div>
             </template>

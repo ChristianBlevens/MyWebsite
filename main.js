@@ -15,117 +15,70 @@ document.addEventListener('alpine:init', () => {
     };
   }
   
-  // Universal iframe resizing handler
+  // Simplified iframe resizing handler for project iframes only
   function setupIframeResize(iframe, frameId, options = {}) {
     if (!iframe) return null;
     
     const {
-      origin = null,
-      isCommentIframe = false,
       minHeight = 300,
-      maxHeight = null  // No max height for comment iframes
+      maxHeight = null
     } = options;
     
     let resizeInterval = null;
-    let messageHandler = null;
-    
-    // Setup message listener for comment iframes
-    const setupMessageListener = () => {
-      if (!isCommentIframe) return;
-      
-      messageHandler = (event) => {
-        // Skip if origin doesn't match
-        if (origin && event.origin !== origin) return;
-        
-        // Handle resize messages from comment iframes
-        if (event.data && event.data.type === 'resize' && event.data.height) {
-          // Check frameId matches or no frameId specified
-          if (!event.data.frameId || event.data.frameId === frameId) {
-            // For comment iframes, allow unlimited height expansion
-            // For other iframes, respect the maxHeight limit
-            const height = isCommentIframe && !maxHeight 
-              ? Math.max(minHeight, event.data.height)
-              : Math.min(maxHeight || Infinity, Math.max(minHeight, event.data.height));
-            iframe.style.height = `${height}px`;
-          }
-        }
-      };
-      
-      window.addEventListener('message', messageHandler);
-    };
     
     // Function to handle iframe resizing
     const resizeIframe = () => {
-      if (isCommentIframe) {
-        // Comment iframes: send message to request height
-        try {
-          iframe.contentWindow?.postMessage({ type: 'getHeight', frameId: frameId }, origin || '*');
-        } catch (e) {
-          console.log('Cannot communicate with comment iframe');
-        }
-      } else {
-        // Project iframes: try multiple height detection methods
-        try {
-          // Try direct access first
-          const doc = iframe.contentWindow?.document;
-          if (doc) {
-            // Try multiple height detection methods
-            const heights = [
-              doc.body?.scrollHeight,
-              doc.body?.offsetHeight,
-              doc.documentElement?.scrollHeight,
-              doc.documentElement?.offsetHeight,
-              doc.body?.clientHeight,
-              doc.documentElement?.clientHeight
-            ].filter(h => h > 0);
-            
-            if (heights.length > 0) {
-              const detectedHeight = Math.max(...heights);
-              // Apply maxHeight only if it's defined
-              const finalHeight = maxHeight ? Math.min(maxHeight, Math.max(minHeight, detectedHeight)) : Math.max(minHeight, detectedHeight);
-              iframe.style.height = `${finalHeight}px`;
-              return;
-            }
+      // Project iframes: try multiple height detection methods
+      try {
+        // Try direct access first
+        const doc = iframe.contentWindow?.document;
+        if (doc) {
+          // Try multiple height detection methods
+          const heights = [
+            doc.body?.scrollHeight,
+            doc.body?.offsetHeight,
+            doc.documentElement?.scrollHeight,
+            doc.documentElement?.offsetHeight,
+            doc.body?.clientHeight,
+            doc.documentElement?.clientHeight
+          ].filter(h => h > 0);
+          
+          if (heights.length > 0) {
+            const detectedHeight = Math.max(...heights);
+            // Apply maxHeight only if it's defined
+            const finalHeight = maxHeight ? Math.min(maxHeight, Math.max(minHeight, detectedHeight)) : Math.max(minHeight, detectedHeight);
+            iframe.style.height = `${finalHeight}px`;
+            return;
           }
-        } catch (e) {
-          // Cross-origin, continue with fallback
         }
-        
-        // Fallback: gradually increase height if content seems cut off
-        const currentHeight = parseInt(iframe.style.height) || minHeight;
-        // Only apply maxHeight limit if it's defined
-        if (!maxHeight || currentHeight < maxHeight) {
-          iframe.style.height = `${currentHeight + 100}px`;
-        }
+      } catch (e) {
+        // Cross-origin, continue with fallback
+      }
+      
+      // Fallback: gradually increase height if content seems cut off
+      const currentHeight = parseInt(iframe.style.height) || minHeight;
+      // Only apply maxHeight limit if it's defined
+      if (!maxHeight || currentHeight < maxHeight) {
+        iframe.style.height = `${currentHeight + 100}px`;
       }
     };
-    
-    // Setup message listener for comment iframes
-    if (isCommentIframe) {
-      setupMessageListener();
-    }
     
     // Start periodic resizing
     const startResize = () => {
       // Initial resize after delay
       setTimeout(resizeIframe, 500);
       
-      // For comment iframes, keep checking periodically
-      if (isCommentIframe) {
-        resizeInterval = setInterval(resizeIframe, 250);
-      } else {
-        // For project iframes, check less frequently and stop after a few attempts
-        let attempts = 0;
-        resizeInterval = setInterval(() => {
-          resizeIframe();
-          attempts++;
-          // Stop trying after 10 attempts (2.5 seconds) for project iframes
-          if (attempts >= 10) {
-            clearInterval(resizeInterval);
-            resizeInterval = null;
-          }
-        }, 250);
-      }
+      // For project iframes, check less frequently and stop after a few attempts
+      let attempts = 0;
+      resizeInterval = setInterval(() => {
+        resizeIframe();
+        attempts++;
+        // Stop trying after 10 attempts (2.5 seconds) for project iframes
+        if (attempts >= 10) {
+          clearInterval(resizeInterval);
+          resizeInterval = null;
+        }
+      }, 250);
     };
     
     // Handle iframe load event
@@ -142,76 +95,6 @@ document.addEventListener('alpine:init', () => {
         if (resizeInterval) {
           clearInterval(resizeInterval);
           resizeInterval = null;
-        }
-        if (messageHandler) {
-          window.removeEventListener('message', messageHandler);
-          messageHandler = null;
-        }
-      }
-    };
-  }
-  
-  // Dedicated function for comment iframe resizing
-  function setupCommentIframeResize(iframe, frameId, origin = 'https://mycomments.duckdns.org') {
-    if (!iframe) {
-      console.log('setupCommentIframeResize: iframe is null');
-      return null;
-    }
-    
-    console.log('Setting up comment iframe resize for frameId:', frameId);
-    
-    let messageHandler = null;
-    const minHeight = 400;
-    
-    // Setup message listener
-    messageHandler = (event) => {
-      // Skip if origin doesn't match
-      if (origin && event.origin !== origin) return;
-      
-      // Handle resize messages from comment iframes
-      if (event.data && event.data.type === 'resize' && event.data.height) {
-        //console.log('Received resize message:', event.data);
-        // Check frameId matches or no frameId specified
-        if (!event.data.frameId || event.data.frameId === frameId) {
-          // Allow unlimited height expansion for comments
-          const newHeight = Math.max(minHeight, event.data.height);
-          //console.log('Setting iframe height to:', newHeight);
-          iframe.style.height = `${newHeight}px`;
-        }
-      }
-    };
-    
-    window.addEventListener('message', messageHandler);
-    
-    // Send initial height request
-    const requestHeight = () => {
-      try {
-        //console.log('Requesting height from iframe with frameId:', frameId);
-        iframe.contentWindow?.postMessage({ type: 'getHeight', frameId: frameId }, origin);
-      } catch (e) {
-        //console.log('Cannot communicate with comment iframe:', e);
-      }
-    };
-    
-    // Request height periodically
-    const resizeInterval = setInterval(requestHeight, 250);
-    
-    // Setup load handler
-    iframe.addEventListener('load', () => {
-      setTimeout(requestHeight, 500);
-    });
-    
-    // Initial request
-    setTimeout(requestHeight, 500);
-    
-    // Return cleanup function
-    return {
-      stop: () => {
-        if (resizeInterval) {
-          clearInterval(resizeInterval);
-        }
-        if (messageHandler) {
-          window.removeEventListener('message', messageHandler);
         }
       }
     };
@@ -234,21 +117,15 @@ document.addEventListener('alpine:init', () => {
     mobileMenuOpen: false,
     projects: window.projects || [],
     navElement: null,
-    mainCommentResizer: null,
     
     init() {
       this.cacheElements();
       this.setupSmoothScrolling();
       this.setupGlobalListeners();
-      this.setupMainCommentIframeResize();
     },
     
     destroy() {
       // Cleanup on component destruction
-      if (this.mainCommentResizer) {
-        this.mainCommentResizer.stop();
-        this.mainCommentResizer = null;
-      }
     },
     
     // Cache frequently accessed DOM elements
@@ -290,19 +167,6 @@ document.addEventListener('alpine:init', () => {
       Alpine.store('portfolio').selectedProject = project;
       this.$dispatch('open-project', { project });
     },
-    
-    // Setup main comment iframe resize functionality
-    setupMainCommentIframeResize() {
-      const mainIframe = document.getElementById('mainCommentIframe');
-      if (!mainIframe) return;
-      
-      // Use the dedicated comment iframe resize handler
-      this.mainCommentResizer = setupCommentIframeResize(
-        mainIframe, 
-        'ChristianBlevens', 
-        'https://mycomments.duckdns.org'
-      );
-    }
   }));
   
   // ========================================
@@ -750,7 +614,6 @@ document.addEventListener('alpine:init', () => {
     uniqueId: 1,
     markdownContent: '',
     loadingMarkdown: false,
-    commentResizer: null,
     
     init() {
       this.setupEventListeners();
@@ -791,6 +654,9 @@ document.addEventListener('alpine:init', () => {
       } else {
         this.iframeLoaded = true;
       }
+      
+      // Load comment section after a delay to ensure modal is rendered
+      setTimeout(() => this.loadCommentSection(), 100);
     },
     
     // Initialize modal state
@@ -971,13 +837,24 @@ document.addEventListener('alpine:init', () => {
               </div>`;
     },
     
+    // Load comment section dynamically
+    loadCommentSection() {
+      const container = this.$refs.commentContainer;
+      if (!container || !this.project) return;
+      
+      // Clear existing content
+      container.innerHTML = '';
+      
+      // Create and append script element
+      const script = document.createElement('script');
+      script.src = 'embed.js';
+      script.setAttribute('data-instance', 'https://mycomments.duckdns.org');
+      script.setAttribute('data-page-id', this.project.title);
+      container.appendChild(script);
+    },
+    
     // Close modal and cleanup
     close() {
-      // Stop comment resize handler
-      if (this.commentResizer) {
-        this.commentResizer.stop();
-        this.commentResizer = null;
-      }
       this.removeIframe();
       this.isOpen = false;
       document.body.style.overflow = 'auto';
@@ -1150,31 +1027,6 @@ document.addEventListener('alpine:init', () => {
         iframe.removeAttribute('height');
       }
     },
-    
-    // Resize comment iframe to fit content
-    resizeCommentIframe() {
-      const iframe = this.$refs.commentIframe;
-      console.log('resizeCommentIframe called, iframe:', iframe);
-      if (!iframe) {
-        console.log('Comment iframe not found in refs');
-        return;
-      }
-      
-      // Clean up existing resizer if any
-      if (this.commentResizer) {
-        console.log('Cleaning up existing comment resizer');
-        this.commentResizer.stop();
-      }
-      
-      // Use the dedicated comment iframe resize handler
-      const frameId = this.project?.title || `project-${this.uniqueId}`;
-      console.log('Using frameId for comment iframe:', frameId);
-      this.commentResizer = setupCommentIframeResize(
-        iframe, 
-        frameId,
-        'https://mycomments.duckdns.org'
-      );
-    }
   }));
   
   Alpine.data('galleryModal', () => ({

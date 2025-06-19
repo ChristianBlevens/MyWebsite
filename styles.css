@@ -482,34 +482,6 @@ html {
   overflow-x: auto;
 }
 
-/* ========================================
-   COMMENT SECTION STYLES
-   ======================================== */
-.comment-section-container {
-  background-color: var(--color-bg-secondary);
-  border-radius: 0.5rem;
-  padding: 1rem;
-  box-shadow: var(--shadow-md);
-}
-
-.comment-iframe {
-  background-color: transparent;
-  border-radius: 0.375rem;
-  overflow: hidden;
-  transition: height 0.3s ease;
-}
-
-/* Main page comment section */
-.main-comment-section {
-  background-color: var(--color-bg-tertiary);
-  border-top: 1px solid var(--color-bg-light);
-}
-
-.main-comment-section .comment-section-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: var(--color-bg-secondary);
-}
 
 /* ========================================
    RESPONSIVE DESIGN
