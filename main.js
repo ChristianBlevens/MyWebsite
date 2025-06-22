@@ -847,7 +847,7 @@ document.addEventListener('alpine:init', () => {
       
       // Create and append script element
       const script = document.createElement('script');
-      script.src = 'embed.js';
+      script.src = 'https://cdn.jsdelivr.net/gh/ChristianBlevens/CommentSectionWebApp@main/embed.js';
       script.setAttribute('data-instance', 'https://mycomments.duckdns.org');
       script.setAttribute('data-page-id', this.project.title);
       container.appendChild(script);
