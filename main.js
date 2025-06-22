@@ -849,7 +849,7 @@ document.addEventListener('alpine:init', () => {
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/gh/ChristianBlevens/CommentSectionWebApp@main/embed.js';
       script.setAttribute('data-instance', 'https://mycomments.duckdns.org');
-      script.setAttribute('data-page-id', this.project.title);
+      script.setAttribute('data-page-id', this.project.title.replace(/\s/g,''));
       container.appendChild(script);
     },
     
