@@ -322,8 +322,12 @@ document.addEventListener('alpine:init', () => {
 
       // Setup automatic resizing
       if (container && typeof setupIframeResize === 'function') {
+        // Use container width as initial minimum height
+        const containerWidth = container.offsetWidth || 500;
+        console.log(`[Modal] Container width: ${containerWidth}px, using as min height`);
+
         this.resizeHandler = setupIframeResize(element, container, {
-          minHeight: 300,
+          minHeight: containerWidth,
           maxHeight: null // No max height - let content dictate size
         });
       }
@@ -393,6 +397,7 @@ document.addEventListener('alpine:init', () => {
       iframe.src = this.getIframeSrc();
       iframe.style.width = '100%';
       iframe.style.height = '100%';
+      iframe.style.minHeight = '100%';
       iframe.style.border = '0';
       iframe.style.margin = '0';
       iframe.style.padding = '0';

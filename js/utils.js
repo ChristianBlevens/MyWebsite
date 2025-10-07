@@ -21,9 +21,11 @@ function setupIframeResize(iframe, container, options = {}) {
   console.log(`[${iframeId}] Setting up iframe resize handler`);
 
   const {
-    minHeight = 300,
+    minHeight = 500, // Fallback if not provided
     maxHeight = null // No max height limit by default
   } = options;
+
+  console.log(`[${iframeId}] Min height set to: ${minHeight}px`);
 
   let resizeInterval = null;
   let lastHeight = -1; // Start at -1 to ensure first height is always applied
@@ -100,22 +102,20 @@ function setupIframeResize(iframe, container, options = {}) {
 
         if (heights.length > 0) {
           const detectedHeight = Math.max(...heights);
-          console.log('Direct DOM height detection:', detectedHeight);
+          console.log(`[${iframeId}] Direct DOM height detection:`, detectedHeight);
           applyHeight(detectedHeight);
           return true; // Successfully detected height
         }
       }
     } catch (e) {
       // Cross-origin iframe - can't access content
-      console.log('Cross-origin iframe - waiting for postMessage');
+      console.log(`[${iframeId}] Cross-origin iframe - waiting for postMessage`);
     }
 
-    // Fallback for cross-origin iframes: use a sensible default
-    // The iframe should send postMessage with actual height
-    const defaultHeight = maxHeight ? Math.min(maxHeight, 800) : 800;
-    if (lastHeight === -1) { // Only set default once (on first attempt)
-      console.log('Setting default height:', defaultHeight);
-      applyHeight(defaultHeight);
+    // For cross-origin iframes, just set minimum height once and wait for postMessage
+    if (lastHeight === -1) {
+      console.log(`[${iframeId}] Setting initial min height:`, minHeight);
+      applyHeight(minHeight);
     }
     return false; // Could not detect exact height
   };
