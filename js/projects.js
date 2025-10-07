@@ -1,4 +1,6 @@
-// Project data for the portfolio
+/**
+ * PROJECT DATA
+ */
 (function() {
   // Project factory function to reduce redundancy
   function createProject(title, image, summary, features, description, skills, gallery, demoType = null, demoPath = null, githubUrl = null) {

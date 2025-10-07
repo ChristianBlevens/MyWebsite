@@ -226,7 +226,7 @@ html {
 .iframe-container {
   position: relative;
   width: 100%;
-  height: 600px;
+  min-height: 400px;
   background-color: var(--color-bg-secondary);
   overflow: hidden;
   transition: height 0.3s ease;
@@ -246,33 +246,6 @@ html {
   justify-content: center;
   z-index: 10;
   transition: opacity 0.5s ease;
-}
-
-/* Size Control Buttons */
-.size-controls {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  gap: 4px;
-  z-index: 10;
-}
-
-.size-control-btn {
-  width: 28px;
-  height: 28px;
-  background-color: rgba(55, 65, 81, 0.8);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.size-control-btn:hover {
-  background-color: rgba(75, 85, 99, 0.9);
 }
 
 /* External Demo Styles */
@@ -534,7 +507,7 @@ html {
   }
   
   .iframe-container {
-    height: 400px;
+    min-height: 300px;
   }
 
   #resumeModal .bg-white {

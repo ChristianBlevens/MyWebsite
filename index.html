@@ -327,7 +327,7 @@
                                 <div class="relative">
                                     
                                     <!-- Demo Container -->
-                                    <div class="iframe-container rounded-md" x-ref="iframeContainer" :style="`height: ${iframeHeight}px;`">
+                                    <div class="iframe-container rounded-md" x-ref="iframeContainer">
                                         <!-- Loading Overlay -->
                                         <div x-show="hasDemo() && !iframeLoaded" class="iframe-loading-overlay">
                                             <div class="mb-4 text-center">
@@ -336,16 +336,6 @@
                                             </div>
                                             <div class="loading-spinner mb-4"></div>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Size Controls -->
-                                    <div class="size-controls" x-show="iframeLoaded && project.demoType !== 'external'">
-                                        <button @click="increaseHeight" class="size-control-btn rounded" title="Increase height">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                        <button @click="decreaseHeight" class="size-control-btn rounded" title="Decrease height">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -492,8 +482,19 @@
     </div>
     
     <!-- JavaScript -->
-    <script src="projects.js"></script>
-    <script src="main.js"></script>
+    <!-- Utilities -->
+    <script src="js/utils.js"></script>
+
+    <!-- Data -->
+    <script src="js/projects.js"></script>
+
+    <!-- Store & Components -->
+    <script src="js/store.js"></script>
+    <script src="js/components/app.js"></script>
+    <script src="js/components/scroll.js"></script>
+    <script src="js/components/filters.js"></script>
+    <script src="js/components/forms.js"></script>
+    <script src="js/components/modals.js"></script>
     
     <!-- Configuration -->
     <script>
