@@ -139,7 +139,7 @@
         "GPU acceleration with direct FFmpeg processing"
       ],
       "",
-      ["Web Development", "Python", "FastAPI", "Faster Whisper", "FFmpeg", "Docker", "WebSockets", "JavaScript"],
+      ["Web Development", "Python", "FastAPI", "Faster Whisper", "FFmpeg", "Docker", "WebSockets", "JavaScript", "AI"],
       [],
       "online",
       "https://christianblevens.github.io/VideoEditor/",
