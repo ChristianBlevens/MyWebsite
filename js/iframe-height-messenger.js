@@ -1,7 +1,7 @@
 /**
  * IFRAME HEIGHT MESSENGER
  * Add this script to embedded projects to communicate height to parent
- * Usage: <script src="https://yourdomain.com/js/iframe-height-messenger.js"></script>
+ * Usage: <script src="https://christianblevens.github.io/MyWebsite/js/iframe-height-messenger.js"></script>
  */
 
 (function() {
