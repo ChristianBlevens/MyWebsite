@@ -1,7 +1,7 @@
 /**
  * IFRAME HEIGHT MESSENGER
  * Add this script to embedded projects to communicate height to parent
- * Usage: <script src="https://christianblevens.github.io/MyWebsite/js/iframe-height-messenger.js"></script>
+ * Usage: <script src="https://yourdomain.com/js/iframe-height-messenger.js"></script>
  */
 
 (function() {
@@ -12,7 +12,8 @@
     return; // Not in an iframe, no need to send messages
   }
 
-  let lastHeight = 0;
+  let lastHeight = -1; // Start at -1 to ensure first measurement is always sent
+  let firstSent = false;
 
   // Function to calculate and send current page height
   function sendHeight() {
@@ -29,9 +30,12 @@
 
       const currentHeight = Math.max(...heights);
 
-      // Only send if height has changed by more than 10px
-      if (Math.abs(currentHeight - lastHeight) > 10) {
+      // Always send first measurement, then only send if changed by more than 10px
+      const shouldSend = !firstSent || Math.abs(currentHeight - lastHeight) > 10;
+
+      if (shouldSend) {
         lastHeight = currentHeight;
+        firstSent = true;
 
         // Send height to parent window
         window.parent.postMessage({

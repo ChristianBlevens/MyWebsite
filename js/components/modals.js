@@ -59,11 +59,21 @@ document.addEventListener('alpine:init', () => {
 
     // Initialize modal state
     initializeModalState(project) {
+      console.log(`[Modal] Initializing for project: ${project.title}`);
       this.project = project;
       this.isOpen = true;
       this.iframeLoaded = false;
       this.uniqueId = Date.now();
       document.body.style.overflow = 'hidden';
+
+      // Reset iframe container height for fresh start
+      this.$nextTick(() => {
+        const container = this.$refs.iframeContainer;
+        if (container) {
+          console.log(`[Modal] Resetting container height (was: ${container.style.height})`);
+          container.style.height = '';
+        }
+      });
     },
 
     // Reset modal scroll position
@@ -260,15 +270,26 @@ document.addEventListener('alpine:init', () => {
 
     // Create iframe for project demo
     createIframe() {
+      console.log(`[Modal] Creating iframe for: ${this.project.title}`);
       this.removeIframe();
 
       const container = this.$refs.iframeContainer;
-      if (!container) return;
+      if (!container) {
+        console.log('[Modal] No container found!');
+        return;
+      }
+
+      // Ensure container height is reset before creating new iframe
+      console.log(`[Modal] Resetting container before iframe creation (was: ${container.style.height})`);
+      container.style.height = '';
 
       const demoTypeConfigs = this.getDemoTypeConfigs();
       const createElementFn = demoTypeConfigs[this.project.demoType];
 
-      if (!createElementFn) return;
+      if (!createElementFn) {
+        console.log(`[Modal] No demo type config for: ${this.project.demoType}`);
+        return;
+      }
 
       const element = createElementFn();
       container.appendChild(element);
@@ -302,8 +323,8 @@ document.addEventListener('alpine:init', () => {
       // Setup automatic resizing
       if (container && typeof setupIframeResize === 'function') {
         this.resizeHandler = setupIframeResize(element, container, {
-          minHeight: 400,
-          maxHeight: window.innerHeight * 0.8
+          minHeight: 300,
+          maxHeight: null // No max height - let content dictate size
         });
       }
     },
@@ -318,9 +339,12 @@ document.addEventListener('alpine:init', () => {
 
       const container = this.$refs.iframeContainer;
       if (container) {
+        // Remove all children
         while (container.firstChild) {
           container.firstChild.remove();
         }
+        // Reset container height so next iframe starts fresh
+        container.style.height = '';
       }
     },
 

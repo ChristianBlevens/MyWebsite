@@ -8,23 +8,43 @@ document.addEventListener('alpine:init', () => {
     activeFilter: 'all',
     moreDropdownOpen: false,
 
-    // Filter Configuration
-    filterOptions: [
-      { id: 'all', label: 'All Projects' },
-      { id: 'Webdev', label: 'Webdev' },
-      { id: 'Unity', label: 'Unity' },
-      { id: 'AI', label: 'AI' },
-      { id: 'Data Visualization', label: 'Data Visualization' },
-      { id: 'OOP', label: 'OOP' },
-      { id: 'Pathfinding', label: 'Pathfinding' }
-    ],
+    // Filter Configuration (dynamically generated from projects)
+    filterOptions: [],
 
     // Dynamic Filter Arrays
     visibleFilters: [],
     overflowFilters: [],
 
     init() {
+      this.generateFilterOptions();
       this.setupResponsiveFilters();
+    },
+
+    // Generate filter options dynamically from all project skills
+    generateFilterOptions() {
+      const skillsSet = new Set();
+
+      // Collect all unique skills from projects
+      if (window.projects && Array.isArray(window.projects)) {
+        window.projects.forEach(project => {
+          if (project.skills && Array.isArray(project.skills)) {
+            project.skills.forEach(skill => {
+              skillsSet.add(skill);
+            });
+          }
+        });
+      }
+
+      // Convert to sorted array and create filter options
+      const uniqueSkills = Array.from(skillsSet).sort();
+
+      // Always start with "All Projects"
+      this.filterOptions = [{ id: 'all', label: 'All Projects' }];
+
+      // Add each unique skill as a filter option
+      uniqueSkills.forEach(skill => {
+        this.filterOptions.push({ id: skill, label: skill });
+      });
     },
 
     // Setup responsive filter button handling

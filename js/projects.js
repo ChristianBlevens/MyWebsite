@@ -23,13 +23,14 @@
     createProject(
       "Christmas Lights AI Demo",
       "https://i.imgur.com/m0Wfsrh.png",
-      "Intuitive and comprehensive digital christmas light demo designed to encourage sales",
+      "Interactive image editor with AI-powered enhancement for visualizing Christmas light installations",
       [
-        "Easy to use",
-        "Beautiful result",
+        "Spline-based light placement with depth mapping",
+        "Real-time AI image enhancement via cloud processing",
+        "Camera integration and custom editing controls"
       ],
       "christmas-lights-ai.md",
-      ["Webdev", "AI", "Google Cloud Run", "Cloud Compute", "API Usage", "Javascript"],
+      ["Web Development", "AI", "Google Cloud Run", "Image Processing", "Canvas API", "JavaScript"],
       [
         "https://i.imgur.com/9p8linJ.png",
         "https://i.imgur.com/SMNiBJf.jpeg",
@@ -41,18 +42,17 @@
     ),
 	
 	createProject(
-      "Daily Schedule Web App",
+      "Daily Habit Tracker",
       "",
-      "A simple to use schedule app for people with dynamic wake periods",
+      "Habit tracking app with analytics for monitoring daily routines and productivity patterns",
       [
-        "Intuitive usage",
-        "Robust implementation",
+        "Streak tracking and performance metrics",
+        "Activity logging with duration and tags",
+        "Weekly comparison and trend analysis"
       ],
       "",
-      ["Webdev", "Javascript", "Reactive", "User Storage"],
-      [
-        
-      ],
+      ["Web Development", "JavaScript", "Local Storage", "Data Visualization", "Analytics"],
+      [],
       "online",
       "https://christianblevens.github.io/DailyScheduleWebApp/",
       "https://github.com/ChristianBlevens/DailyScheduleWebApp"
@@ -61,13 +61,14 @@
     createProject(
       "Roof Area Calculator",
       "https://i.imgur.com/ldkbu25.png",
-      "Simple web app to calculate the area of a roof",
+      "Interactive map-based tool using pixel detection algorithms to calculate roof dimensions",
       [
-        "Basic tech demo",
-        "Simple file structure"
+        "Geolocation and address search integration",
+        "Canvas-based roof detection from satellite imagery",
+        "Accurate area calculations accounting for zoom and curvature"
       ],
       "test.md",
-      ["Webdev", "API Usage", "Map Tile API", "Javascript"],
+      ["Web Development", "Leaflet.js", "OpenStreetMap", "Canvas API", "Geolocation API", "JavaScript"],
       [
         "https://i.imgur.com/ldkbu25.png"
       ],
@@ -75,18 +76,139 @@
       "https://christianblevens.github.io/RoofAreaCalculatorWebApp/",
       "https://github.com/ChristianBlevens/RoofAreaCalculatorWebApp"
     ),
-    
+
     createProject(
-      "This Website",
-      "https://i.imgur.com/WYd2iPv.png",
-      "A full display of what I can do using Alpine.js, Tailwind.css, and custom js/css",
+      "Sunlight Hours Tracker",
+      "",
+      "Real-time visualization of daylight phases, twilight transitions, and lunar cycles based on geolocation",
       [
-        "Wide ranging usage of iframe to showcase previous projects",
-        "Comprehensive usage of Alpine.js and Tailwind.css",
-        "Complex website presented in a simple package"
+        "Animated sun and moon positions with gradient backgrounds",
+        "Countdown timers for twilight stages",
+        "Integration with Open-Meteo and Farmsense APIs"
+      ],
+      "",
+      ["Web Development", "JavaScript", "Geolocation API", "API Integration", "CSS Animations"],
+      [],
+      "online",
+      "https://christianblevens.github.io/SunlightTrackerWebApp/",
+      "https://github.com/ChristianBlevens/SunlightTrackerWebApp"
+    ),
+
+    createProject(
+      "Global Time & Daylight Comparison",
+      "",
+      "Multi-location time zone visualizer with synchronized daylight progression bars",
+      [
+        "Add multiple global locations simultaneously",
+        "Color-coded day/night gradients for each location",
+        "Real-time sunrise/sunset markers"
+      ],
+      "",
+      ["Web Development", "JavaScript", "API Integration", "Time Zone Handling"],
+      [],
+      "online",
+      "https://christianblevens.github.io/TimeAndDayLightComparisonWebApp/",
+      "https://github.com/ChristianBlevens/TimeAndDayLightComparisonWebApp"
+    ),
+
+    createProject(
+      "Gravity Wars: Space Battle Game",
+      "",
+      "Browser-based arcade shooter with wave-based combat and roguelike ability system",
+      [
+        "WASD movement with mouse aim and dash mechanics",
+        "Dynamic ability selection and combo tracking",
+        "Enemy wave progression with score system"
+      ],
+      "",
+      ["Web Development", "JavaScript", "Canvas API", "Game Development"],
+      [],
+      "online",
+      "https://christianblevens.github.io/SpaceBattleGameWebApp/",
+      "https://github.com/ChristianBlevens/SpaceBattleGameWebApp"
+    ),
+
+    createProject(
+      "AI Video Editor",
+      "",
+      "Local video editor accelerating editing workflows with AI-powered audio processing and transcription",
+      [
+        "Automated pause removal, swear censoring, and filler word detection",
+        "Word-level transcription with subtitle generation",
+        "FastAPI backend with batched processing for 12.5x speedup",
+        "GPU acceleration with direct FFmpeg processing"
+      ],
+      "",
+      ["Web Development", "Python", "FastAPI", "Faster Whisper", "FFmpeg", "Docker", "WebSockets", "JavaScript"],
+      [],
+      "online",
+      "https://christianblevens.github.io/VideoEditor/",
+      "https://github.com/ChristianBlevens/VideoEditor"
+    ),
+
+    createProject(
+      "Face Anonymization Pipeline",
+      "",
+      "Cloud-hosted face generation and application system for creating reusable anonymized identities",
+      [
+        "Multi-stage pipeline: detection, anonymization, enhancement, and face swapping",
+        "RetinaFace detection with FARL-based anonymization",
+        "CodeFormer enhancement and FaceFusion face application",
+        "GPU-accelerated processing with unified Docker deployment"
+      ],
+      "",
+      ["Python", "Flask", "PyTorch", "CUDA", "Docker", "FaceFusion", "AI"],
+      [],
+      null,
+      null,
+      null
+    ),
+
+    createProject(
+      "YouTube Word Extractor",
+      "",
+      "Flask-based pipeline for extracting and compiling specific words from YouTube videos using AI transcription",
+      [
+        "6-stage processing: download, transcription, search, extraction, compilation",
+        "GPU/CPU mode with Faster Whisper integration",
+        "Cloud database for transcript storage and reuse"
+      ],
+      "",
+      ["Python", "Flask", "Faster Whisper", "FFmpeg", "Docker", "yt-dlp", "SQLite"],
+      [],
+      null,
+      null,
+      "https://github.com/ChristianBlevens/FasterWhisperWebApp"
+    ),
+
+    createProject(
+      "Production Comment System",
+      "",
+      "Self-hosted comment platform with Discord OAuth, AI content moderation, and embeddable widget",
+      [
+        "Discord authentication with user reputation system",
+        "AI-powered spam detection and moderation",
+        "Rich text support with auto-theme detection"
+      ],
+      "",
+      ["JavaScript", "Node.js", "PostgreSQL", "Redis", "Discord OAuth", "Docker", "AI"],
+      [],
+      null,
+      null,
+      "https://github.com/ChristianBlevens/CommentSectionWebApp"
+    ),
+
+    createProject(
+      "Portfolio Website",
+      "https://i.imgur.com/WYd2iPv.png",
+      "Modular single-page application showcasing projects through embedded iframes and dynamic modals",
+      [
+        "Alpine.js reactive components with organized file structure",
+        "Responsive filter system with overflow handling",
+        "PostMessage API for cross-origin iframe communication"
       ],
       "README.md",
-      ["Webdev", "Alpine.js", "Tailwind.css", "API Usage", "Iframes", "Javascript"],
+      ["Web Development", "Alpine.js", "Tailwind.css", "API Integration", "JavaScript"],
       [
         "https://i.imgur.com/WYd2iPv.png",
       ],
@@ -96,15 +218,16 @@
     ),
     
     createProject(
-      "Impact Based Descructible Environment",
+      "Impact Based Destructible Environment",
       "https://i.imgur.com/I7ZkATK.gif",
-      "Muliplayer game with an intuitive and reactive desctructible environment",
+      "Multiplayer game with real-time terrain destruction and physics-based combat",
       [
-        "Performant terain destruction",
-        "Basic dumb fun gameplay"
+        "Performant terrain destruction system",
+        "Fish Networking multiplayer synchronization",
+        "Data-oriented design for optimization"
       ],
       "",
-      ["Unity", "C#", "Fish Networking", "Data Oriented Design", "OOP"],
+      ["Unity", "C#", "Fish Networking", "Data Oriented Design", "Physics"],
       [
         "https://i.imgur.com/I7ZkATK.gif",
       ],
@@ -141,7 +264,7 @@
         "Production ready website deployment"
       ],
       "",
-      ["Unity", "C#", "Probuilder", "Javascript Plugins"],
+      ["Unity", "C#", "ProBuilder"],
       [
         "https://i.imgur.com/zW5XWYm.gif",
       ],
@@ -173,7 +296,7 @@
         "Can be accessed remotely to use or iterate on software"
       ],
       "",
-      ["Webdev", "C#", "Database", "Python", "Data Visualization", "Unity"],
+      ["Web Development", "C#", "Database", "Python", "Data Visualization", "Unity"],
       [
         "https://i.imgur.com/klahjti.gif",
       ],
@@ -188,7 +311,7 @@
         "Fully abstracted concept for easy implementation"
       ],
       "",
-      ["Unity", "C#", "Fish Networking", "Data Oriented Design", "OOP"],
+      ["Unity", "C#", "Fish Networking", "Data Oriented Design", "Object Oriented Programming"],
       [
         "https://i.imgur.com/Rt6xMLu.gif",
       ],
@@ -217,7 +340,7 @@
         
       ],
       "",
-      ["Webdev", "Wix"],
+      ["Web Development", "Wix"],
       [
 
       ],
@@ -233,7 +356,7 @@
         
       ],
       "",
-      ["Webdev", "Squarespace"],
+      ["Web Development", "Squarespace"],
       [
 
       ],

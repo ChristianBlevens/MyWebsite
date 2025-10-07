@@ -102,6 +102,11 @@ html {
   transition: colors 0.2s;
 }
 
+.filter-dropdown {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 /* GitHub Button Styles */
 .github-button {
   display: inline-flex;

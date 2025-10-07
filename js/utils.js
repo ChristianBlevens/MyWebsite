@@ -17,20 +17,36 @@ function debounce(func, wait = 20) {
 function setupIframeResize(iframe, container, options = {}) {
   if (!iframe) return null;
 
+  const iframeId = Math.random().toString(36).substring(7);
+  console.log(`[${iframeId}] Setting up iframe resize handler`);
+
   const {
-    minHeight = 400,
-    maxHeight = window.innerHeight * 0.8 // 80% of viewport height
+    minHeight = 300,
+    maxHeight = null // No max height limit by default
   } = options;
 
   let resizeInterval = null;
-  let lastHeight = minHeight;
+  let lastHeight = -1; // Start at -1 to ensure first height is always applied
   let messageListener = null;
+  let isActive = true; // Track if this handler is still active
 
   // Function to apply height
   const applyHeight = (height) => {
-    const finalHeight = Math.min(maxHeight, Math.max(minHeight, height));
+    if (!isActive) {
+      console.log(`[${iframeId}] Handler inactive, ignoring height:`, height);
+      return;
+    }
 
-    if (Math.abs(finalHeight - lastHeight) > 10) {
+    // Apply min/max constraints only if specified
+    let finalHeight = height;
+    if (minHeight) finalHeight = Math.max(minHeight, finalHeight);
+    if (maxHeight) finalHeight = Math.min(maxHeight, finalHeight);
+
+    // Always apply first height, then only if changed by more than 10px
+    const shouldApply = lastHeight === -1 || Math.abs(finalHeight - lastHeight) > 10;
+
+    if (shouldApply) {
+      console.log(`[${iframeId}] Applying height: ${finalHeight}px (from: ${height}px)`);
       lastHeight = finalHeight;
       container.style.height = `${finalHeight}px`;
       iframe.style.height = `${finalHeight}px`;
@@ -41,11 +57,16 @@ function setupIframeResize(iframe, container, options = {}) {
   messageListener = (event) => {
     // Validate message is from our iframe
     try {
+      // Check if this handler is still active and message is for our iframe
+      if (!isActive) {
+        return; // This handler has been stopped
+      }
+
       if (event.source === iframe.contentWindow) {
         // Check for height message
         if (event.data && typeof event.data === 'object') {
           if (event.data.type === 'iframe-height' && typeof event.data.height === 'number') {
-            console.log('Received height from iframe:', event.data.height);
+            console.log(`[${iframeId}] Received height from iframe:`, event.data.height);
             applyHeight(event.data.height);
 
             // Stop polling once we receive postMessage
@@ -58,6 +79,7 @@ function setupIframeResize(iframe, container, options = {}) {
       }
     } catch (e) {
       // Ignore invalid messages
+      console.log(`[${iframeId}] Error handling message:`, e);
     }
   };
 
@@ -78,18 +100,21 @@ function setupIframeResize(iframe, container, options = {}) {
 
         if (heights.length > 0) {
           const detectedHeight = Math.max(...heights);
+          console.log('Direct DOM height detection:', detectedHeight);
           applyHeight(detectedHeight);
           return true; // Successfully detected height
         }
       }
     } catch (e) {
       // Cross-origin iframe - can't access content
+      console.log('Cross-origin iframe - waiting for postMessage');
     }
 
     // Fallback for cross-origin iframes: use a sensible default
     // The iframe should send postMessage with actual height
-    const defaultHeight = Math.min(maxHeight, 800);
-    if (lastHeight === minHeight) { // Only set default once
+    const defaultHeight = maxHeight ? Math.min(maxHeight, 800) : 800;
+    if (lastHeight === -1) { // Only set default once (on first attempt)
+      console.log('Setting default height:', defaultHeight);
       applyHeight(defaultHeight);
     }
     return false; // Could not detect exact height
@@ -147,6 +172,9 @@ function setupIframeResize(iframe, container, options = {}) {
   // Return cleanup function
   return {
     stop: () => {
+      console.log(`[${iframeId}] Stopping resize handler`);
+      isActive = false; // Mark handler as inactive
+
       if (resizeInterval) {
         clearInterval(resizeInterval);
         resizeInterval = null;
@@ -154,6 +182,11 @@ function setupIframeResize(iframe, container, options = {}) {
       if (messageListener) {
         window.removeEventListener('message', messageListener);
         messageListener = null;
+      }
+
+      // Reset container height
+      if (container) {
+        container.style.height = '';
       }
     }
   };
