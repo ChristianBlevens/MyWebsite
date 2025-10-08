@@ -466,6 +466,102 @@ html {
 
 
 /* ========================================
+   CAROUSEL COMPONENTS
+   ======================================== */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  min-height: 500px;
+}
+
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1500px;
+  user-select: none; /* Prevent text selection during drag */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.carousel-card {
+  position: absolute;
+  width: 350px;
+  height: 400px;
+  background-color: var(--color-bg-tertiary);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.carousel-card-image {
+  width: 100%;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.carousel-card-content {
+  padding: 1.5rem;
+  height: 200px;
+  overflow: hidden;
+}
+
+.carousel-nav-btn {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+/* Carousel Card States (will be animated by GSAP) */
+.carousel-card[data-position="center"] {
+  z-index: 5;
+  transform: translateX(0) scale(1) rotateY(0deg);
+  opacity: 1;
+}
+
+.carousel-card[data-position="left-1"] {
+  z-index: 4;
+  transform: translateX(-380px) scale(0.85) rotateY(15deg);
+  opacity: 0.85;
+}
+
+.carousel-card[data-position="right-1"] {
+  z-index: 4;
+  transform: translateX(380px) scale(0.85) rotateY(-15deg);
+  opacity: 0.85;
+}
+
+.carousel-card[data-position="left-2"] {
+  z-index: 3;
+  transform: translateX(-680px) scale(0.7) rotateY(25deg);
+  opacity: 0.6;
+}
+
+.carousel-card[data-position="right-2"] {
+  z-index: 3;
+  transform: translateX(680px) scale(0.7) rotateY(-25deg);
+  opacity: 0.6;
+}
+
+.carousel-card[data-position="hidden"] {
+  z-index: 1;
+  transform: scale(0.5);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ========================================
    RESPONSIVE DESIGN
    ======================================== */
 /* Medium-Small Viewport Adjustments */
@@ -509,12 +605,12 @@ html {
   #projectDetails {
     padding: 16px;
   }
-  
+
   #projectDetails > div {
     max-width: calc(100vw - 32px);
     max-height: calc(100vh - 32px);
   }
-  
+
   .iframe-container {
     min-height: 300px;
   }
@@ -523,17 +619,75 @@ html {
     width: 95%;
     height: 80vh;
   }
-  
+
   .external-demo-container {
     padding: 0.75rem;
   }
-  
+
   .external-demo-image {
     max-height: calc(100% - 50px);
   }
-  
+
   .external-demo-button {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
+  }
+
+  /* Carousel Mobile Adjustments */
+  .carousel-wrapper {
+    height: 500px;
+  }
+
+  .carousel-card {
+    width: 280px;
+    height: 420px;
+  }
+
+  .carousel-card-image {
+    height: 180px;
+  }
+
+  .carousel-card-content {
+    padding: 1rem;
+    height: 240px;
+  }
+
+  /* Adjust positions for smaller screens */
+  .carousel-card[data-position="left-1"],
+  .carousel-card[data-position="right-1"] {
+    transform: translateX(-300px) scale(0.75) rotateY(20deg) !important;
+  }
+
+  .carousel-card[data-position="right-1"] {
+    transform: translateX(300px) scale(0.75) rotateY(-20deg) !important;
+  }
+
+  /* Hide ±2 cards on mobile */
+  .carousel-card[data-position="left-2"],
+  .carousel-card[data-position="right-2"] {
+    display: none;
+  }
+}
+
+/* Tablet Adjustments */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .carousel-card {
+    width: 320px;
+  }
+
+  .carousel-card[data-position="left-1"] {
+    transform: translateX(-340px) scale(0.8) rotateY(18deg);
+  }
+
+  .carousel-card[data-position="right-1"] {
+    transform: translateX(340px) scale(0.8) rotateY(-18deg);
+  }
+
+  .carousel-card[data-position="left-2"] {
+    transform: translateX(-600px) scale(0.65) rotateY(28deg);
+  }
+
+  .carousel-card[data-position="right-2"] {
+    transform: translateX(600px) scale(0.65) rotateY(-28deg);
   }
 }

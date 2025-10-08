@@ -139,7 +139,7 @@
         "GPU acceleration with direct FFmpeg processing"
       ],
       "A professional-grade video editing application that combines traditional editing capabilities with advanced AI-powered audio processing. The multi-track timeline editor supports drag-and-drop media import, clip manipulation (split, delete, mute), speed adjustment (0.25x to 2x), volume and opacity controls, and background noise removal. The AI transcription system provides automatic transcription with filler word detection, profanity detection, pause detection, and intelligent silence removal or compression. Comprehensive subtitle tools offer custom styling with font selection, position and animation options, and automatic generation with the ability to burn subtitles directly into video. Export options include multiple quality presets (Web, HD, 4K), codec selection, partial or full timeline export, and estimated file size calculations. Additional professional features include a marker and comment system, waveform visualization, and recent project tracking. The FastAPI backend with batched processing achieves 12.5x speedup over real-time, while GPU acceleration and direct FFmpeg processing ensure efficient rendering. Recent projects tracking and clip properties management round out the feature set. This application is ideal for content creators, YouTubers, and video editors seeking to accelerate their workflow through AI-assisted editing.",
-      ["Web Development", "Python", "FastAPI", "Faster Whisper", "FFmpeg", "Docker", "WebSockets", "JavaScript", "AI", "Cuda"],
+      ["Web Development", "Python", "FastAPI", "Faster Whisper", "FFmpeg", "Docker", "WebSockets", "JavaScript", "AI", "CUDA"],
       [],
       "online",
       "https://christianblevens.github.io/VideoEditor/",
@@ -174,7 +174,7 @@
         "Cloud database for transcript storage and reuse"
       ],
       "An advanced web application that automatically finds and extracts specific words or phrases from YouTube videos, channels, or playlists, and compiles them into a single cohesive video. The six-stage processing pipeline includes video download via yt-dlp with aria2c acceleration, AI-powered transcription using Faster Whisper with CTranslate2 for word-level timestamps and confidence scores, intelligent word search with context and customizable padding, automated clip extraction with nearby segment merging, video normalization for consistent resolution and audio streams, and final compilation with FFmpeg. The cloud database saves transcriptions to prevent redundant processing and enables transcript sharing across users for faster results. The system supports multiple Whisper model sizes and operates in both GPU and CPU modes for flexible deployment. The vanilla JavaScript frontend provides a user-friendly interface for configuring searches, while the Python Flask backend handles all processing stages. Docker and Docker Compose enable easy containerized deployment. This tool is perfect for content creators making compilation videos, researchers analyzing speech patterns, or anyone wanting to create supercuts of specific words or phrases from YouTube content.",
-      ["Python", "Flask", "Faster Whisper", "FFmpeg", "Docker", "yt-dlp", "SQLite"],
+      ["Python", "Flask", "Faster Whisper", "FFmpeg", "Docker", "yt-dlp", "SQLite", "CUDA"],
       [],
       null,
       null,

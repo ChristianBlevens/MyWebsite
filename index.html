@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Christian Blevens - Game Programmer specializing in game mechanics, systems design, and technical problem-solving">
-    <title>Christian Blevens | Game Programmer</title>
+    <meta name="description" content="Christian Blevens - Full-Stack Engineer & Game Systems Architect specializing in AI, game development, and technical problem-solving">
+    <title>Christian Blevens | Full-Stack Engineer & Game Systems Architect</title>
     <link rel="icon" type="image/svg" href="./favicon.svg"/>
 
     <!-- External Stylesheets -->
@@ -16,6 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 	
 </head>
 <body class="text-gray-100 antialiased bg-gray-900 font-sans" x-data="portfolioApp">
@@ -24,7 +25,7 @@
         <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-purple-900 opacity-20"></div>
         <div class="container-padded relative z-10">
             <h1 class="text-5xl md:text-6xl font-bold tracking-tight">Christian Blevens</h1>
-            <h2 class="text-2xl text-blue-300 font-normal mt-3">Game Programmer</h2>
+            <h2 class="text-2xl text-blue-300 font-normal mt-3">Full-Stack Engineer & Game Systems Architect</h2>
         </div>
     </header>
     
@@ -88,8 +89,8 @@
                         <div id="profile-pic" class="rounded-full p-1 bg-gradient-to-r from-blue-500 to-purple-500 mb-4 md:mb-8">
                             <img src="https://i.imgur.com/z7NBCHn.jpeg" alt="Christian Blevens" class="w-48 h-48 rounded-full object-cover">
                         </div>
-                        <h2 class="text-4xl font-bold mb-2 md:mb-4">Game Programmer & Developer</h2>
-                        <p class="text-xl max-w-3xl mb-4 md:mb-8">Welcome to my portfolio! I'm a passionate game programmer with expertise in creating innovative gameplay systems, efficient architecture, and engaging player experiences. I specialize in mechanics implementation, systems design, and technical problem-solving in game development.</p>
+                        <h2 class="text-4xl font-bold mb-2 md:mb-4">Full-Stack Engineer & Game Systems Architect</h2>
+                        <p class="text-xl max-w-3xl mb-4 md:mb-8">I build intelligent systems across web, AI, and game development. From AI-powered video editors and face anonymization pipelines to data-oriented game architectures and real-time multiplayer systems, I specialize in solving complex technical challenges with elegant, performant solutions. My work spans full-stack applications, machine learning integration, advanced Unity systems, and everything in between.</p>
                         <a href="#contact" class="btn-primary px-8 py-3 rounded-md font-medium inline-block">Get In Touch</a>
                     </div>
                 </div>
@@ -102,6 +103,24 @@
                 <h2 class="text-4xl font-bold text-center mb-8">Projects</h2>
                 
                 <div x-data="projectFilters">
+                    <!-- View Mode Toggle -->
+                    <div class="flex justify-center mb-6">
+                        <div class="inline-flex items-center bg-gray-800 rounded-lg p-1">
+                            <button @click="viewMode = 'carousel'"
+                                    :class="viewMode === 'carousel' ? 'bg-blue-600 text-white' : 'text-gray-400'"
+                                    class="px-4 py-2 rounded-md transition-all duration-200 text-sm font-medium flex items-center gap-2">
+                                <i class="fas fa-layer-group"></i>
+                                <span>Carousel</span>
+                            </button>
+                            <button @click="viewMode = 'grid'"
+                                    :class="viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-400'"
+                                    class="px-4 py-2 rounded-md transition-all duration-200 text-sm font-medium flex items-center gap-2">
+                                <i class="fas fa-th"></i>
+                                <span>Grid</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Project Filter Controls -->
                     <div x-ref="filterContainer" class="flex flex-wrap justify-center mb-10 gap-2">
                         <!-- Visible Filters -->
@@ -141,8 +160,77 @@
                         </div>
                     </div>
                     
-                    <!-- Project Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                    <!-- Carousel View -->
+                    <div x-show="viewMode === 'carousel'"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         class="carousel-container mt-8">
+
+                        <!-- Carousel Navigation Buttons -->
+                        <div class="flex justify-center gap-4 mb-6">
+                            <button @click="previousProject()"
+                                    class="carousel-nav-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button @click="nextProject()"
+                                    class="carousel-nav-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Carousel Cards -->
+                        <div class="carousel-wrapper" x-ref="carouselWrapper">
+                            <template x-for="(project, index) in filteredProjects" :key="index">
+                                <div class="carousel-card"
+                                     :data-index="index"
+                                     @click="goToProject(index)">
+
+                                    <!-- Project Image -->
+                                    <div class="carousel-card-image" :style="`background-image: url('${project.image}')`">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
+                                    </div>
+
+                                    <!-- Project Content -->
+                                    <div class="carousel-card-content">
+                                        <h3 class="text-xl font-bold mb-2" x-text="project.title"></h3>
+                                        <p class="text-gray-300 text-sm mb-3" x-text="project.summary"></p>
+
+                                        <!-- Skill Tags -->
+                                        <div class="flex flex-wrap gap-1">
+                                            <template x-for="skill in project.skills.slice(0, 3)" :key="skill">
+                                                <span class="skill-tag bg-gray-800 text-xs py-1 px-2 rounded-full" x-text="skill"></span>
+                                            </template>
+                                            <template x-if="project.skills.length > 3">
+                                                <span class="skill-tag bg-blue-600 text-xs py-1 px-2 rounded-full" x-text="`+${project.skills.length - 3}`"></span>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Carousel Counter & Navigation Hint -->
+                        <div class="text-center mt-6">
+                            <div class="text-gray-400 mb-2">
+                                <span x-text="currentIndex + 1"></span> / <span x-text="filteredProjects.length"></span>
+                            </div>
+                            <div class="text-xs text-gray-500 flex items-center justify-center gap-3">
+                                <span><i class="fas fa-hand-pointer"></i> Click</span>
+                                <span>•</span>
+                                <span><i class="fas fa-hand-paper"></i> Swipe</span>
+                                <span>•</span>
+                                <span><i class="fas fa-keyboard"></i> Arrow Keys</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid View -->
+                    <div x-show="viewMode === 'grid'"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
                         <template x-for="(project, index) in window.projects" :key="index">
 							<div x-show="activeFilter === 'all' || project.skills.includes(activeFilter)"
 							  x-transition:enter="transition ease-out duration-300"
@@ -150,33 +238,33 @@
 							  x-transition:enter-end="opacity-100 transform scale-100"
 							  class="project-card rounded-lg overflow-hidden cursor-pointer"
 							  @click="$dispatch('open-project', { project })">
-								
+
 								<!-- Project Image -->
 								<div class="h-48 bg-center bg-cover relative" :style="`background-image: url('${project.image}')`">
 									<div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
 								</div>
-								
+
 								<!-- Project Content -->
 								<div class="p-6">
 									<h3 class="text-xl font-bold mb-2" x-text="project.title"></h3>
 									<p class="mb-4 text-gray-300" x-text="project.summary"></p>
-									
+
 									<!-- Project Features -->
 									<div class="space-y-2">
 										<template x-for="feature in project.features.slice(0, 2)" :key="feature">
 											<div class="text-sm text-gray-400" x-text="`• ${feature}`"></div>
 										</template>
 									</div>
-									
+
 									<!-- Dynamic Skill Tags -->
-									<div class="mt-4 flex flex-wrap gap-2 min-h-[2.75rem]" 
+									<div class="mt-4 flex flex-wrap gap-2 min-h-[2.75rem]"
 										 x-data="dynamicSkillTags(project.skills)"
 										 x-init="init()">
-										
+
 										<template x-for="(skill, index) in visibleSkills" :key="index">
 											<span class="skill-tag bg-gray-800 text-xs py-1 px-2 rounded-full" x-text="skill"></span>
 										</template>
-										
+
 										<template x-if="remainingCount > 0">
 											<span class="skill-tag bg-blue-600 text-xs py-1 px-2 rounded-full" x-text="`+${remainingCount}`"></span>
 										</template>

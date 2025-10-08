@@ -8,6 +8,13 @@ document.addEventListener('alpine:init', () => {
     activeFilter: 'all',
     moreDropdownOpen: false,
 
+    // View Mode State
+    viewMode: 'carousel', // 'carousel' or 'grid'
+
+    // Carousel State
+    currentIndex: 0,
+    maxVisibleCards: 7, // Maximum cards visible at once (center + sides)
+
     // Filter Configuration (dynamically generated from projects)
     filterOptions: [],
 
@@ -15,9 +22,25 @@ document.addEventListener('alpine:init', () => {
     visibleFilters: [],
     overflowFilters: [],
 
+    // Computed: Get filtered projects based on active filter
+    get filteredProjects() {
+      if (!window.projects) return [];
+      if (this.activeFilter === 'all') return window.projects;
+      return window.projects.filter(project =>
+        project.skills && project.skills.includes(this.activeFilter)
+      );
+    },
+
     init() {
       this.generateFilterOptions();
       this.setupResponsiveFilters();
+      this.setupCarouselEventListeners();
+      this.setupSwipeNavigation();
+
+      // Initialize carousel on next tick
+      this.$nextTick(() => {
+        this.updateCarousel();
+      });
     },
 
     // Generate filter options dynamically from all project skills
@@ -114,6 +137,218 @@ document.addEventListener('alpine:init', () => {
     setFilter(filterId) {
       this.activeFilter = filterId;
       this.moreDropdownOpen = false;
+
+      // Reset carousel to first project when filter changes
+      if (this.viewMode === 'carousel') {
+        this.currentIndex = 0;
+        this.$nextTick(() => {
+          this.updateCarousel();
+        });
+      }
+    },
+
+    // Carousel Navigation Methods
+    nextProject() {
+      if (this.filteredProjects.length === 0) return;
+
+      // Loop to start when at end
+      this.currentIndex = (this.currentIndex + 1) % this.filteredProjects.length;
+      this.updateCarousel();
+    },
+
+    previousProject() {
+      if (this.filteredProjects.length === 0) return;
+
+      // Loop to end when at start
+      this.currentIndex = (this.currentIndex - 1 + this.filteredProjects.length) % this.filteredProjects.length;
+      this.updateCarousel();
+    },
+
+    goToProject(index) {
+      if (index === this.currentIndex) {
+        // If clicking center card, open project modal
+        this.$dispatch('open-project', { project: this.filteredProjects[index] });
+        return;
+      }
+      this.currentIndex = index;
+      this.updateCarousel();
+    },
+
+    // Update carousel card positions with GSAP
+    updateCarousel() {
+      if (this.viewMode !== 'carousel' || !this.$refs.carouselWrapper) return;
+
+      const cards = this.$refs.carouselWrapper.querySelectorAll('.carousel-card');
+      const totalCards = this.filteredProjects.length;
+
+      if (totalCards === 0) return;
+
+      // Calculate how many cards to show on each side
+      const visibleCards = Math.min(this.maxVisibleCards, totalCards);
+      const sideCards = Math.ceil((visibleCards - 1) / 2); // Cards on each side of center
+
+      cards.forEach((card, index) => {
+        const relativePos = this.getRelativePosition(index, this.currentIndex, totalCards);
+        const position = this.getCardPosition(relativePos, sideCards);
+
+        // Set data attribute for CSS fallback
+        card.setAttribute('data-position', position);
+
+        // Animate with GSAP
+        const config = this.getCardConfig(position, relativePos);
+
+        if (window.gsap) {
+          gsap.to(card, {
+            x: config.x,
+            y: config.y,
+            scale: config.scale,
+            rotateY: config.rotateY,
+            opacity: config.opacity,
+            zIndex: config.zIndex,
+            duration: 0.6,
+            ease: 'power2.out'
+          });
+        }
+      });
+    },
+
+    // Get relative position with wrapping
+    getRelativePosition(index, currentIndex, totalCards) {
+      let relativePos = index - currentIndex;
+
+      // Wrap around for looping
+      if (relativePos > totalCards / 2) {
+        relativePos -= totalCards;
+      } else if (relativePos < -totalCards / 2) {
+        relativePos += totalCards;
+      }
+
+      return relativePos;
+    },
+
+    // Determine card position label based on relative position and max side cards
+    getCardPosition(relativePos, sideCards) {
+      if (relativePos === 0) return 'center';
+
+      const absPos = Math.abs(relativePos);
+      const side = relativePos > 0 ? 'right' : 'left';
+
+      // If within visible range, return position (e.g., 'left-1', 'right-2')
+      if (absPos <= sideCards) {
+        return `${side}-${absPos}`;
+      }
+
+      // Otherwise hide
+      return 'hidden';
+    },
+
+    // Get card animation configuration dynamically
+    getCardConfig(position, relativePos) {
+      // Center card
+      if (position === 'center') {
+        return { x: 0, y: 0, scale: 1, rotateY: 0, opacity: 1, zIndex: 10 };
+      }
+
+      // Hidden cards
+      if (position === 'hidden') {
+        return { x: 0, y: 0, scale: 0.5, rotateY: 0, opacity: 0, zIndex: 1 };
+      }
+
+      // Parse position (e.g., 'left-1', 'right-2')
+      const [side, distanceStr] = position.split('-');
+      const distance = parseInt(distanceStr);
+      const isLeft = side === 'left';
+
+      // Calculate properties based on distance from center
+      const baseOffset = 380; // Base horizontal offset
+      const offsetIncrement = 300; // Additional offset per card
+      const baseScale = 0.85; // Scale for first side card
+      const scaleDecrement = 0.15; // Scale reduction per card
+      const baseRotation = 15; // Rotation for first side card
+      const rotationIncrement = 10; // Additional rotation per card
+      const baseOpacity = 0.85; // Opacity for first side card
+      const opacityDecrement = 0.25; // Opacity reduction per card
+
+      const x = (baseOffset + (distance - 1) * offsetIncrement) * (isLeft ? -1 : 1);
+      const scale = Math.max(0.5, baseScale - (distance - 1) * scaleDecrement);
+      const rotateY = (baseRotation + (distance - 1) * rotationIncrement) * (isLeft ? 1 : -1);
+      const opacity = Math.max(0.3, baseOpacity - (distance - 1) * opacityDecrement);
+      const zIndex = 10 - distance;
+
+      return { x, y: 0, scale, rotateY, opacity, zIndex };
+    },
+
+    // Setup carousel event listeners
+    setupCarouselEventListeners() {
+      // Keyboard navigation
+      const handleKeydown = (e) => {
+        if (this.viewMode !== 'carousel') return;
+
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          this.previousProject();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          this.nextProject();
+        }
+      };
+
+      window.addEventListener('keydown', handleKeydown);
+    },
+
+    // Setup swipe/drag navigation (works for both mouse and touch)
+    setupSwipeNavigation() {
+      this.$nextTick(() => {
+        const wrapper = this.$refs.carouselWrapper;
+        if (!wrapper) return;
+
+        let startX = 0;
+        let isDragging = false;
+        const swipeThreshold = 50; // Minimum distance for swipe
+
+        // Unified start handler (mouse + touch)
+        const handleStart = (e) => {
+          if (this.viewMode !== 'carousel') return;
+
+          isDragging = true;
+          startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+          wrapper.style.cursor = 'grabbing';
+        };
+
+        // Unified end handler (mouse + touch)
+        const handleEnd = (e) => {
+          if (!isDragging || this.viewMode !== 'carousel') return;
+
+          const endX = e.type.includes('mouse')
+            ? e.clientX
+            : (e.changedTouches ? e.changedTouches[0].clientX : startX);
+
+          const deltaX = endX - startX;
+
+          // Swipe left (next) - loops to start
+          if (deltaX < -swipeThreshold) {
+            this.nextProject();
+          }
+          // Swipe right (previous) - loops to end
+          else if (deltaX > swipeThreshold) {
+            this.previousProject();
+          }
+
+          isDragging = false;
+          wrapper.style.cursor = 'grab';
+        };
+
+        // Mouse events
+        wrapper.addEventListener('mousedown', handleStart);
+        window.addEventListener('mouseup', handleEnd);
+
+        // Touch events
+        wrapper.addEventListener('touchstart', handleStart, { passive: true });
+        window.addEventListener('touchend', handleEnd, { passive: true });
+
+        // Set initial cursor
+        wrapper.style.cursor = 'grab';
+      });
     }
   }));
 
