@@ -355,12 +355,48 @@
         <section class="py-20">
             <div class="container-padded">
                 <h2 class="text-4xl font-bold text-center mb-8">Comments</h2>
-                <script src="https://cdn.jsdelivr.net/gh/ChristianBlevens/CommentSectionWebApp@main/embed.js" 
-                        data-instance="https://mycomments.duckdns.org" 
-                        data-page-id="ChristianBlevens">
-                </script>
+                <div id="main-comments-container">
+                    <script src="https://cdn.jsdelivr.net/gh/ChristianBlevens/CommentSectionWebApp@main/embed.js"
+                            data-instance="https://mycomments.duckdns.org"
+                            data-page-id="ChristianBlevens">
+                    </script>
+                </div>
             </div>
         </section>
+
+        <!-- Setup iframe resize for main comment section -->
+        <script>
+            (function() {
+                // Wait for the comment iframe to be created
+                const observer = new MutationObserver(function(mutations) {
+                    const container = document.getElementById('main-comments-container');
+                    if (!container) return;
+
+                    const iframe = container.querySelector('iframe');
+                    if (iframe && typeof setupIframeResize === 'function') {
+                        console.log('Setting up comment iframe resize handler');
+
+                        // Setup resize handler with NO max height
+                        setupIframeResize(iframe, container, {
+                            minHeight: 400,
+                            maxHeight: null // No maximum height - expand infinitely
+                        });
+
+                        // Stop observing once we've set it up
+                        observer.disconnect();
+                    }
+                });
+
+                // Start observing for iframe creation
+                const container = document.getElementById('main-comments-container');
+                if (container) {
+                    observer.observe(container, {
+                        childList: true,
+                        subtree: true
+                    });
+                }
+            })();
+        </script>
         
     </main>
     
