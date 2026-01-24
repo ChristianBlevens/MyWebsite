@@ -254,8 +254,8 @@ document.addEventListener('alpine:init', () => {
 
       // Create and append script element
       const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/gh/ChristianBlevens/CommentSectionWebApp@main/embed.js';
-      script.setAttribute('data-instance', 'https://mycomments.duckdns.org');
+      script.src = 'https://christianblevens.me/comments/embed.js';
+      script.setAttribute('data-instance', 'https://christianblevens.me/comments');
       script.setAttribute('data-page-id', this.project.title.replace(/\s/g,''));
       container.appendChild(script);
     },
